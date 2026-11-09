@@ -2,11 +2,13 @@
 //
 // Entry shape (all collections share it):
 //   { id, type, date, data, updatedAt, exportedAt, exportId, deletedAt }
-//   type: 'habit_check' | 'weigh_in' | 'guitar'
+//   type: 'habit_check' | 'weigh_in' | 'guitar' | 'lift_set'
 //   data: habit_check { habit, done } | weigh_in { weight_lb } | guitar { minutes, focus, best_bpm }
+//         | lift_set { session, exercise, kind, weight, reps, seconds, side }   (see logic/workout.js)
 //   updatedAt/exportedAt: ms timestamps; exportedAt and exportId are null until confirmed.
 
 import { toDateString } from './dates.js';
+import { workoutMarkdown } from './workout.js';
 
 /** An entry needs exporting if it was never exported or was edited after export. */
 export function isDirty(entry) {
@@ -52,6 +54,8 @@ function dayMarkdown(date, entries) {
     }
     lines.push('');
   }
+
+  lines.push(...workoutMarkdown(entries));
 
   return lines.join('\n');
 }

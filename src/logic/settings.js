@@ -19,6 +19,15 @@ export function loadSettings(storage) {
   try { return normalizeSettings(JSON.parse(storage.getItem(SETTINGS_KEY) || 'null')); } catch { return { ...DEFAULT_SETTINGS }; }
 }
 
+// Starter habits are added once per device. This flag stops them coming back after you delete them.
+export const SEEDED_KEY = 'lifelog.seeded';
+export function isSeeded(storage) {
+  try { return storage.getItem(SEEDED_KEY) === '1'; } catch { return true; } // storage blocked: do not re-seed every load
+}
+export function markSeeded(storage) {
+  try { storage.setItem(SEEDED_KEY, '1'); } catch { /* storage blocked */ }
+}
+
 /** Returns true if saved, false if storage refused. */
 export function saveSettings(storage, settings) {
   try { storage.setItem(SETTINGS_KEY, JSON.stringify(normalizeSettings(settings))); return true; } catch { return false; }

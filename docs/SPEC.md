@@ -360,10 +360,10 @@ Build in four milestones, each usable on its own.
 
 **Open questions**
 
-- [ ] Which habits should ship in the starter list?
-- [ ] Which exercises should the starter Upper and Lower lists include? (All editable.)
+- [x] Starter habits: Guitar, Coding, Workout (editable)
+- [x] Starter exercises: from Upper-Lower-3-4-Day-Plan.pdf, see TEMPLATE-upper-lower.md (all editable)
 - [x] Export folder: myVault/sources/life-log/ (confirmed)
-- [ ] Is protein worth tracking, or just meal names?
+- [x] Protein: tracked against a 160 g daily target (F13)
 - [ ] Does the app name stay Life Log, or do you want another?
 
 ## Feature scope
@@ -384,7 +384,7 @@ There are 17 must-have features: 11 Must-M1 (v1) and 6 Must-M2. Everything else 
 | F10 | Week view: habit grid, weight trend with 170 lb line | Core | Should | M2 |
 | F11 | Streaks per habit and for guitar | Habits | Should | M2 |
 | F12 | Practice timer | Guitar | Could | M2 |
-| F13 | Protein and water tracking | Food | Could | M2 |
+| F13 | Protein tracking against a 160 g daily target; water optional | Food | Should | M2 |
 | F14 | Markdown export to Dropbox, then warned wipe of exported logs | Core | Must-M1 | M1 |
 | F15 | Synced backend | Core | Could | M3 |
 | F16 | Kumio prep and study log | Study | Should | M2 |

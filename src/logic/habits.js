@@ -21,6 +21,10 @@ export const habitId = (name) => normalizeName(name)?.toLowerCase() ?? null;
 
 export const checkId = (habit, date) => `hc-${habit.id}-${date}`;
 
+/** The habits a fresh install starts with. All of them can be renamed or removed. */
+export const STARTER_HABITS = ['Guitar', 'Coding', 'Workout'];
+export const starterHabits = () => STARTER_HABITS.map((name) => ({ id: habitId(name), name }));
+
 /** Add a habit. Returns { habits, habit } or { error }. Does not mutate. */
 export function addHabit(habits, rawName) {
   const name = normalizeName(rawName);

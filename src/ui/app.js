@@ -1,46 +1,29 @@
 import { isDirty, buildExport } from '../logic/exportBuilder.js';
 import { markExported, planWipe } from '../logic/wipeEligibility.js';
-import { toDateString, logicalDate } from '../logic/dates.js';
-import { addHabit, toggleCheck, isChecked } from '../logic/habits.js';
+import { logicalDate } from '../logic/dates.js';
+import { addHabit, toggleCheck, isChecked, starterHabits } from '../logic/habits.js';
 import { computeStats, emptyStats, streakWithStats } from '../logic/retainedStats.js';
-import { parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry, liveEntries } from '../logic/entries.js';
-import { loadSettings, saveSettings, normalizeSettings } from '../logic/settings.js';
+import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry, liveEntries } from '../logic/entries.js';
+import { demoEntries } from '../logic/demo.js';
+import { sessionForDate } from '../logic/workout.js';
+import { sessionById } from '../logic/template.js';
+import { loadSettings, saveSettings, normalizeSettings, isSeeded, markSeeded } from '../logic/settings.js';
 import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
 import { historyView } from './historyView.js';
 import { settingsView } from './settingsView.js';
-import { renderBackupPanel, backupActions } from './backupPanel.js';
-import { getConfig, isConnected, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
+import { workoutView } from './workoutView.js';
+import { createWorkoutActions } from './workoutActions.js';
+import { exportView, wipeView, waiting, wipeOpts } from './exportWipeView.js';
+import { backupActions } from './backupPanel.js';
+import { getConfig, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
 import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, deleteHabit } from '../db/store.js';
-
-const DAY_MS = 24 * 3600 * 1000;
-const WIPE_TEXT = (n, range) =>
-  `Wipe permanently deletes ${n} entries (${range ? `${range.from} to ${range.to}` : 'none'}) from this phone. ` +
-  'Open the file in Dropbox first and confirm it is there. This cannot be undone.';
-
-const newId = () => (crypto.randomUUID ? crypto.randomUUID() : `e${Date.now()}${Math.random().toString(16).slice(2)}`);
-const makeEntry = (type, date, data, updatedAt) => ({
-  id: newId(), type, date, data, updatedAt, exportedAt: null, exportId: null, deletedAt: null,
-});
-
-function demoEntries() {
-  const now = Date.now();
-  const out = [];
-  for (let i = 12; i >= 1; i -= 1) {
-    const ts = now - i * DAY_MS;
-    const date = toDateString(ts);
-    out.push(makeEntry('weigh_in', date, { weight_lb: +(184 - i * 0.15).toFixed(1) }, ts));
-    out.push(makeEntry('guitar', date, { minutes: 15 + (i % 3) * 10, focus: 'technique', best_bpm: 90 + i }, ts));
-    out.push(makeEntry('habit_check', date, { habit: 'Water', done: i % 2 === 0 }, ts));
-  }
-  return out;
-}
 
 const settings = (() => { try { return loadSettings(localStorage); } catch { return normalizeSettings(null); } })();
 const persistSettings = () => {
   try { saveSettings(localStorage, { keepDays: state.keepDays, dayStartHour: state.dayStartHour }); } catch { /* storage blocked */ }
 };
-const TABS = ['today', 'history', 'export', 'wipe', 'settings'];
+const TABS = ['today', 'workout', 'history', 'export', 'wipe', 'settings'];
 
 const state = {
   tab: 'today',
@@ -50,6 +33,7 @@ const state = {
   keepDays: settings.keepDays,
   dayStartHour: settings.dayStartHour,
   editId: null, // id of the entry being edited on the History tab
+  wSession: null, // workout session picked on the Workout tab (null = today's)
   installEvent: null, // the browser's deferred install prompt, when it offers one
   installKind: 'other',
   storageLine: '',
@@ -63,8 +47,6 @@ const state = {
 };
 
 const $app = document.getElementById('app');
-const waiting = () => state.entries.filter(isDirty).length;
-const wipeOpts = () => ({ now: Date.now(), keepDays: state.keepDays, dayStartHour: state.dayStartHour });
 const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; };
 const inputValue = (id) => document.getElementById(id)?.value ?? '';
 const today = () => logicalDate(Date.now(), state.dayStartHour);
@@ -96,6 +78,8 @@ function download(file) {
 
 // ---- actions ----
 const actions = {
+  ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today }),
+
   tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; },
 
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
@@ -137,6 +121,7 @@ const actions = {
     if (!e) return;
     const r = parseEdit(e, {
       weight: inputValue('ed-w'), minutes: inputValue('ed-m'), focus: inputValue('ed-f'), bpm: inputValue('ed-b'),
+      reps: inputValue('ed-r'), seconds: inputValue('ed-s'),
       done: document.getElementById('ed-d')?.checked,
     });
     if (r.error) { state.msg = r.error; return; }
@@ -186,7 +171,7 @@ const actions = {
   },
 
   demo: async () => {
-    const demo = demoEntries();
+    const demo = demoEntries(Date.now());
     try { await saveEntries(demo); } catch (e) { state.msg = saveFail(e); return; }
     state.entries.push(...demo);
     state.msg = 'Loaded 12 days of demo data.';
@@ -292,7 +277,7 @@ const actions = {
   },
 
   wipe: async () => {
-    const plan = planWipe(state.entries, state.flow.result.manifest, wipeOpts());
+    const plan = planWipe(state.entries, state.flow.result.manifest, wipeOpts(state));
     if (plan.count === 0) return;
     if (state.keepDays === 0 && !window.confirm(`Keep window is 0. This wipes ALL ${plan.count} exported entries, including today. Continue?`)) return;
     // Compute the facts that must outlive these entries BEFORE deleting, from every entry we hold.
@@ -345,6 +330,14 @@ function habitsPanel() {
   </div>`;
 }
 
+function sessionPanel() {
+  const id = sessionForDate(today());
+  const s = id && sessionById(id);
+  return `<div class="panel"><h2>TODAY'S SESSION</h2>
+    <p>${s ? `${esc(s.name)}: ${esc(s.focus)}` : 'No lifting scheduled. BJJ, rest or a walk.'}</p>
+    <button class="btn" data-tab="workout" data-action="tab">${s ? 'START WORKOUT' : 'PICK A WORKOUT'}</button></div>`;
+}
+
 function todayView() {
   const recent = liveEntries(state.entries).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 8);
   const rows = recent.map((e) =>
@@ -353,10 +346,11 @@ function todayView() {
   return `
     <div class="panel">
       <h2>WAITING TO EXPORT</h2>
-      <div class="big">${waiting()}</div>
-      <p>${waiting() ? 'These entries are on this phone only.' : 'Everything is exported.'}</p>
+      <div class="big">${waiting(state)}</div>
+      <p>${waiting(state) ? 'These entries are on this phone only.' : 'Everything is exported.'}</p>
       <p>${esc(storageLine())}</p>
     </div>
+    ${sessionPanel()}
     ${habitsPanel()}
     <div class="panel">
       <h2>LOG</h2>
@@ -375,65 +369,10 @@ function todayView() {
     </div>`;
 }
 
-function dropboxBlock() {
-  if (isConnected()) {
-    return `<button class="btn" data-action="upload">UPLOAD TO DROPBOX</button>
-      <p>Goes to ${esc(getConfig().folder)}/</p>
-      <button class="btn secondary" data-action="disconnect">DISCONNECT DROPBOX</button>`;
-  }
-  return `<p>Connect once to upload straight to your vault.</p>
-    <input id="appKey" class="field" placeholder="Dropbox app key" value="${esc(getConfig().appKey || '')}" autocomplete="off">
-    <button class="btn" data-action="connect">CONNECT DROPBOX</button>`;
-}
-
-function exportView() {
-  const { step, result, viaDownload } = state.flow;
-  const n = waiting();
-  let body = '';
-  if (step === 'idle') {
-    body = `<p>${n} entries waiting.</p><button class="btn" data-action="build" ${n ? '' : 'disabled'}>EXPORT</button>`;
-  } else if (step === 'built') {
-    body = `<p>File: <b>${esc(result.filename)}</b><br>${result.manifest.items.length} entries, ${esc(result.manifest.range.from)} to ${esc(result.manifest.range.to)}</p>
-      ${dropboxBlock()}
-      <button class="btn ${isConnected() ? 'secondary' : ''}" data-action="share">SAVE VIA SHARE SHEET</button>
-      <button class="btn secondary" data-action="confirmNo">CANCEL</button>
-      <pre>${esc(result.markdown)}</pre>`;
-  } else if (step === 'shared') {
-    body = `<p>${viaDownload ? 'The file was downloaded. The app cannot tell where it went.' : 'The share sheet closed.'}</p>
-      <p><b>Is ${esc(result.filename)} in Dropbox?</b></p>
-      <button class="btn" data-action="confirmYes">YES, IT IS</button>
-      <button class="btn secondary" data-action="confirmNo">NO</button>`;
-  } else {
-    body = `<p>Confirmed: ${esc(result.filename)}. Go to WIPE when you are ready.</p>
-      <button class="btn secondary" data-tab="wipe" data-action="tab">GO TO WIPE</button>`;
-  }
-  return `<div class="panel"><h2>EXPORT</h2>${body}</div>${renderBackupPanel(state)}`;
-}
-
-function wipeView() {
-  const { step, result } = state.flow;
-  const keep = `<p>Keep the last <select data-action="setKeep" aria-label="Keep days">
-      ${[0, 3, 7, 14].map((d) => `<option value="${d}" ${d === state.keepDays ? 'selected' : ''}>${d}</option>`).join('')}
-    </select> days on this phone.</p>`;
-  if (step !== 'confirmed') {
-    return `<div class="panel"><h2>WIPE</h2>${keep}
-      <p>Wipe is off until you export and confirm the file is in Dropbox.</p>
-      <button class="btn danger" disabled>WIPE !!</button></div>`;
-  }
-  const plan = planWipe(state.entries, result.manifest, wipeOpts());
-  const ready = state.wipeTick && plan.count > 0;
-  return `<div class="panel"><h2>WIPE</h2>${keep}
-    <div class="warn">${esc(WIPE_TEXT(plan.count, plan.range))}</div>
-    <label class="check"><input type="checkbox" data-action="tick" ${state.wipeTick ? 'checked' : ''}>
-      <span>I opened the file in Dropbox and it is complete</span></label>
-    <button class="btn danger" data-action="wipe" ${ready ? '' : 'disabled'}>WIPE ${plan.count} !!</button>
-    ${plan.count === 0 ? '<p>Nothing is old enough to wipe yet.</p>' : ''}</div>`;
-}
-
 function render() {
   state.storageLine = storageLine();
   refreshInstall();
-  const views = { today: todayView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
+  const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
   const tabs = TABS.map((t) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${state.tab === t ? 'aria-current="page"' : ''}>${t.toUpperCase()}</button>`).join('');
   $app.innerHTML = `<h1>LIFE LOG</h1><nav>${tabs}</nav>
@@ -461,6 +400,19 @@ $app.addEventListener('change', (ev) => {
 window.addEventListener('beforeinstallprompt', (ev) => { ev.preventDefault(); state.installEvent = ev; render(); });
 window.addEventListener('appinstalled', () => { state.installEvent = null; render(); });
 
+// First run on this device: add Guitar, Coding and Workout once. Deleting them later does not bring them back.
+async function seedStarterHabits() {
+  let seeded = true;
+  try { seeded = isSeeded(localStorage); } catch { /* storage blocked: skip seeding */ }
+  if (seeded) return;
+  if (!state.habits.length) {
+    const starters = starterHabits();
+    try { if (state.storageOk) for (const h of starters) await putHabit(h); } catch { return; }
+    state.habits = starters.sort((a, b) => a.name.localeCompare(b.name));
+  }
+  try { markSeeded(localStorage); } catch { /* storage blocked */ }
+}
+
 // ---- boot ----
 async function boot() {
   try {
@@ -473,6 +425,7 @@ async function boot() {
     state.storageOk = false;
     state.msg = 'Storage is unavailable here, so entries will not be saved.';
   }
+  await seedStarterHabits();
   try {
     if (navigator.storage?.persist) await navigator.storage.persist();
     if (navigator.storage?.persisted) state.persisted = await navigator.storage.persisted();

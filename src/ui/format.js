@@ -1,5 +1,7 @@
 // Small display helpers shared by the screens.
 
+import { setText } from '../logic/workout.js';
+
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 /** One-line text for an entry in a list. */
@@ -10,5 +12,6 @@ export function label(e) {
       .filter(Boolean).join(', ');
     return `Guitar ${e.data.minutes} min${extra ? ` (${extra})` : ''}`;
   }
+  if (e.type === 'lift_set') return `${e.data.exercise} ${e.data.kind === 'warmup' ? '(warm-up) ' : ''}${setText(e.data)}`;
   return `${e.data.habit} ${e.data.done ? 'done' : 'missed'}`;
 }

@@ -17,6 +17,13 @@ function editForm(e) {
     fields = `<input id="ed-m" class="field" type="number" inputmode="numeric" step="1" value="${esc(e.data.minutes)}" aria-label="Minutes">
       <input id="ed-f" class="field" maxlength="40" value="${esc(e.data.focus || '')}" aria-label="Focus" autocomplete="off">
       <input id="ed-b" class="field" type="number" inputmode="numeric" step="1" value="${esc(e.data.best_bpm ?? '')}" placeholder="Best BPM" aria-label="Best BPM">`;
+  } else if (e.type === 'lift_set') {
+    const d = e.data;
+    fields = `<p>${esc(d.exercise)} ${d.kind === 'warmup' ? '(warm-up)' : ''} ${d.side ? esc(d.side) : ''}</p>
+      <input id="ed-w" class="field" type="number" inputmode="decimal" step="0.5" value="${esc(d.weight ?? '')}" placeholder="Weight (lb)" aria-label="Weight in lb">
+      ${d.seconds != null
+    ? `<input id="ed-s" class="field" type="number" inputmode="numeric" step="1" value="${esc(d.seconds)}" aria-label="Seconds">`
+    : `<input id="ed-r" class="field" type="number" inputmode="numeric" step="1" value="${esc(d.reps ?? '')}" aria-label="Reps">`}`;
   } else {
     fields = `<label class="check"><input id="ed-d" type="checkbox" ${e.data.done ? 'checked' : ''}><span>${esc(e.data.habit)} done</span></label>`;
   }

@@ -7,8 +7,18 @@
 // again and is never wiped until re-exported. Deleting sets deletedAt (a tombstone) so a restore
 // of an older backup cannot bring the entry back; the Dropbox copy of an exported entry stays.
 
+import { findExercise } from './template.js';
+import { parseSet } from './workout.js';
+
 export const MAX_FOCUS = 40;
 export const DEFAULT_FOCUS = 'practice';
+
+export const newId = () => (globalThis.crypto?.randomUUID ? crypto.randomUUID() : `e${Date.now()}${Math.random().toString(16).slice(2)}`);
+
+/** A new, never-exported entry. */
+export const newEntry = (type, date, data, updatedAt) => ({
+  id: newId(), type, date, data, updatedAt, exportedAt: null, exportId: null, deletedAt: null,
+});
 
 /** Weight in lb. Returns { value } or { error }. */
 export function parseWeight(raw) {
@@ -41,6 +51,11 @@ export function parseEdit(entry, fields) {
   }
   if (entry.type === 'guitar') return parseGuitar(fields);
   if (entry.type === 'habit_check') return { data: { done: Boolean(fields.done) } };
+  if (entry.type === 'lift_set') {
+    const ex = findExercise(entry.data.exercise) ?? { mode: entry.data.seconds != null ? 'timed' : 'weight', perSide: Boolean(entry.data.side) };
+    const r = parseSet(ex, { weight: fields.weight, reps: fields.reps, seconds: fields.seconds, side: entry.data.side });
+    return r.error ? r : { data: r.data };
+  }
   return { error: 'This entry cannot be edited.' };
 }
 

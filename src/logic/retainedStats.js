@@ -14,7 +14,7 @@ import { currentStreak } from './habits.js';
 export const GUITAR = '__guitar__';
 const MAX_WEIGH_INS = 7;
 
-export const emptyStats = () => ({ key: 'stats', updatedAt: 0, best: {}, anchors: {}, lastSets: {}, weighIns: [] });
+export const emptyStats = () => ({ key: 'stats', updatedAt: 0, best: {}, anchors: {}, lastSets: {}, lastLifts: {}, weighIns: [] });
 
 const alive = (e) => !e.deletedAt;
 
@@ -77,6 +77,17 @@ export function computeStats(entries, prev = emptyStats(), now = 0) {
     }
   }
 
+  // Last working set per lift, so pre-fill and "what to beat" survive a wipe.
+  const lastLifts = { ...base.lastLifts };
+  for (const e of entries) {
+    if (!alive(e) || e.type !== 'lift_set' || e.data.kind !== 'working') continue;
+    const cur = lastLifts[e.data.exercise];
+    if (!cur || e.date > cur.date || (e.date === cur.date && e.updatedAt >= cur.at)) {
+      const { weight, reps, seconds, side } = e.data;
+      lastLifts[e.data.exercise] = { date: e.date, at: e.updatedAt, weight, reps, seconds, side };
+    }
+  }
+
   // Latest weigh-in per day wins; keep the most recent MAX_WEIGH_INS days.
   const perDay = new Map(base.weighIns.map((w) => [w.date, { ...w, at: 0 }]));
   for (const e of entries) {
@@ -89,7 +100,7 @@ export function computeStats(entries, prev = emptyStats(), now = 0) {
     .slice(-MAX_WEIGH_INS)
     .map(({ date, weight_lb }) => ({ date, weight_lb }));
 
-  return { key: 'stats', updatedAt: now, best, anchors, lastSets, weighIns };
+  return { key: 'stats', updatedAt: now, best, anchors, lastSets, lastLifts, weighIns };
 }
 
 /**

@@ -18,13 +18,13 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 ## M2 Training and food
 
-- [ ] F8 Upper/Lower session logger with last-weight pre-fill (Must-M2)
+- [x] F8 Upper/Lower session logger with last-weight pre-fill (Must-M2)
 - [ ] F9 Meal log: name, type (Must-M2)
 - [ ] F20 Add and delete exercises, Upper and Lower lists (Must-M2)
-- [ ] F21 Workout template: Upper/Lower 3-4 day plan (Must-M2)
-- [ ] F22 Warm-up and working sets logged separately (Must-M2)
+- [x] F21 Workout template: Upper/Lower 3-4 day plan (Must-M2). Upper A, Lower, Upper B and optional Upper C are in; the 3/4-day switch is F31
+- [x] F22 Warm-up and working sets logged separately (Must-M2)
 - [ ] F23 Rest timer (Should)
-- [ ] F24 Timed, per-side and bodyweight exercises (Must-M2)
+- [x] F24 Timed, per-side and bodyweight exercises (Must-M2)
 - [ ] F25 Progression prompt on first lift (Should)
 - [ ] F29 Warm-up checklists and back-training cues (Could)
 - [ ] F30 Trim a set (Could)
@@ -35,7 +35,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [ ] F10 Week view: habit grid, weight trend with 170 lb line (Should)
 - [ ] F11 Streaks per habit and for guitar (Should)
 - [ ] F12 Practice timer (Could)
-- [ ] F13 Protein and water tracking (Could)
+- [ ] F13 Protein tracking against a 160 g daily target; water is optional (Should)
 - [ ] F19 Personal records: top 5 per lift, bodyweight, guitar BPM and more, kept through wipe (Should)
 
 ## M3 Vault link
@@ -49,9 +49,9 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 ## Open questions
 
-- [ ] Starter habit list
-- [ ] Starter exercises for Upper and Lower (all editable)
+- [x] Starter habit list: Guitar, Coding, Workout (editable)
+- [x] Starter exercises for Upper and Lower: from Upper-Lower-3-4-Day-Plan.pdf, see docs/TEMPLATE-upper-lower.md (all editable)
 - [x] Export folder: myVault/sources/life-log/ (confirmed)
-- [ ] Track protein or just meal names
+- [x] Track protein: yes, against a 160 g daily target (F13)
 - [ ] App name
 - [ ] Other things that should have a top 5
