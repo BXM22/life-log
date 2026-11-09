@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat: edit or delete each logged set right on the Workout tab (2026-11-09)
+- feat: add, edit and delete exercises in any workout session, or reset to the built-in plan; edits are kept on the phone and survive a wipe (F20); 77 tests (2026-11-09)
 - feat: iPhone-style layout: bottom tab bar with icons, large screen titles, Today summary, Sync tab with Export/Wipe switch, floating messages, 16px-safe inputs (2026-11-09)
 - feat: Workout tab with the Upper/Lower template, warm-up and working sets, last-weight pre-fill, timed, per-side and bodyweight sets, and a Today's session panel (F8, F21, F22, F24); lift sets export under a Workout section and the last working set per lift survives a wipe; 70 tests (2026-11-09)
 - feat: new installs start with Guitar, Coding and Workout habits, added once (2026-11-09)

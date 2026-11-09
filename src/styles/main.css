@@ -194,10 +194,13 @@ button.btn.habit-del { width: 44px; min-height: 44px; flex: none; margin: 0 0 0 
 /* History: entry rows with edit and delete */
 .entry { border-bottom: 2px dotted var(--shade); padding: 4px 0; }
 .entry .row { border-bottom: 0; }
+.entry .tag { align-self: flex-start; flex: none; }
 .entry .actions { display: flex; gap: 8px; }
 .entry.editing { padding: 8px 0; }
 .entry.editing .field { margin-top: 8px; }
 button.btn.small { width: auto; min-height: 44px; margin: 4px 0 8px; padding: 6px 12px; font-size: 8px; }
+/* Visible labels on form fields */
+.lbl { display: block; margin: 12px 0 4px; font-family: 'Press Start 2P', monospace; font-size: 8px; }
 small { font-family: 'Press Start 2P', monospace; font-size: 8px; }
 
 pre {

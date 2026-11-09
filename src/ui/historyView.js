@@ -9,7 +9,7 @@ import { esc, label } from './format.js';
 const MAX_ROWS = 60;
 const MAX_WEIGHTS = 14;
 
-function editForm(e) {
+export function editForm(e) {
   let fields = '';
   if (e.type === 'weigh_in') {
     fields = `<input id="ed-w" class="field" type="number" inputmode="decimal" step="0.1" value="${esc(e.data.weight_lb)}" aria-label="Weight in lb">`;

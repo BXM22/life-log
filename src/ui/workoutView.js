@@ -1,12 +1,14 @@
 // WORKOUT tab: today's session from the template, one panel per exercise.
 //   html:    workoutView(state)
-//   actions: data-action="pickSession" | "logSet" (data-i = exercise index, data-kind = warmup | working), see workoutActions.js
+//   actions: data-action="pickSession" | "toggleManage" | "logSet" (data-i = exercise index, data-kind = warmup | working), see workoutActions.js
 // Warm-up and working sets are logged separately. The weight box is pre-filled from the last working set.
 
-import { SESSIONS, sessionById } from '../logic/template.js';
+import { getSessions, sessionById } from '../logic/template.js';
 import { activeSessionId, lastWorking, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
 import { esc } from './format.js';
+import { manageView } from './templateView.js';
+import { editForm } from './historyView.js';
 
 function exercisePanel(state, ex, i, day) {
   const last = lastWorking(state.entries, state.stats, ex.name);
@@ -24,8 +26,10 @@ function exercisePanel(state, ex, i, day) {
       : '',
   ].join('');
 
-  const rows = sets.map((e) =>
-    `<div class="row"><span>${e.data.kind === 'warmup' ? 'Warm-up' : 'Set'} ${esc(setText(e.data))}</span></div>`).join('');
+  // Each logged set can be edited or deleted right here (same actions as the History tab).
+  const rows = sets.map((e) => (state.editId === e.id ? editForm(e) : `<div class="entry"><div class="row"><span>${e.data.kind === 'warmup' ? 'Warm-up' : 'Set'} ${esc(setText(e.data))}</span>
+      <span class="actions"><button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}" aria-label="Edit this set">EDIT</button>
+      <button class="btn secondary small" data-action="deleteEntry" data-id="${esc(e.id)}" aria-label="Delete this set">DEL</button></span></div></div>`)).join('');
 
   return `<div class="panel">
     <h2>${esc(ex.name)}</h2>
@@ -44,11 +48,12 @@ export function workoutView(state) {
   const day = logicalDate(Date.now(), state.dayStartHour);
   const id = activeSessionId(state.wSession, day);
   const session = sessionById(id);
-  const picker = SESSIONS.map((s) => `<option value="${s.id}" ${s.id === id ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
+  const picker = getSessions().map((s) => `<option value="${s.id}" ${s.id === id ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
   return `<div class="panel">
       <h2>WORKOUT ${esc(day.slice(5))}</h2>
       <p><select data-action="pickSession" aria-label="Session">${picker}</select></p>
       <p>${esc(session.focus)}. Add weight or reps on the first exercise each week.</p>
+      <button class="btn secondary" data-action="toggleManage">${state.wManage ? 'DONE EDITING' : 'EDIT EXERCISES'}</button>
     </div>
-    ${session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
+    ${state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
 }

@@ -49,8 +49,25 @@ export async function loadAll() {
   const exports = tx.objectStore('exports').getAll();
   const habits = tx.objectStore('habits').getAll();
   const stats = tx.objectStore('retained_stats').get('stats');
+  const template = tx.objectStore('retained_stats').get('template');
   await finished(tx);
-  return { entries: entries.result, exports: exports.result, habits: habits.result, stats: stats.result || null };
+  return { entries: entries.result, exports: exports.result, habits: habits.result, stats: stats.result || null, template: template.result?.sessions ?? null };
+}
+
+/** Save the edited workout template. It lives in retained_stats under its own key, so a wipe never touches it. */
+export async function saveTemplate(sessions) {
+  const db = await openDb();
+  const tx = db.transaction('retained_stats', 'readwrite');
+  tx.objectStore('retained_stats').put({ key: 'template', sessions });
+  await finished(tx);
+}
+
+/** Forget the edited template; the built-in plan is used again. */
+export async function clearTemplate() {
+  const db = await openDb();
+  const tx = db.transaction('retained_stats', 'readwrite');
+  tx.objectStore('retained_stats').delete('template');
+  await finished(tx);
 }
 
 /**

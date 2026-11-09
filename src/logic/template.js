@@ -66,11 +66,17 @@ export const SESSIONS = [
 /** Weekday (0 = Sunday) to session id. Monday and Wednesday are BJJ and calisthenics, Friday is rest. */
 export const SCHEDULE = { 0: 'upper_c', 2: 'upper_a', 4: 'lower', 6: 'upper_b' };
 
-export const sessionById = (id) => SESSIONS.find((s) => s.id === id) ?? null;
+// SESSIONS is the built-in plan. The active plan is that, or the user's edited copy (see templateEdit.js).
+let active = SESSIONS;
+export const getSessions = () => active;
+/** Use an edited plan, or pass null to go back to the built-in one. */
+export function setTemplate(sessions) { active = Array.isArray(sessions) && sessions.length ? sessions : SESSIONS; }
+
+export const sessionById = (id) => active.find((s) => s.id === id) ?? null;
 
 /** The exercise definition for a logged exercise name, from any session. */
 export function findExercise(name) {
-  for (const s of SESSIONS) {
+  for (const s of active) {
     const ex = s.exercises.find((e) => e.name === name);
     if (ex) return ex;
   }

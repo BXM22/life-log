@@ -15,10 +15,13 @@ import { historyView } from './historyView.js';
 import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
 import { createWorkoutActions } from './workoutActions.js';
+import { createTemplateActions } from './templateActions.js';
+import { setTemplate } from '../logic/template.js';
+import { normalizeTemplate } from '../logic/templateEdit.js';
 import { exportView, wipeView, waiting, wipeOpts } from './exportWipeView.js';
 import { backupActions } from './backupPanel.js';
 import { getConfig, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
-import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, deleteHabit } from '../db/store.js';
+import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, deleteHabit, saveTemplate, clearTemplate } from '../db/store.js';
 
 const settings = (() => { try { return loadSettings(localStorage); } catch { return normalizeSettings(null); } })();
 const persistSettings = () => {
@@ -38,6 +41,9 @@ const state = {
   dayStartHour: settings.dayStartHour,
   editId: null, // id of the entry being edited on the History tab
   wSession: null, // workout session picked on the Workout tab (null = today's)
+  wManage: false, // Workout tab in edit-exercises mode
+  tEdit: null, // exercise form open: { mode: 'add' } or { mode: 'edit', i }
+  tDraft: null, // form values kept when a save is refused
   installEvent: null, // the browser's deferred install prompt, when it offers one
   installKind: 'other',
   storageLine: '',
@@ -83,6 +89,11 @@ function download(file) {
 // ---- actions ----
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTemplateActions({
+    state, saveFail, today,
+    saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); },
+    clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
+  }),
 
   tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; window.scrollTo(0, 0); },
 
@@ -458,6 +469,7 @@ async function boot() {
     state.habits = (saved.habits || []).sort((a, b) => a.name.localeCompare(b.name));
     state.exportedNames = saved.exports.map((x) => x.filename);
     state.stats = saved.stats || null;
+    setTemplate(normalizeTemplate(saved.template)); // null keeps the built-in plan
   } catch {
     state.storageOk = false;
     state.msg = 'Storage is unavailable here, so entries will not be saved.';
