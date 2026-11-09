@@ -2,7 +2,12 @@
 
 A phone-friendly web app (PWA) for fast daily logging: habits and food, workouts and bodyweight, and guitar practice. Offline-first, with JSON backup and a daily Markdown export for an Obsidian vault.
 
-**Status:** planning. No app code yet; the spec is written and milestone 1 is next.
+**Status:** milestone 1 in progress. The app shell, offline support, backup and restore, Dropbox export and warned wipe are built; the spec and backlog track what remains.
+
+## Run and test
+
+- Serve the folder with any static server, for example `npx serve .`, and open it on your phone or in a browser.
+- Run tests with `npm test` (Node's built-in test runner, no dependencies).
 
 ## Docs
 

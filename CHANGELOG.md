@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: offline-first PWA with IndexedDB store, JSON backup and restore, Markdown export, direct Dropbox upload (OAuth PKCE) and warned local wipe (2026-11-09)
 - docs: add spec, feature backlog and SDLC plan (2026-11-07)
 - docs: add export-to-Dropbox and warned local wipe (F14, now M1) (2026-11-07)
 - docs: add personal records, top 5 per lift, bodyweight, guitar BPM (F19, M2) (2026-11-07)
