@@ -3,6 +3,12 @@ import { markExported, planWipe } from '../logic/wipeEligibility.js';
 import { toDateString, logicalDate } from '../logic/dates.js';
 import { addHabit, toggleCheck, isChecked } from '../logic/habits.js';
 import { computeStats, emptyStats, streakWithStats } from '../logic/retainedStats.js';
+import { parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry, liveEntries } from '../logic/entries.js';
+import { loadSettings, saveSettings, normalizeSettings } from '../logic/settings.js';
+import { installKind } from '../logic/install.js';
+import { esc, label } from './format.js';
+import { historyView } from './historyView.js';
+import { settingsView } from './settingsView.js';
 import { renderBackupPanel, backupActions } from './backupPanel.js';
 import { getConfig, isConnected, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
 import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, deleteHabit } from '../db/store.js';
@@ -30,13 +36,23 @@ function demoEntries() {
   return out;
 }
 
+const settings = (() => { try { return loadSettings(localStorage); } catch { return normalizeSettings(null); } })();
+const persistSettings = () => {
+  try { saveSettings(localStorage, { keepDays: state.keepDays, dayStartHour: state.dayStartHour }); } catch { /* storage blocked */ }
+};
+const TABS = ['today', 'history', 'export', 'wipe', 'settings'];
+
 const state = {
   tab: 'today',
   entries: [],
   habits: [], // [{ id, name }]
   stats: null, // retained_stats record kept across wipes (best streaks, anchors, last sets, weigh-ins)
-  keepDays: 7,
-  dayStartHour: 4,
+  keepDays: settings.keepDays,
+  dayStartHour: settings.dayStartHour,
+  editId: null, // id of the entry being edited on the History tab
+  installEvent: null, // the browser's deferred install prompt, when it offers one
+  installKind: 'other',
+  storageLine: '',
   exportedNames: [],
   // flow.step: idle | built | shared | confirmed
   flow: { step: 'idle', result: null, viaDownload: false },
@@ -47,7 +63,6 @@ const state = {
 };
 
 const $app = document.getElementById('app');
-const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const waiting = () => state.entries.filter(isDirty).length;
 const wipeOpts = () => ({ now: Date.now(), keepDays: state.keepDays, dayStartHour: state.dayStartHour });
 const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; };
@@ -81,28 +96,66 @@ function download(file) {
 
 // ---- actions ----
 const actions = {
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; },
 
-  setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; },
+  setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
+
+  setDayStart: (el) => { state.dayStartHour = Number(el.value); persistSettings(); },
+
+  install: async () => {
+    const ev = state.installEvent;
+    if (!ev) return;
+    state.installEvent = null;
+    try { await ev.prompt(); } catch { /* the browser may refuse a second prompt */ }
+  },
 
   logWeighIn: async () => {
-    const w = Number(inputValue('wt'));
-    if (!(w >= 50 && w <= 600)) { state.msg = 'Enter a weight between 50 and 600.'; return; }
+    const r = parseWeight(inputValue('wt'));
+    if (r.error) { state.msg = r.error; return; }
     const now = Date.now();
-    const e = makeEntry('weigh_in', toDateString(now - state.dayStartHour * 3600 * 1000), { weight_lb: w }, now);
-    try { await saveEntries([e]); } catch (e) { state.msg = saveFail(e); return; }
+    const e = makeEntry('weigh_in', today(), { weight_lb: r.value }, now);
+    try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
     state.entries.push(e);
-    state.msg = `Saved ${w} lb.`;
+    state.msg = `Saved ${r.value} lb.`;
   },
 
   logGuitar: async () => {
-    const m = Number(inputValue('gm'));
-    if (!(Number.isInteger(m) && m >= 1 && m <= 600)) { state.msg = 'Enter whole minutes, 1 to 600.'; return; }
-    const now = Date.now();
-    const e = makeEntry('guitar', toDateString(now - state.dayStartHour * 3600 * 1000), { minutes: m, focus: 'practice', best_bpm: null }, now);
-    try { await saveEntries([e]); } catch (e) { state.msg = saveFail(e); return; }
+    const r = parseGuitar({ minutes: inputValue('gm'), focus: inputValue('gf'), bpm: inputValue('gb') });
+    if (r.error) { state.msg = r.error; return; }
+    const e = makeEntry('guitar', today(), r.data, Date.now());
+    try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
     state.entries.push(e);
-    state.msg = `Saved ${m} min of guitar.`;
+    state.msg = `Saved ${r.data.minutes} min of guitar.`;
+  },
+
+  startEdit: (el) => { state.editId = el.dataset.id; state.msg = ''; },
+
+  cancelEdit: () => { state.editId = null; },
+
+  saveEdit: async (el) => {
+    const e = state.entries.find((x) => x.id === el.dataset.id);
+    if (!e) return;
+    const r = parseEdit(e, {
+      weight: inputValue('ed-w'), minutes: inputValue('ed-m'), focus: inputValue('ed-f'), bpm: inputValue('ed-b'),
+      done: document.getElementById('ed-d')?.checked,
+    });
+    if (r.error) { state.msg = r.error; return; }
+    const edited = editEntry(e, r.data, Date.now());
+    try { await saveEntries([edited]); } catch (err) { state.msg = saveFail(err); return; }
+    state.entries = state.entries.map((x) => (x.id === e.id ? edited : x));
+    state.editId = null;
+    state.msg = `Saved. ${e.date} is waiting to export again.`;
+  },
+
+  deleteEntry: async (el) => {
+    const e = state.entries.find((x) => x.id === el.dataset.id);
+    if (!e) return;
+    const kept = e.exportedAt != null ? ' It is already in your Dropbox export; that copy stays.' : '';
+    if (!window.confirm(`Delete ${label(e)} on ${e.date}?${kept}`)) return;
+    const gone = deleteEntry(e, Date.now());
+    try { await saveEntries([gone]); } catch (err) { state.msg = saveFail(err); return; }
+    state.entries = state.entries.map((x) => (x.id === e.id ? gone : x));
+    state.msg = 'Deleted.';
   },
 
   addHabit: async () => {
@@ -137,16 +190,6 @@ const actions = {
     try { await saveEntries(demo); } catch (e) { state.msg = saveFail(e); return; }
     state.entries.push(...demo);
     state.msg = 'Loaded 12 days of demo data.';
-  },
-
-  editOld: async () => {
-    // Test helper: edit the oldest entry that was already exported.
-    const e = state.entries.filter((x) => x.exportedAt != null).sort((a, b) => a.date.localeCompare(b.date))[0];
-    if (!e) { state.msg = 'No exported entry to edit yet.'; return; }
-    const edited = { ...e, updatedAt: Date.now() };
-    try { await saveEntries([edited]); } catch (e) { state.msg = saveFail(e); return; }
-    state.entries = state.entries.map((x) => (x.id === e.id ? edited : x));
-    state.msg = `Edited ${e.date}. It is waiting again and will not be wiped.`;
   },
 
   build: () => {
@@ -270,18 +313,19 @@ const actions = {
 };
 
 // ---- views ----
-const label = (e) => {
-  if (e.type === 'weigh_in') return `${e.data.weight_lb} lb`;
-  if (e.type === 'guitar') return `Guitar ${e.data.minutes} min`;
-  return `${e.data.habit} ${e.data.done ? 'done' : 'missed'}`;
-};
-
 function storageLine() {
   if (!state.storageOk) return 'Storage unavailable. Entries are lost when you close this page.';
   if (state.persisted === true) return 'Storage protected.';
   if (state.persisted === false) return 'Storage not protected. Export weekly, and add this app to your Home Screen.';
   return '';
 }
+
+const standalone = () => Boolean(navigator.standalone || window.matchMedia?.('(display-mode: standalone)').matches);
+const refreshInstall = () => {
+  state.installKind = installKind({
+    userAgent: navigator.userAgent, standalone: standalone(), canPrompt: Boolean(state.installEvent), maxTouchPoints: navigator.maxTouchPoints || 0,
+  });
+};
 
 function habitsPanel() {
   const day = today();
@@ -302,7 +346,7 @@ function habitsPanel() {
 }
 
 function todayView() {
-  const recent = [...state.entries].sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 8);
+  const recent = liveEntries(state.entries).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 8);
   const rows = recent.map((e) =>
     `<div class="row"><span>${esc(e.date.slice(5))} ${esc(label(e))}</span>` +
     `<span class="tag ${isDirty(e) ? 'waiting' : 'done'}">${isDirty(e) ? 'WAITING' : 'EXPORTED'}</span></div>`).join('');
@@ -319,12 +363,15 @@ function todayView() {
       <input id="wt" class="field" type="number" inputmode="decimal" step="0.1" placeholder="Weight (lb)">
       <button class="btn" data-action="logWeighIn">SAVE WEIGH-IN</button>
       <input id="gm" class="field" type="number" inputmode="numeric" step="1" placeholder="Guitar minutes" style="margin-top:8px">
+      <input id="gf" class="field" maxlength="40" list="focuses" placeholder="Focus (optional)" autocomplete="off" style="margin-top:8px">
+      <datalist id="focuses"><option value="technique"><option value="songs"><option value="theory"><option value="improvisation"></datalist>
+      <input id="gb" class="field" type="number" inputmode="numeric" step="1" placeholder="Best BPM (optional)" style="margin-top:8px">
       <button class="btn" data-action="logGuitar">SAVE GUITAR</button>
     </div>
     <div class="panel">
       <h2>LATEST</h2>${rows || '<p>No entries yet.</p>'}
       ${state.entries.length === 0 ? '<button class="btn secondary" data-action="demo">LOAD DEMO DATA</button>' : ''}
-      <button class="btn secondary" data-action="editOld">EDIT AN EXPORTED ENTRY</button>
+      <button class="btn secondary" data-tab="history" data-action="tab">EDIT OR DELETE ENTRIES</button>
     </div>`;
 }
 
@@ -384,11 +431,13 @@ function wipeView() {
 }
 
 function render() {
-  const views = { today: todayView, export: exportView, wipe: wipeView };
-  const tabs = ['today', 'export', 'wipe'].map((t) =>
+  state.storageLine = storageLine();
+  refreshInstall();
+  const views = { today: todayView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
+  const tabs = TABS.map((t) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${state.tab === t ? 'aria-current="page"' : ''}>${t.toUpperCase()}</button>`).join('');
   $app.innerHTML = `<h1>LIFE LOG</h1><nav>${tabs}</nav>
-    ${state.msg ? `<div class="msg">${esc(state.msg)}</div>` : ''}${views[state.tab]()}`;
+    ${state.msg ? `<div class="msg">${esc(state.msg)}</div>` : ''}${views[state.tab](state)}`;
 }
 
 async function dispatch(el) {
@@ -407,6 +456,10 @@ $app.addEventListener('change', (ev) => {
   const el = ev.target.closest('[data-action]');
   if (el && (el.tagName === 'SELECT' || el.type === 'checkbox')) dispatch(el);
 });
+
+// The browser offers its install dialog through this event (Chrome and Android; Safari never fires it).
+window.addEventListener('beforeinstallprompt', (ev) => { ev.preventDefault(); state.installEvent = ev; render(); });
+window.addEventListener('appinstalled', () => { state.installEvent = null; render(); });
 
 // ---- boot ----
 async function boot() {

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: finish M1: guitar focus and best BPM (F4), History tab with bodyweight history and edit/delete (F3, F5), Settings tab with saved keep-days and day-start (F26), Add to Home Screen prompt (F28); 55 tests (2026-11-09)
 - feat: offline-first PWA with IndexedDB store, JSON backup and restore, Markdown export, direct Dropbox upload (OAuth PKCE) and warned local wipe (2026-11-09)
 - docs: add spec, feature backlog and SDLC plan (2026-11-07)
 - docs: add export-to-Dropbox and warned local wipe (F14, now M1) (2026-11-07)

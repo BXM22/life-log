@@ -4,17 +4,17 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 ## M1 MVP
 
-- [ ] F1 Today screen with open items (Must-M1)
-- [ ] F2 Habit checklist; add and delete habits (Must-M1)
-- [ ] F3 Quick weigh-in and bodyweight history (Must-M1)
-- [ ] F4 Guitar log: minutes, focus, best BPM (Must-M1)
-- [ ] F5 Edit and delete any entry (Must-M1)
-- [ ] F6 Offline use and install to home screen (Must-M1)
-- [ ] F7 JSON backup and restore (Must-M1)
-- [ ] F26 Settings screen (Must-M1)
-- [ ] F27 Summary store and keep-last-7-days wipe (Must-M1)
-- [ ] F28 Storage persistence and Add to Home Screen prompt (Must-M1)
-- [ ] F14 Markdown export to Dropbox, then warned wipe of exported logs (Must-M1)
+- [x] F1 Today screen with open items (Must-M1)
+- [x] F2 Habit checklist; add and delete habits (Must-M1)
+- [x] F3 Quick weigh-in and bodyweight history (Must-M1)
+- [x] F4 Guitar log: minutes, focus, best BPM (Must-M1)
+- [x] F5 Edit and delete any entry (Must-M1). Habit checks change by toggling, not deleting
+- [x] F6 Offline use and install to home screen (Must-M1)
+- [x] F7 JSON backup and restore (Must-M1)
+- [x] F26 Settings screen (Must-M1)
+- [x] F27 Summary store and keep-last-7-days wipe (Must-M1)
+- [x] F28 Storage persistence and Add to Home Screen prompt (Must-M1)
+- [x] F14 Markdown export to Dropbox, then warned wipe of exported logs (Must-M1)
 
 ## M2 Training and food
 
