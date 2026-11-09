@@ -1,0 +1,17 @@
+# tool/agent state (local only, may hold session data)
+.claude/
+.claude-flow/
+.cursor/
+
+# env + secrets
+.env
+.env.*
+*.pem
+*.key
+
+# misc
+.DS_Store
+*.log
+node_modules/
+dist/
+backups/

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8-Bit UI Kit — Live Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root,[data-theme="night"]{
+  --bg:#1B1530; --bg2:#2E2350; --panel:#F2D6B3; --shade:#C79A73; --ink:#1B1530;
+  --accent:#E8456B; --accent2:#F5C542; --ok:#5BBF6A; --info:#58A6E8; --text:#F2D6B3; --onaccent:#fff;
+}
+[data-theme="gb"]{
+  --bg:#0F380F; --bg2:#306230; --panel:#9BBC0F; --shade:#8BAC0F; --ink:#0F380F;
+  --accent:#306230; --accent2:#8BAC0F; --ok:#306230; --info:#306230; --text:#9BBC0F; --onaccent:#9BBC0F;
+}
+[data-theme="mono"]{
+  --bg:#000; --bg2:#222; --panel:#F4F1DE; --shade:#bdb9a4; --ink:#000;
+  --accent:#FFE600; --accent2:#F4F1DE; --ok:#F4F1DE; --info:#F4F1DE; --text:#F4F1DE; --onaccent:#000;
+}
+[data-theme="parch"]{
+  --bg:#CFC2A8; --bg2:#B9AA8C; --panel:#E8DCC0; --shade:#B29B74; --ink:#3A2A1E;
+  --accent:#8A6A4A; --accent2:#E3A33B; --ok:#6B8E3A; --info:#4A7A9A; --text:#3A2A1E; --onaccent:#fff;
+}
+*{box-sizing:border-box;border-radius:0!important}
+html{image-rendering:pixelated}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--text);font:24px/1.35 'VT323',monospace;-webkit-font-smoothing:none;text-rendering:optimizeSpeed;
+  background-image:conic-gradient(var(--bg2) 25%,transparent 0 50%,var(--bg2) 0 75%,transparent 0);background-size:8px 8px;transition:none}
+h1,h2,h3,.disp{font-family:'Press Start 2P',monospace;font-weight:400;margin:0;line-height:1.5;text-transform:uppercase}
+.wrap{max-width:1040px;margin:0 auto;padding:24px 16px 64px}
+/* HUD */
+.hud{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:24px}
+.logo{font-size:16px;color:var(--accent2);text-shadow:4px 4px 0 var(--ink)}
+.themes{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font:10px 'Press Start 2P',monospace;padding:10px 12px;background:var(--panel);color:var(--ink);border:4px solid var(--ink);cursor:pointer;box-shadow:4px 4px 0 var(--ink)}
+.chip[aria-pressed="true"]{background:var(--accent2);transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+.chip:focus-visible,.btn:focus-visible,.slot:focus-visible,.row:focus-visible{outline:4px solid var(--accent2);outline-offset:2px}
+/* grid */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px}
+/* panel with notched corners */
+.box{position:relative;background:var(--panel);color:var(--ink);border:4px solid var(--ink);padding:28px 20px 20px;
+  box-shadow:inset -4px -4px 0 var(--shade),inset 4px 4px 0 #ffffff66,6px 6px 0 var(--ink);
+  clip-path:polygon(0 8px,4px 8px,4px 4px,8px 4px,8px 0,calc(100% - 8px) 0,calc(100% - 8px) 4px,calc(100% - 4px) 4px,calc(100% - 4px) 8px,100% 8px,100% calc(100% - 8px),calc(100% - 4px) calc(100% - 8px),calc(100% - 4px) calc(100% - 4px),calc(100% - 8px) calc(100% - 4px),calc(100% - 8px) 100%,8px 100%,8px calc(100% - 4px),4px calc(100% - 4px),4px calc(100% - 8px),0 calc(100% - 8px))}
+.box.wide{grid-column:1/-1}
+.ribbon{position:absolute;top:-4px;left:50%;transform:translate(-50%,-50%);background:var(--accent);color:var(--onaccent);font:11px 'Press Start 2P',monospace;padding:10px 20px;border:4px solid var(--ink);white-space:nowrap;text-transform:uppercase;z-index:2;
+  clip-path:polygon(0 0,100% 0,calc(100% - 8px) 50%,100% 100%,0 100%,8px 50%)}
+.note{font-size:20px;opacity:.85;margin:6px 0 14px}
+/* buttons */
+.btn{display:block;width:100%;margin:10px 0;padding:12px;font:12px 'Press Start 2P',monospace;text-transform:uppercase;text-align:center;
+  background:var(--accent);color:var(--onaccent);border:4px solid var(--ink);cursor:pointer;
+  box-shadow:inset -4px -4px 0 #0003,inset 4px 4px 0 #fff4,4px 4px 0 var(--ink);transition:transform .1s steps(2)}
+.btn:hover{background:var(--accent2);color:var(--ink);transform:translateY(-4px)}
+.btn:active{transform:translateY(4px);box-shadow:inset -4px -4px 0 #0003,inset 4px 4px 0 #fff4}
+.btn.sec{background:var(--panel);color:var(--ink)}
+.btn.sec:hover{background:var(--accent2)}
+.btn[disabled]{background:#8a8a8a;color:#444;cursor:not-allowed;transform:none;box-shadow:inset -4px -4px 0 #0003;
+  background-image:conic-gradient(#0002 25%,transparent 0 50%,#0002 0 75%,transparent 0);background-size:8px 8px}
+.btn.sq{display:inline-block;width:48px;height:48px;padding:0;margin:0;font-size:14px}
+.row2{display:flex;gap:10px}.row2 .btn{margin:10px 0}
+/* menu */
+.menu{list-style:none;margin:0;padding:0}
+.row{display:flex;align-items:center;gap:8px;padding:8px 10px;font:12px 'Press Start 2P',monospace;text-transform:uppercase;cursor:pointer;border:4px solid transparent;margin:4px 0}
+.row .cur{width:16px;visibility:hidden}
+.row.sel{background:var(--ink);color:var(--panel)}
+.row.sel .cur{visibility:visible;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+/* bars */
+.lbl{display:flex;justify-content:space-between;font:10px 'Press Start 2P',monospace;margin:12px 0 6px}
+.bar{height:28px;border:4px solid var(--ink);background:var(--bg2);display:flex;padding:2px;gap:2px}
+.bar i{flex:1;background:#0000}
+.bar i.on{background:var(--c,var(--ok))}
+.bar.low i.on{background:var(--accent)}
+.bar-ctl{display:flex;gap:8px;align-items:center;margin-top:8px}
+/* toggle */
+.opt{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:4px dotted var(--shade)}
+.opt span:first-child{font:10px 'Press Start 2P',monospace}
+.tog{display:flex;border:4px solid var(--ink);cursor:pointer;background:none;padding:0;font:10px 'Press Start 2P',monospace}
+.tog b{padding:8px 10px;font-weight:400;color:var(--ink)}
+.tog[aria-checked="true"] b:first-child,.tog[aria-checked="false"] b:last-child{background:var(--ink);color:var(--panel)}
+/* hearts & stars */
+.icons{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.px{width:32px;height:32px;shape-rendering:crispEdges}
+.px.off{opacity:.25}
+/* inventory */
+.inv{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.slot{aspect-ratio:1;background:var(--bg2);border:4px solid var(--ink);display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;color:var(--text);padding:0}
+.slot svg{width:70%;height:70%;shape-rendering:crispEdges}
+.slot .n{position:absolute;right:2px;bottom:0;font:8px 'Press Start 2P',monospace;color:#fff;text-shadow:2px 2px 0 #000}
+.slot.sel{border-color:var(--accent);outline:4px solid var(--accent2);outline-offset:-8px;animation:blink2 1s steps(2) infinite}
+@keyframes blink2{50%{outline-color:transparent}}
+/* dialog */
+.dlg{display:flex;gap:12px;border:4px solid var(--ink);padding:12px;background:var(--panel);min-height:120px;position:relative}
+.face{flex:0 0 64px;height:64px;background:var(--bg2);border:4px solid var(--ink)}
+.dlg p{margin:0;font-size:24px;flex:1}
+.next{position:absolute;right:10px;bottom:6px;font:12px 'Press Start 2P',monospace;animation:blink 1s steps(2) infinite}
+/* shop */
+.shop{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.shop .item{display:flex;flex-direction:column;align-items:center;gap:6px;font:10px 'Press Start 2P',monospace}
+.coin{width:48px;height:48px}
+.shop .btn{font-size:9px;padding:8px 4px;margin:0}
+/* title */
+.title{text-align:center;padding:12px 0}
+.logo-big{font:28px/1.2 'Press Start 2P',monospace;color:var(--accent2);text-transform:uppercase;
+  text-shadow:-4px -4px 0 var(--ink),4px -4px 0 var(--ink),-4px 4px 0 var(--ink),4px 4px 0 var(--ink),0 8px 0 var(--ink),0 -4px 0 var(--ink),-4px 0 0 var(--ink),4px 0 0 var(--ink)}
+.press{margin-top:24px;font:12px 'Press Start 2P',monospace;animation:blink 1s steps(2) infinite;cursor:pointer;background:none;border:0;color:var(--ink)}
+.scene{height:72px;margin:12px 0;background:linear-gradient(var(--bg2) 0 50%,var(--ok) 50%);border:4px solid var(--ink);position:relative;overflow:hidden}
+.scene::before{content:"";position:absolute;left:0;right:0;bottom:0;height:50%;background:conic-gradient(var(--ink) 25%,transparent 0 50%,var(--ink) 0 75%,transparent 0);background-size:8px 8px;opacity:.25}
+.scene .star{position:absolute;width:4px;height:4px;background:var(--accent2);animation:blink 1s steps(2) infinite}
+/* os */
+.os{border:4px solid var(--ink);background:var(--panel)}
+.os .tb{background:var(--ink);color:var(--panel);display:flex;justify-content:space-between;padding:6px 8px;font:10px 'Press Start 2P',monospace}
+.os .desk{background:var(--bg);padding:14px;display:flex;gap:18px;flex-wrap:wrap;min-height:130px;position:relative}
+.ico{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--text);font:10px 'Press Start 2P',monospace;background:none;border:0;cursor:pointer;padding:6px;width:80px}
+.ico svg{width:40px;height:40px;shape-rendering:crispEdges}
+.ico:hover,.ico.sel{background:var(--accent);color:var(--onaccent)}
+.crt{position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 2px,#0003 2px 4px)}
+/* overlay */
+.overlay{position:fixed;inset:0;background:#000a;display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.overlay.on{display:flex}
+.overlay .box{max-width:420px;width:100%;text-align:center}
+.go{font:24px 'Press Start 2P',monospace;color:var(--accent);text-shadow:4px 4px 0 var(--ink);margin:6px 0 12px}
+.foot{margin-top:32px;font-size:20px;text-align:center;opacity:.8}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body data-theme="night">
+<div class="wrap">
+  <header class="hud">
+    <div class="logo disp">▶ 8-BIT UI KIT</div>
+    <div class="themes" role="group" aria-label="Theme">
+      <button class="chip" data-t="night" aria-pressed="true">Night</button>
+      <button class="chip" data-t="gb" aria-pressed="false">Game Boy</button>
+      <button class="chip" data-t="mono" aria-pressed="false">Mono</button>
+      <button class="chip" data-t="parch" aria-pressed="false">Parchment</button>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <section class="box wide">
+      <div class="ribbon">Title Screen</div>
+      <div class="title">
+        <div class="logo-big">Pixel Quest</div>
+        <div class="scene" id="scene"></div>
+        <button class="press" id="pressStart">PRESS START</button>
+      </div>
+    </section>
+
+    <section class="box">
+      <div class="ribbon">Main Menu</div>
+      <p class="note">Use ↑ ↓ and Enter, or click.</p>
+      <ul class="menu" id="menu" role="listbox" aria-label="Main menu" tabindex="0">
+        <li class="row sel" role="option"><span class="cur">▶</span>Play</li>
+        <li class="row" role="option"><span class="cur">▶</span>Continue</li>
+        <li class="row" role="option"><span class="cur">▶</span>Options</li>
+        <li class="row" role="option"><span class="cur">▶</span>Credits</li>
+        <li class="row" role="option"><span class="cur">▶</span>Exit</li>
+      </ul>
+      <div class="note" id="menuOut" aria-live="polite">Selected: PLAY</div>
+    </section>
+
+    <section class="box">
+      <div class="ribbon">Buttons</div>
+      <button class="btn">Primary</button>
+      <button class="btn sec">Secondary</button>
+      <button class="btn" disabled>Disabled</button>
+      <div class="row2"><button class="btn">Yes ✓</button><button class="btn sec">No</button></div>
+      <div class="icons"><button class="btn sq" aria-label="Left">◀</button><button class="btn sq sec" aria-label="Close">✕</button><button class="btn sq" aria-label="Right">▶</button></div>
+      <p class="note">Hover lifts 4px · press snaps down.</p>
+    </section>
+
+    <section class="box">
+      <div class="ribbon">HP · XP · Lives</div>
+      <div class="lbl"><span>HP</span><span id="hpv">80/100</span></div>
+      <div class="bar" id="hp" aria-label="HP"></div>
+      <div class="bar-ctl"><button class="btn sq sec" id="hpm" aria-label="Damage">−</button><button class="btn sq" id="hpp" aria-label="Heal">+</button><span style="font-size:20px">Hit / heal</span></div>
+      <div class="lbl"><span>XP</span><span id="xpv">40%</span></div>
+      <div class="bar" id="xp" style="--c:var(--info)" aria-label="XP"></div>
+      <div class="bar-ctl"><button class="btn sq" id="xpp" aria-label="Gain XP">+</button><span style="font-size:20px">Gain XP</span></div>
+      <div class="lbl"><span>Lives</span></div>
+      <div class="icons" id="hearts"></div>
+    </section>
+
+    <section class="box">
+      <div class="ribbon">Options</div>
+      <div class="opt"><span>Music</span><button class="tog" role="switch" aria-checked="true"><b>ON</b><b>OFF</b></button></div>
+      <div class="opt"><span>SFX</span><button class="tog" role="switch" aria-checked="true"><b>ON</b><b>OFF</b></button></div>
+      <div class="opt"><span>Vibration</span><button class="tog" role="switch" aria-checked="false"><b>ON</b><b>OFF</b></button></div>
+      <div class="lbl"><span>Volume</span><span id="volv">5</span></div>
+      <div class="bar-ctl" style="margin-top:0"><button class="btn sq sec" id="volm" aria-label="Volume down">◀</button><div class="bar" id="vol" style="flex:1" aria-label="Volume"></div><button class="btn sq" id="volp" aria-label="Volume up">▶</button></div>
+    </section>
+
+    <section class="box">
+      <div class="ribbon">Inventory</div>
+      <div class="inv" id="inv"></div>
+      <div class="note" id="invOut" style="margin-top:12px">Pick an item.</div>
+    </section>
+
+    <section class="box">
+      <div class="ribbon">Dialog</div>
+      <div class="dlg"><div class="face" id="face"></div><p id="dtext"></p><span class="next">▼</span></div>
+      <button class="btn sec" id="dnext">Next ▼</button>
+    </section>
+
+    <section class="box">
+      <div class="ribbon">Shop</div>
+      <div class="shop">
+        <div class="item"><svg class="coin" viewBox="0 0 8 8" id="c1"></svg>100<button class="btn buy">$0.99</button></div>
+        <div class="item"><svg class="coin" viewBox="0 0 8 8" id="c2"></svg>250<button class="btn buy">$1.99</button></div>
+        <div class="item"><svg class="coin" viewBox="0 0 8 8" id="c3"></svg>400<button class="btn buy">$2.99</button></div>
+      </div>
+      <button class="btn sec" style="margin-top:16px">Restore purchases</button>
+      <div class="note" id="shopOut">Demo only — nothing is charged.</div>
+    </section>
+
+    <section class="box wide">
+      <div class="ribbon">Retro OS</div>
+      <div class="os">
+        <div class="tb"><span>PIXEL_OS</span><span>▢ ▫ ✕</span></div>
+        <div class="desk" id="desk">
+          <button class="ico"><svg viewBox="0 0 8 8" id="i1"></svg>GAMES</button>
+          <button class="ico"><svg viewBox="0 0 8 8" id="i2"></svg>IMAGES</button>
+          <button class="ico"><svg viewBox="0 0 8 8" id="i3"></svg>NONAME</button>
+          <button class="ico"><svg viewBox="0 0 8 8" id="i4"></svg>TRASH</button>
+          <div class="crt"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="box wide" style="text-align:center">
+      <div class="ribbon">Game Over</div>
+      <button class="btn" id="goBtn" style="max-width:320px;margin:10px auto">Trigger Game Over</button>
+    </section>
+  </div>
+  <p class="foot">Spec: 8bit-design.md · source: Pinterest "8 bit ui" crawl · 4px grid, no radius, stepped motion</p>
+</div>
+
+<div class="overlay" id="ov" role="dialog" aria-modal="true" aria-label="Game over">
+  <div class="box">
+    <div class="go">GAME OVER</div>
+    <div class="icons" style="justify-content:center" id="goHearts"></div>
+    <p class="disp" style="font-size:12px;margin:16px 0">Try again?</p>
+    <div class="row2"><button class="btn" id="goYes">Yes ✓</button><button class="btn sec" id="goNo">No</button></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var $=function(s,r){return (r||document).querySelector(s)}, $$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
+  // pixel sprites: strings, '#' = fill, 'o' = outline-ish alt, '.' = empty
+  function sprite(rows,fill,alt){var s='';rows.forEach(function(r,y){for(var x=0;x<r.length;x++){var c=r[x];if(c==='.')continue;s+='<rect x="'+x+'" y="'+y+'" width="1" height="1" fill="'+(c==='#'?fill:alt||'#000')+'"/>';}});return s;}
+  var HEART=['.##.##.','#######','#######','.#####.','..###..','...#...'];
+  var STAR=['...#...','...#...','#######','.#####.','..###..','.##.##.','.#...#.'];
+  var COIN=['..####..','.######.','########','###oo###','###oo###','########','.######.','..####..'];
+  var FOLDER=['........','.####...','########','########','########','########','########','........'];
+  var TRASH=['..####..','########','.######.','.#.#.#..','.#.#.#..','.#.#.#..','.######.','........'];
+  var IMG=['########','#......#','#.#..#.#','#.##.#.#','#.####.#','#......#','########','........'];
+  var SWORD=['......##','.....##.','....##..','#..##...','.###....','..##....','.#.##...','#...#...'];
+  var POTION=['..####..','...##...','..####..','.######.','########','########','.######.','..####..'];
+  var KEY=['.####...','##..##..','##..##..','.####...','..##....','..###...','..##....','..###...'];
+  var SHIELD=['########','########','########','########','.######.','..####..','...##...','........'];
+  var MAP=['########','#.##.#.#','#.#..###','########','#.#.##.#','########','........','........'];
+  var BOOK=['.#######','##.....#','##.###.#','##.....#','##.###.#','##.....#','.#######','........'];
+  var BOMB=['......#.','.....#..','..####..','.######.','########','########','.######.','..####..'];
+  var GEM=['..####..','.######.','########','.######.','..####..','...##...','........','........'];
+  function svg(vb,inner){return '<svg viewBox="0 0 '+vb+'" xmlns="http://www.w3.org/2000/svg">'+inner+'</svg>';}
+
+  // themes
+  $$('.chip').forEach(function(c){c.onclick=function(){document.body.setAttribute('data-theme',c.dataset.t);$$('.chip').forEach(function(x){x.setAttribute('aria-pressed',x===c)});try{localStorage.setItem('px-theme',c.dataset.t)}catch(e){}}});
+  try{var t=localStorage.getItem('px-theme');if(t){var b=$('.chip[data-t="'+t+'"]');if(b)b.click();}}catch(e){}
+
+  // title scene stars + press start
+  var sc=$('#scene');for(var i=0;i<14;i++){var s=document.createElement('i');s.className='star';s.style.left=(Math.random()*96|0)+'%';s.style.top=(Math.random()*40|0)+'px';s.style.animationDelay=(i%5)*0.2+'s';sc.appendChild(s);}
+  $('#pressStart').onclick=function(){$('#menu').focus();$('#menu').scrollIntoView({block:'center'});};
+
+  // menu
+  var rows=$$('#menu .row'),idx=0;
+  function sel(i){idx=(i+rows.length)%rows.length;rows.forEach(function(r,k){r.classList.toggle('sel',k===idx)});$('#menuOut').textContent='Selected: '+rows[idx].textContent.replace('▶','').trim().toUpperCase();}
+  rows.forEach(function(r,k){r.onclick=function(){sel(k);$('#menuOut').textContent='Chose: '+r.textContent.replace('▶','').trim().toUpperCase()+' ✓';};});
+  $('#menu').addEventListener('keydown',function(e){if(e.key==='ArrowDown'){e.preventDefault();sel(idx+1)}else if(e.key==='ArrowUp'){e.preventDefault();sel(idx-1)}else if(e.key==='Enter'){rows[idx].click()}});
+
+  // segmented bars
+  function bar(el,n,val){el.innerHTML='';for(var i=0;i<n;i++){var b=document.createElement('i');if(i<val)b.className='on';el.appendChild(b);}}
+  var hp=8,xp=4,vol=5;
+  function drawHP(){bar($('#hp'),10,hp);$('#hp').classList.toggle('low',hp<=3);$('#hpv').textContent=hp*10+'/100';}
+  function drawXP(){bar($('#xp'),10,xp);$('#xpv').textContent=xp*10+'%';}
+  function drawVol(){bar($('#vol'),10,vol);$('#volv').textContent=vol;}
+  var lives=3;
+  function drawHearts(){var h='';for(var i=0;i<3;i++)h+='<svg class="px'+(i<lives?'':' off')+'" viewBox="0 0 7 6">'+sprite(HEART,i<lives?'var(--accent)':'var(--ink)','var(--ink)')+'</svg>';$('#hearts').innerHTML=h;}
+  function gameOverCheck(){if(hp<=0){lives--;drawHearts();if(lives<=0){showGO();}else{hp=10;drawHP();}}}
+  $('#hpm').onclick=function(){hp=Math.max(0,hp-2);drawHP();gameOverCheck();};
+  $('#hpp').onclick=function(){hp=Math.min(10,hp+2);drawHP();};
+  $('#xpp').onclick=function(){xp++;if(xp>10)xp=0;drawXP();};
+  $('#volm').onclick=function(){vol=Math.max(0,vol-1);drawVol();};
+  $('#volp').onclick=function(){vol=Math.min(10,vol+1);drawVol();};
+  drawHP();drawXP();drawVol();drawHearts();
+
+  // toggles
+  $$('.tog').forEach(function(t){t.onclick=function(){t.setAttribute('aria-checked',t.getAttribute('aria-checked')!=='true');};});
+
+  // inventory
+  var items=[['Sword',SWORD,1],['Potion',POTION,3],['Key',KEY,1],['Shield',SHIELD,1],['Map',MAP,1],['Book',BOOK,2],['Bomb',BOMB,5],['Gem',GEM,12]];
+  var inv=$('#inv');
+  for(var k=0;k<12;k++){(function(k){var b=document.createElement('button');b.className='slot';var it=items[k];if(it){b.innerHTML=svg(8,sprite(it[1],'currentColor'))+(it[2]>1?'<span class="n">'+it[2]+'</span>':'');}b.onclick=function(){$$('.slot').forEach(function(s){s.classList.remove('sel')});b.classList.add('sel');$('#invOut').textContent=it?('Equipped: '+it[0].toUpperCase()):'Empty slot';};inv.appendChild(b);})(k);}
+
+  // dialog typewriter
+  var lines=['Welcome, hero! The pixels are\nscattered across the land.','Take this SWORD and find the\nthree golden coins.','Press NEXT to continue...'];
+  var li=0,timer;
+  $('#face').innerHTML=svg(8,sprite(['..####..','.######.','.#.##.#.','.######.','.#....#.','..####..','.######.','##....##'],'var(--accent2)','var(--ink)'));
+  function type(){clearInterval(timer);var txt=lines[li],n=0,p=$('#dtext');p.textContent='';timer=setInterval(function(){n++;p.textContent=txt.slice(0,n);if(n>=txt.length)clearInterval(timer);},30);}
+  $('#dnext').onclick=function(){li=(li+1)%lines.length;type();};
+  $('#dtext').style.whiteSpace='pre-line';type();
+
+  // shop + os icons
+  ['c1','c2','c3'].forEach(function(id){$('#'+id).innerHTML=sprite(COIN,'var(--accent2)','var(--ink)');});
+  $('#i1').innerHTML=sprite(FOLDER,'var(--accent2)');$('#i2').innerHTML=sprite(IMG,'currentColor');$('#i3').innerHTML=sprite(FOLDER,'var(--accent2)');$('#i4').innerHTML=sprite(TRASH,'currentColor');
+  $$('.buy').forEach(function(b){b.onclick=function(){$('#shopOut').textContent='Demo: '+b.textContent+' pack selected (no charge).';};});
+  $$('.ico').forEach(function(i){i.onclick=function(){$$('.ico').forEach(function(x){x.classList.remove('sel')});i.classList.add('sel');};});
+
+  // game over
+  function goHearts(){var h='';for(var i=0;i<3;i++)h+='<svg class="px off" viewBox="0 0 7 6">'+sprite(HEART,'var(--ink)')+'</svg>';$('#goHearts').innerHTML=h;}
+  function showGO(){goHearts();$('#ov').classList.add('on');$('#goYes').focus();}
+  function hideGO(){$('#ov').classList.remove('on');}
+  $('#goBtn').onclick=showGO;
+  $('#goYes').onclick=function(){hp=8;lives=3;drawHP();drawHearts();hideGO();};
+  $('#goNo').onclick=hideGO;
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')hideGO();});
+})();
+</script>
+</body>
+</html>

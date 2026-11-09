@@ -1,0 +1,148 @@
+:root {
+  --bg: #000000;
+  --bg-alt: #233d4d;
+  --panel: #eaecf0;
+  --ink: #000000;
+  --accent: #fe7f2d;
+  --text: #eaecf0;
+  --on-accent: #000000;
+  --shade: rgba(35, 61, 77, 0.28);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg-alt);
+  background-image:
+    linear-gradient(45deg, var(--bg) 25%, transparent 25%, transparent 75%, var(--bg) 75%),
+    linear-gradient(45deg, var(--bg) 25%, transparent 25%, transparent 75%, var(--bg) 75%);
+  background-size: 8px 8px;
+  background-position: 0 0, 4px 4px;
+  color: var(--text);
+  font-family: 'VT323', monospace;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+#app {
+  max-width: 440px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 16px 12px 32px;
+}
+
+h1, h2, .pixel, button, .tab {
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 0;
+}
+
+h1 {
+  margin: 0 0 12px;
+  padding: 12px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 4px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-size: 14px;
+  font-weight: normal;
+}
+
+h2 { margin: 0 0 8px; font-size: 11px; font-weight: normal; }
+
+nav { display: flex; gap: 8px; margin-bottom: 12px; }
+
+.tab {
+  flex: 1;
+  min-height: 48px;
+  padding: 8px 4px;
+  background: var(--panel);
+  color: var(--ink);
+  border: 4px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-size: 10px;
+  cursor: pointer;
+}
+.tab[aria-current="page"] { background: var(--accent); }
+
+.panel {
+  margin-bottom: 12px;
+  padding: 12px;
+  background: var(--panel);
+  color: var(--ink);
+  border: 4px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.panel p { margin: 0 0 8px; }
+.big { font-family: 'Press Start 2P', monospace; font-size: 20px; margin: 4px 0 8px; }
+
+button.btn {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  margin-top: 8px;
+  padding: 10px;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 4px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-size: 11px;
+  cursor: pointer;
+}
+button.btn.secondary { background: var(--panel); }
+button.btn:active:not(:disabled) { transform: translate(4px, 4px); box-shadow: none; }
+button.btn:disabled {
+  background: var(--panel);
+  color: var(--bg-alt);
+  border-style: dashed;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* Wipe must not look like a normal action. */
+button.btn.danger {
+  background: var(--ink);
+  color: var(--accent);
+  border: 4px dashed var(--accent);
+  outline: 4px solid var(--ink);
+}
+button.btn.danger:disabled { background: var(--panel); color: var(--bg-alt); border: 4px dashed var(--bg-alt); outline: none; }
+
+.warn {
+  padding: 8px;
+  background: var(--ink);
+  color: var(--accent);
+  border: 4px dashed var(--accent);
+}
+
+.row { display: flex; justify-content: space-between; gap: 8px; border-bottom: 2px dotted var(--shade); padding: 4px 0; }
+.tag { font-family: 'Press Start 2P', monospace; font-size: 8px; padding: 3px 4px; border: 2px solid var(--ink); }
+.tag.waiting { background: var(--accent); }
+.tag.done { background: var(--panel); }
+
+label.check { display: flex; gap: 12px; align-items: flex-start; min-height: 48px; margin: 8px 0; cursor: pointer; }
+label.check input { width: 32px; height: 32px; flex: none; accent-color: var(--accent); }
+
+/* Habits */
+.habit { display: flex; align-items: center; gap: 8px; border-bottom: 2px dotted var(--shade); }
+.habit label.check { flex: 1; margin: 0; align-items: center; }
+.streak { font-family: 'Press Start 2P', monospace; font-size: 8px; padding: 3px 4px; background: var(--accent); border: 2px solid var(--ink); }
+button.btn.habit-del { width: 48px; flex: none; margin: 0; padding: 0; }
+
+pre {
+  margin: 8px 0 0;
+  padding: 8px;
+  max-height: 220px;
+  overflow: auto;
+  background: var(--ink);
+  color: var(--text);
+  border: 4px solid var(--ink);
+  font-family: 'VT323', monospace;
+  font-size: 18px;
+  white-space: pre-wrap;
+}
+
+.msg { margin-bottom: 12px; padding: 8px; background: var(--ink); color: var(--text); border: 4px solid var(--accent); }
+.field { width: 100%; min-height: 48px; padding: 8px; background: var(--panel); color: var(--ink); border: 4px solid var(--ink); font-family: 'VT323', monospace; font-size: 22px; }
+select { min-height: 44px; font-family: 'Press Start 2P', monospace; font-size: 10px; background: var(--panel); color: var(--ink); border: 4px solid var(--ink); }

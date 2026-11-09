@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Life Log">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <title>Life Log</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/styles/main.css">
+</head>
+<body>
+  <main id="app" aria-live="polite"></main>
+  <script>
+    // Show real errors on screen instead of a blank page.
+    (function () {
+      function show(msg) {
+        var el = document.getElementById('app');
+        if (!el) return;
+        var box = document.getElementById('errbox');
+        if (!box) {
+          box = document.createElement('pre');
+          box.id = 'errbox';
+          box.style.cssText = 'white-space:pre-wrap;word-break:break-word;margin:12px;padding:8px;background:#000;color:#fe7f2d;border:4px dashed #fe7f2d;font:14px monospace';
+          el.parentNode.insertBefore(box, el);
+        }
+        box.textContent += msg + '\n';
+      }
+      window.addEventListener('error', function (e) {
+        show('ERROR: ' + (e.message || (e.target && (e.target.src || e.target.href)) || 'load failed') +
+          (e.filename ? ' @ ' + e.filename + ':' + e.lineno : ''));
+      }, true);
+      window.addEventListener('unhandledrejection', function (e) {
+        show('REJECTED: ' + (e.reason && (e.reason.stack || e.reason.message) || e.reason));
+      });
+      setTimeout(function () {
+        var el = document.getElementById('app');
+        if (el && !el.innerHTML.trim()) show('App did not start.\nURL: ' + location.href + '\nUA: ' + navigator.userAgent);
+      }, 3000);
+    })();
+  </script>
+  <script type="module" src="src/ui/app.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => { /* offline support is optional */ });
+      });
+    }
+  </script>
+</body>
+</html>
