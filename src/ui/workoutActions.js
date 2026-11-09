@@ -5,7 +5,7 @@ import { newEntry } from '../logic/entries.js';
 import { sessionById } from '../logic/template.js';
 import { activeSessionId, parseSet, setText } from '../logic/workout.js';
 
-export function createWorkoutActions({ state, saveEntries, saveFail, inputValue, today }) {
+export function createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet }) {
   return {
     pickSession: (el) => { state.wSession = el.value; state.msg = ''; },
 
@@ -26,6 +26,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
       try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
       state.entries.push(e);
       state.msg = `${kind === 'warmup' ? 'Warm-up' : 'Set'} saved: ${setText(r.data)}.`;
+      if (kind === 'working' && onWorkingSet) onWorkingSet();
     },
   };
 }

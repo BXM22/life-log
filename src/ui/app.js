@@ -1,12 +1,10 @@
-import { isDirty, buildExport } from '../logic/exportBuilder.js';
+import { buildExport } from '../logic/exportBuilder.js';
 import { markExported, planWipe } from '../logic/wipeEligibility.js';
 import { logicalDate } from '../logic/dates.js';
-import { addHabit, toggleCheck, isChecked, starterHabits } from '../logic/habits.js';
-import { computeStats, emptyStats, streakWithStats } from '../logic/retainedStats.js';
-import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry, liveEntries } from '../logic/entries.js';
+import { addHabit, toggleCheck, starterHabits } from '../logic/habits.js';
+import { computeStats, emptyStats } from '../logic/retainedStats.js';
+import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry } from '../logic/entries.js';
 import { demoEntries } from '../logic/demo.js';
-import { sessionForDate } from '../logic/workout.js';
-import { sessionById } from '../logic/template.js';
 import { loadSettings, saveSettings, normalizeSettings, isSeeded, markSeeded } from '../logic/settings.js';
 import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
@@ -14,11 +12,15 @@ import { icon } from './icons.js';
 import { historyView } from './historyView.js';
 import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
+import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
 import { createTemplateActions } from './templateActions.js';
+import { createRestActions } from './restActions.js';
+import { positionWheels } from './restView.js';
+import { loadRest } from '../logic/rest.js';
 import { setTemplate } from '../logic/template.js';
 import { normalizeTemplate } from '../logic/templateEdit.js';
-import { exportView, wipeView, waiting, wipeOpts } from './exportWipeView.js';
+import { exportView, wipeView, wipeOpts } from './exportWipeView.js';
 import { backupActions } from './backupPanel.js';
 import { getConfig, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
 import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, deleteHabit, saveTemplate, clearTemplate } from '../db/store.js';
@@ -41,6 +43,7 @@ const state = {
   dayStartHour: settings.dayStartHour,
   editId: null, // id of the entry being edited on the History tab
   wSession: null, // workout session picked on the Workout tab (null = today's)
+  rest: (() => { try { return loadRest(localStorage, Date.now()); } catch { return loadRest({ getItem: () => null }, Date.now()); } })(), // rest timer, see logic/rest.js
   wManage: false, // Workout tab in edit-exercises mode
   tEdit: null, // exercise form open: { mode: 'add' } or { mode: 'edit', i }
   tDraft: null, // form values kept when a save is refused
@@ -87,8 +90,10 @@ function download(file) {
 }
 
 // ---- actions ----
+const rest = createRestActions({ state, onChange: () => render() });
 const actions = {
-  ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
+  ...rest.actions,
   ...createTemplateActions({
     state, saveFail, today,
     saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); },
@@ -329,79 +334,6 @@ const refreshInstall = () => {
   });
 };
 
-function habitsPanel() {
-  const day = today();
-  const rows = state.habits.map((h) => {
-    const streak = streakWithStats(state.entries, h.name, day, state.stats);
-    return `<div class="habit">
-      <label class="check"><input type="checkbox" data-action="toggleHabit" data-habit="${esc(h.id)}" ${isChecked(state.entries, h, day) ? 'checked' : ''}>
-        <span>${esc(h.name)}${streak ? ` <span class="streak">${streak}d</span>` : ''}</span></label>
-      <button class="btn secondary habit-del" data-action="deleteHabit" data-habit="${esc(h.id)}" aria-label="Remove ${esc(h.name)}">X</button>
-    </div>`;
-  }).join('');
-  return `<div class="panel">
-    <h2>HABITS ${esc(day.slice(5))}</h2>
-    ${rows || '<p>No habits yet. Add one below.</p>'}
-    <input id="habitName" class="field" maxlength="40" placeholder="New habit" autocomplete="off">
-    <button class="btn" data-action="addHabit">ADD HABIT</button>
-  </div>`;
-}
-
-function sessionPanel() {
-  const id = sessionForDate(today());
-  const s = id && sessionById(id);
-  return `<div class="panel"><h2>TODAY'S SESSION</h2>
-    <p>${s ? `${esc(s.name)}: ${esc(s.focus)}` : 'No lifting scheduled. BJJ, rest or a walk.'}</p>
-    <button class="btn" data-tab="workout" data-action="tab">${s ? 'START WORKOUT' : 'PICK A WORKOUT'}</button></div>`;
-}
-
-function todayView() {
-  const recent = liveEntries(state.entries).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 8);
-  const rows = recent.map((e) =>
-    `<div class="row"><span>${esc(e.date.slice(5))} ${esc(label(e))}</span>` +
-    `<span class="tag ${isDirty(e) ? 'waiting' : 'done'}">${isDirty(e) ? 'WAITING' : 'EXPORTED'}</span></div>`).join('');
-  const day = today();
-  const done = state.habits.filter((h) => isChecked(state.entries, h, day)).length;
-  const total = state.habits.length;
-  const cells = state.habits.map((h) => `<i class="${isChecked(state.entries, h, day) ? 'on' : ''}"></i>`).join('');
-  const n = waiting(state);
-  const note = storageLine();
-  return `
-    <div class="panel hero">
-      <div class="big">${done}/${total}</div>
-      <p>habits done today</p>
-      <div class="pips" aria-hidden="true">${cells}</div>
-    </div>
-    <button class="rowbtn" data-action="tab" data-tab="export">
-      <span>${n ? `${n} waiting to export` : 'Everything exported'}</span><span class="chev" aria-hidden="true">&gt;</span>
-    </button>
-    ${note ? `<p class="note">${esc(note)}</p>` : ''}
-    ${habitsPanel()}
-    ${sessionPanel()}
-    <div class="panel">
-      <h2>WEIGH-IN</h2>
-      <div class="inline">
-        <input id="wt" class="field" type="number" inputmode="decimal" step="0.1" placeholder="Weight (lb)" aria-label="Weight in pounds">
-        <button class="btn" data-action="logWeighIn">SAVE</button>
-      </div>
-    </div>
-    <div class="panel">
-      <h2>GUITAR</h2>
-      <div class="inline">
-        <input id="gm" class="field" type="number" inputmode="numeric" step="1" placeholder="Minutes" aria-label="Guitar minutes">
-        <input id="gb" class="field" type="number" inputmode="numeric" step="1" placeholder="Best BPM" aria-label="Best BPM, optional">
-      </div>
-      <input id="gf" class="field" maxlength="40" list="focuses" placeholder="Focus (optional)" aria-label="Focus, optional" autocomplete="off">
-      <datalist id="focuses"><option value="technique"><option value="songs"><option value="theory"><option value="improvisation"></datalist>
-      <button class="btn" data-action="logGuitar">SAVE GUITAR</button>
-    </div>
-    <div class="panel">
-      <h2>LATEST</h2>${rows || '<p>No entries yet.</p>'}
-      ${state.entries.length === 0 ? '<button class="btn secondary" data-action="demo">LOAD DEMO DATA</button>' : ''}
-      <button class="btn secondary" data-tab="history" data-action="tab">EDIT OR DELETE ENTRIES</button>
-    </div>`;
-}
-
 function header() {
   const d = new Date(`${today()}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   return `<header class="top"><span class="kicker">LIFE LOG &middot; ${esc(d.toUpperCase())}</span><h1>${TITLES[state.tab]}</h1></header>`;
@@ -422,6 +354,7 @@ function render() {
   $app.innerHTML = `${header()}${segmented()}${views[state.tab](state)}
     ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
+  if (state.tab === 'workout' && !state.wManage) positionWheels(state);
   clearTimeout(toastTimer);
   if (state.msg && state.msg.length < 60) toastTimer = setTimeout(() => { state.msg = ''; $app.querySelector('.toast')?.remove(); }, 4500);
 }
@@ -439,6 +372,8 @@ $app.addEventListener('click', (ev) => {
   if (!el || el.disabled || el.tagName === 'SELECT' || el.tagName === 'INPUT') return;
   dispatch(el);
 });
+$app.addEventListener('scroll', rest.onScroll, true); // the rest-time wheels scroll without a re-render
+document.addEventListener('visibilitychange', () => { if (!document.hidden) rest.resume(); });
 $app.addEventListener('change', (ev) => {
   const el = ev.target.closest('[data-action]');
   if (el && (el.tagName === 'SELECT' || el.type === 'checkbox')) dispatch(el);
@@ -480,6 +415,7 @@ async function boot() {
     if (navigator.storage?.persisted) state.persisted = await navigator.storage.persisted();
   } catch { /* the browser may refuse; the banner then says not protected */ }
   render();
+  rest.resume();
 
   // Back from the Dropbox sign-in page: finish connecting and open the Export tab.
   try {

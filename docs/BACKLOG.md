@@ -23,7 +23,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [x] F20 Add, edit and delete exercises in each session (Must-M2)
 - [x] F21 Workout template: Upper/Lower 3-4 day plan (Must-M2). Upper A, Lower, Upper B and optional Upper C are in; the 3/4-day switch is F31
 - [x] F22 Warm-up and working sets logged separately (Must-M2)
-- [ ] F23 Rest timer (Should)
+- [x] F23 Rest timer with a wheel for a custom time (Should)
 - [x] F24 Timed, per-side and bodyweight exercises (Must-M2)
 - [ ] F25 Progression prompt on first lift (Should)
 - [ ] F29 Warm-up checklists and back-training cues (Could)

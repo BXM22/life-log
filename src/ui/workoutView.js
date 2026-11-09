@@ -9,6 +9,7 @@ import { logicalDate } from '../logic/dates.js';
 import { esc } from './format.js';
 import { manageView } from './templateView.js';
 import { editForm } from './historyView.js';
+import { restPanel } from './restView.js';
 
 function exercisePanel(state, ex, i, day) {
   const last = lastWorking(state.entries, state.stats, ex.name);
@@ -55,5 +56,6 @@ export function workoutView(state) {
       <p>${esc(session.focus)}. Add weight or reps on the first exercise each week.</p>
       <button class="btn secondary" data-action="toggleManage">${state.wManage ? 'DONE EDITING' : 'EDIT EXERCISES'}</button>
     </div>
+    ${state.wManage ? '' : restPanel(state)}
     ${state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
 }

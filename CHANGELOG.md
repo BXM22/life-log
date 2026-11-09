@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: rest timer on the Workout tab with 1:00 to 3:00 presets, an iOS-style wheel for a custom time, auto-start after a working set, and a countdown that survives closing the app (F23); 83 tests (2026-11-09)
 - feat: edit or delete each logged set right on the Workout tab (2026-11-09)
 - feat: add, edit and delete exercises in any workout session, or reset to the built-in plan; edits are kept on the phone and survive a wipe (F20); 77 tests (2026-11-09)
 - feat: iPhone-style layout: bottom tab bar with icons, large screen titles, Today summary, Sync tab with Export/Wipe switch, floating messages, 16px-safe inputs (2026-11-09)

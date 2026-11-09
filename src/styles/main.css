@@ -239,3 +239,38 @@ pre {
 @media (prefers-reduced-motion: reduce) { .toast { animation: none; } }
 .field { width: 100%; min-height: 48px; padding: 8px; background: var(--panel); color: var(--ink); border: 4px solid var(--ink); font-family: 'VT323', monospace; font-size: 22px; }
 select { min-height: 48px; font-family: 'VT323', monospace; font-size: 22px; background: var(--panel); color: var(--ink); border: 4px solid var(--ink); }
+
+/* Rest timer: presets, progress bar and an iOS-style wheel (scroll-snap) for a custom time */
+.bar { height: 12px; margin: 0 0 12px; border: 2px solid var(--ink); background: var(--panel); }
+.bar i { display: block; height: 100%; background: var(--accent); }
+.chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+button.btn.chip { margin-top: 0; padding: 8px 0; font-size: 10px; }
+.wheels { display: flex; align-items: center; justify-content: center; gap: 8px; position: relative; }
+.colon { font-family: 'Press Start 2P', monospace; font-size: 16px; }
+.wheel {
+  position: relative;
+  width: 96px;
+  height: 120px; /* three rows of 40px; the middle one is the selection */
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  border: 4px solid var(--ink);
+  background: var(--panel);
+}
+.wheel::-webkit-scrollbar { display: none; }
+.wheel b { display: block; height: 40px; }
+.wheel i {
+  display: flex; align-items: center; justify-content: center;
+  height: 40px;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  font-style: normal;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+}
+/* Selection bar drawn over the middle row; clicks pass through. */
+.wheels::before { content: ''; position: absolute; left: 0; right: 0; top: calc(50% - 20px); height: 40px; border-top: 4px solid var(--accent); border-bottom: 4px solid var(--accent); pointer-events: none; z-index: 1; }
+.panel p.lbl { margin: 20px 0 8px; }
+.chips { padding-bottom: 4px; }
