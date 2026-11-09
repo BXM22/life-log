@@ -10,6 +10,7 @@ import { sessionById } from '../logic/template.js';
 import { loadSettings, saveSettings, normalizeSettings, isSeeded, markSeeded } from '../logic/settings.js';
 import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
+import { icon } from './icons.js';
 import { historyView } from './historyView.js';
 import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
@@ -23,7 +24,10 @@ const settings = (() => { try { return loadSettings(localStorage); } catch { ret
 const persistSettings = () => {
   try { saveSettings(localStorage, { keepDays: state.keepDays, dayStartHour: state.dayStartHour }); } catch { /* storage blocked */ }
 };
-const TABS = ['today', 'workout', 'history', 'export', 'wipe', 'settings'];
+// Bottom tab bar: five top-level screens. Export and Wipe share the Sync tab and switch with a segmented control.
+const NAV = [['today', 'TODAY'], ['workout', 'WORKOUT'], ['history', 'HISTORY'], ['export', 'SYNC'], ['settings', 'SETTINGS']];
+const TITLES = { today: 'TODAY', workout: 'WORKOUT', history: 'HISTORY', export: 'SYNC', wipe: 'SYNC', settings: 'SETTINGS' };
+const navGroup = (t) => (t === 'wipe' ? 'export' : t);
 
 const state = {
   tab: 'today',
@@ -80,7 +84,9 @@ function download(file) {
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; window.scrollTo(0, 0); },
+
+  dismissMsg: () => { state.msg = ''; },
 
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
 
@@ -343,23 +349,39 @@ function todayView() {
   const rows = recent.map((e) =>
     `<div class="row"><span>${esc(e.date.slice(5))} ${esc(label(e))}</span>` +
     `<span class="tag ${isDirty(e) ? 'waiting' : 'done'}">${isDirty(e) ? 'WAITING' : 'EXPORTED'}</span></div>`).join('');
+  const day = today();
+  const done = state.habits.filter((h) => isChecked(state.entries, h, day)).length;
+  const total = state.habits.length;
+  const cells = state.habits.map((h) => `<i class="${isChecked(state.entries, h, day) ? 'on' : ''}"></i>`).join('');
+  const n = waiting(state);
+  const note = storageLine();
   return `
-    <div class="panel">
-      <h2>WAITING TO EXPORT</h2>
-      <div class="big">${waiting(state)}</div>
-      <p>${waiting(state) ? 'These entries are on this phone only.' : 'Everything is exported.'}</p>
-      <p>${esc(storageLine())}</p>
+    <div class="panel hero">
+      <div class="big">${done}/${total}</div>
+      <p>habits done today</p>
+      <div class="pips" aria-hidden="true">${cells}</div>
     </div>
-    ${sessionPanel()}
+    <button class="rowbtn" data-action="tab" data-tab="export">
+      <span>${n ? `${n} waiting to export` : 'Everything exported'}</span><span class="chev" aria-hidden="true">&gt;</span>
+    </button>
+    ${note ? `<p class="note">${esc(note)}</p>` : ''}
     ${habitsPanel()}
+    ${sessionPanel()}
     <div class="panel">
-      <h2>LOG</h2>
-      <input id="wt" class="field" type="number" inputmode="decimal" step="0.1" placeholder="Weight (lb)">
-      <button class="btn" data-action="logWeighIn">SAVE WEIGH-IN</button>
-      <input id="gm" class="field" type="number" inputmode="numeric" step="1" placeholder="Guitar minutes" style="margin-top:8px">
-      <input id="gf" class="field" maxlength="40" list="focuses" placeholder="Focus (optional)" autocomplete="off" style="margin-top:8px">
+      <h2>WEIGH-IN</h2>
+      <div class="inline">
+        <input id="wt" class="field" type="number" inputmode="decimal" step="0.1" placeholder="Weight (lb)" aria-label="Weight in pounds">
+        <button class="btn" data-action="logWeighIn">SAVE</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>GUITAR</h2>
+      <div class="inline">
+        <input id="gm" class="field" type="number" inputmode="numeric" step="1" placeholder="Minutes" aria-label="Guitar minutes">
+        <input id="gb" class="field" type="number" inputmode="numeric" step="1" placeholder="Best BPM" aria-label="Best BPM, optional">
+      </div>
+      <input id="gf" class="field" maxlength="40" list="focuses" placeholder="Focus (optional)" aria-label="Focus, optional" autocomplete="off">
       <datalist id="focuses"><option value="technique"><option value="songs"><option value="theory"><option value="improvisation"></datalist>
-      <input id="gb" class="field" type="number" inputmode="numeric" step="1" placeholder="Best BPM (optional)" style="margin-top:8px">
       <button class="btn" data-action="logGuitar">SAVE GUITAR</button>
     </div>
     <div class="panel">
@@ -369,15 +391,30 @@ function todayView() {
     </div>`;
 }
 
+function header() {
+  const d = new Date(`${today()}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+  return `<header class="top"><span class="kicker">LIFE LOG &middot; ${esc(d.toUpperCase())}</span><h1>${TITLES[state.tab]}</h1></header>`;
+}
+
+function segmented() {
+  if (navGroup(state.tab) !== 'export') return '';
+  const b = (t, text) => `<button data-action="tab" data-tab="${t}" ${state.tab === t ? 'aria-current="page"' : ''}>${text}</button>`;
+  return `<div class="seg">${b('export', 'EXPORT')}${b('wipe', 'WIPE')}</div>`;
+}
+
 function render() {
   state.storageLine = storageLine();
   refreshInstall();
   const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
-  const tabs = TABS.map((t) =>
-    `<button class="tab" data-action="tab" data-tab="${t}" ${state.tab === t ? 'aria-current="page"' : ''}>${t.toUpperCase()}</button>`).join('');
-  $app.innerHTML = `<h1>LIFE LOG</h1><nav>${tabs}</nav>
-    ${state.msg ? `<div class="msg">${esc(state.msg)}</div>` : ''}${views[state.tab](state)}`;
+  const tabs = NAV.map(([t, text]) =>
+    `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
+  $app.innerHTML = `${header()}${segmented()}${views[state.tab](state)}
+    ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
+    <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
+  clearTimeout(toastTimer);
+  if (state.msg && state.msg.length < 60) toastTimer = setTimeout(() => { state.msg = ''; $app.querySelector('.toast')?.remove(); }, 4500);
 }
+let toastTimer = 0;
 
 async function dispatch(el) {
   const fn = actions[el.dataset.action];
