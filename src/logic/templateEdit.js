@@ -55,6 +55,52 @@ export function removeExercise(sessions, sessionId, index) {
   return { sessions: withExercises(sessions, sessionId, s.exercises.filter((_, i) => i !== index)) };
 }
 
+export const MAX_SESSION_NAME = 40;
+
+/** Validate a session name: required, short, and unique (ignoring case) among the other sessions. */
+function parseSessionName(sessions, name, skipId) {
+  const n = String(name ?? '').replace(/\s+/g, ' ').trim();
+  if (!n) return { error: 'Enter a name for the session.' };
+  if (n.length > MAX_SESSION_NAME) return { error: `Session name must be ${MAX_SESSION_NAME} characters or fewer.` };
+  if (sessions.some((s) => s.id !== skipId && s.name.toLowerCase() === n.toLowerCase())) return { error: `${n} already exists.` };
+  return { name: n };
+}
+
+/** A readable id for a custom session, unique among the current ones: c-push-day, c-push-day-2. */
+function newSessionId(sessions, name) {
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 20).replace(/-+$/, '') || 'session';
+  const taken = new Set(sessions.map((s) => s.id));
+  let id = `c-${slug}`;
+  for (let n = 2; taken.has(id); n += 1) id = `c-${slug}-${n}`;
+  return id;
+}
+
+/** Add a session at the end: empty, or a copy of the session with id `copyOf`. Returns { sessions, id } or { error }. */
+export function addSession(sessions, name, copyOf = null) {
+  const r = parseSessionName(sessions, name, null);
+  if (r.error) return r;
+  const src = copyOf ? find(sessions, copyOf) : null;
+  if (copyOf && !src) return { error: 'That session does not exist.' };
+  const id = newSessionId(sessions, r.name);
+  const session = { id, name: r.name, focus: src?.focus ?? '', exercises: src ? src.exercises.map((e) => ({ ...e })) : [] };
+  return { sessions: [...sessions, session], id };
+}
+
+/** Rename a session. Logged sets keep the exercise names they were saved under. */
+export function renameSession(sessions, id, name) {
+  if (!find(sessions, id)) return { error: 'That session does not exist.' };
+  const r = parseSessionName(sessions, name, id);
+  if (r.error) return r;
+  return { sessions: sessions.map((s) => (s.id === id ? { ...s, name: r.name } : s)) };
+}
+
+/** Delete a session. At least one must remain. */
+export function removeSession(sessions, id) {
+  if (!find(sessions, id)) return { error: 'That session does not exist.' };
+  if (sessions.length <= 1) return { error: 'Keep at least one session.' };
+  return { sessions: sessions.filter((s) => s.id !== id) };
+}
+
 /** Any stored value in, a usable sessions array or null out. Null means "use the default plan". */
 export function normalizeTemplate(raw) {
   if (!Array.isArray(raw) || raw.length === 0) return null;

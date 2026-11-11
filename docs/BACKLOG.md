@@ -29,6 +29,8 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [ ] F29 Warm-up checklists and back-training cues (Could)
 - [ ] F30 Trim a set (Could)
 - [x] F31 3-day and 4-day schedule switch (Should). Settings > PLAN; 3 days drops Sunday's Upper C, which stays pickable on the Workout tab
+- [x] F34 Custom workout templates: create, copy, rename and delete your own sessions, filled with the exercise editor (Should). Custom sessions are picked by hand; they are not on the weekday schedule
+- [x] F35 Workout history: past workout days with each session's exercises and sets, newest first (Should)
 - [ ] F32 Calisthenics blocks and BJJ done check (Should)
 - [ ] F33 Weekly export reminder (Should)
 - [ ] F16 Kumio prep and study log (Should)

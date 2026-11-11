@@ -4,7 +4,7 @@
 //   data { session, exercise, kind: 'warmup' | 'working', weight, reps, seconds, side: 'L' | 'R' | null }
 // One entry per set, so each set can be edited, deleted, exported and wiped like any other entry.
 
-import { scheduleFor, sessionById } from './template.js';
+import { scheduleFor, sessionById, getSessions } from './template.js';
 
 export const KINDS = ['warmup', 'working'];
 
@@ -18,7 +18,12 @@ export function weekday(date) {
 export const sessionForDate = (date, days = 4) => scheduleFor(days)[weekday(date)] ?? null;
 
 /** The session to show: the one the user picked, else today's, else Upper A. */
-export const activeSessionId = (picked, date, days = 4) => (sessionById(picked) ? picked : sessionForDate(date, days) ?? 'upper_a');
+export function activeSessionId(picked, date, days = 4) {
+  if (sessionById(picked)) return picked;
+  const scheduled = sessionForDate(date, days);
+  if (sessionById(scheduled)) return scheduled; // a scheduled session may have been deleted
+  return sessionById('upper_a') ? 'upper_a' : getSessions()[0].id;
+}
 
 const blank = (v) => String(v ?? '').trim() === '';
 

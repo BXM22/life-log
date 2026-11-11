@@ -9,6 +9,8 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
   return {
     pickSession: (el) => { state.wSession = el.value; state.msg = ''; },
 
+    toggleHistory: () => { state.wHistory = !state.wHistory; state.wManage = false; state.tEdit = null; state.msg = ''; },
+
     logSet: async (el) => {
       const day = today();
       const id = activeSessionId(state.wSession, day, state.planDays);

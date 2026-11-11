@@ -41,6 +41,20 @@ export function manageView(state, session) {
     </div>`).join('');
   return `${state.tEdit ? form(state, session) : ''}
     <div class="panel">
+      <h2>SESSIONS</h2>
+      <p>Editing <b>${esc(session.name)}</b>. Pick another session above to edit it.</p>
+      <label class="lbl" for="ts-name">SESSION NAME</label>
+      <input id="ts-name" class="field" maxlength="40" placeholder="Push day" autocomplete="off">
+      <div class="pair">
+        <button class="btn secondary" data-action="sAdd">NEW EMPTY</button>
+        <button class="btn secondary" data-action="sCopy">COPY THIS ONE</button>
+      </div>
+      <div class="pair">
+        <button class="btn secondary" data-action="sRename">RENAME THIS ONE</button>
+        <button class="btn secondary" data-action="sDelete">DELETE THIS ONE</button>
+      </div>
+    </div>
+    <div class="panel">
       <h2>${esc(session.name.toUpperCase())} EXERCISES</h2>
       ${rows || '<p>No exercises. Add one below.</p>'}
       <button class="btn" data-action="tAdd">ADD EXERCISE</button>

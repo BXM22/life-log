@@ -47,7 +47,8 @@ const state = {
   editId: null, // id of the entry being edited on the History tab
   wSession: null, // workout session picked on the Workout tab (null = today's)
   rest: (() => { try { return loadRest(localStorage, Date.now()); } catch { return loadRest({ getItem: () => null }, Date.now()); } })(), // rest timer, see logic/rest.js
-  wManage: false, // Workout tab in edit-exercises mode
+  wManage: false, // Workout tab in edit-templates mode
+  wHistory: false, // Workout tab showing past workouts
   tEdit: null, // exercise form open: { mode: 'add' } or { mode: 'edit', i }
   tDraft: null, // form values kept when a save is refused
   installEvent: null, // the browser's deferred install prompt, when it offers one

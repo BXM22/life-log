@@ -10,6 +10,7 @@ import { esc } from './format.js';
 import { manageView } from './templateView.js';
 import { editForm } from './historyView.js';
 import { restPanel } from './restView.js';
+import { workoutHistoryView } from './workoutHistoryView.js';
 
 function exercisePanel(state, ex, i, day) {
   const last = lastWorking(state.entries, state.stats, ex.name);
@@ -53,9 +54,13 @@ export function workoutView(state) {
   return `<div class="panel">
       <h2>WORKOUT ${esc(day.slice(5))}</h2>
       <p><select data-action="pickSession" aria-label="Session">${picker}</select></p>
-      <p>${esc(session.focus)}. Add weight or reps on the first exercise each week.</p>
-      <button class="btn secondary" data-action="toggleManage">${state.wManage ? 'DONE EDITING' : 'EDIT EXERCISES'}</button>
+      <p>${session.focus ? `${esc(session.focus)}. ` : ''}Add weight or reps on the first exercise each week.</p>
+      <div class="pair">
+        <button class="btn secondary" data-action="toggleManage">${state.wManage ? 'DONE EDITING' : 'EDIT TEMPLATES'}</button>
+        <button class="btn secondary" data-action="toggleHistory">${state.wHistory ? 'BACK TO WORKOUT' : 'HISTORY'}</button>
+      </div>
     </div>
-    ${state.wManage ? '' : restPanel(state)}
-    ${state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
+    ${state.wHistory ? workoutHistoryView(state) : ''}
+    ${state.wManage || state.wHistory ? '' : restPanel(state)}
+    ${state.wHistory ? '' : state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
 }

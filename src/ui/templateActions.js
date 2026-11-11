@@ -3,7 +3,7 @@
 
 import { SESSIONS, getSessions, setTemplate } from '../logic/template.js';
 import { activeSessionId } from '../logic/workout.js';
-import { addExercise, updateExercise, removeExercise } from '../logic/templateEdit.js';
+import { addExercise, updateExercise, removeExercise, addSession, renameSession, removeSession } from '../logic/templateEdit.js';
 
 export function createTemplateActions({ state, saveTemplate, clearTemplate, saveFail, today }) {
   const sessionId = () => activeSessionId(state.wSession, today(), state.planDays);
@@ -24,8 +24,26 @@ export function createTemplateActions({ state, saveTemplate, clearTemplate, save
     return true;
   }
 
+  const nameInput = () => document.getElementById('ts-name')?.value;
+  // Apply a session change from templateEdit.js: save it, then make `next` the picked session (id of the new one by default).
+  async function sessionOp(r, msg, next = r.id) {
+    if (r.error) { state.msg = r.error; return; }
+    if (await commit(r.sessions, msg)) { state.wSession = next ?? null; close(); }
+  }
+
   return {
-    toggleManage: () => { state.wManage = !state.wManage; close(); state.msg = ''; },
+    toggleManage: () => { state.wManage = !state.wManage; state.wHistory = false; close(); state.msg = ''; },
+
+    // Session actions read the name box in the SESSIONS panel. A new or copied session becomes the active one.
+    sAdd: () => sessionOp(addSession(getSessions(), nameInput()), 'Session added.'),
+    sCopy: () => sessionOp(addSession(getSessions(), nameInput(), sessionId()), 'Session copied.'),
+    sRename: () => sessionOp(renameSession(getSessions(), sessionId(), nameInput()), 'Session renamed.', sessionId()),
+    sDelete: async () => {
+      const s = getSessions().find((x) => x.id === sessionId());
+      if (!s) return;
+      if (!window.confirm(`Delete ${s.name}? Sets you already logged stay in your log.`)) return;
+      await sessionOp(removeSession(getSessions(), s.id), `Deleted ${s.name}.`, null);
+    },
 
     tAdd: () => { state.tEdit = { mode: 'add' }; state.tDraft = null; state.msg = ''; },
 
