@@ -29,7 +29,7 @@ import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, dele
 
 const settings = (() => { try { return loadSettings(localStorage); } catch { return normalizeSettings(null); } })();
 const persistSettings = () => {
-  try { saveSettings(localStorage, { keepDays: state.keepDays, dayStartHour: state.dayStartHour }); } catch { /* storage blocked */ }
+  try { saveSettings(localStorage, { keepDays: state.keepDays, dayStartHour: state.dayStartHour, planDays: state.planDays }); } catch { /* storage blocked */ }
 };
 // Bottom tab bar: five top-level screens. Export and Wipe share the Sync tab and switch with a segmented control.
 const NAV = [['today', 'TODAY'], ['workout', 'WORKOUT'], ['history', 'HISTORY'], ['export', 'SYNC'], ['settings', 'SETTINGS']];
@@ -43,6 +43,7 @@ const state = {
   stats: null, // retained_stats record kept across wipes (best streaks, anchors, last sets, weigh-ins)
   keepDays: settings.keepDays,
   dayStartHour: settings.dayStartHour,
+  planDays: settings.planDays, // 3 or 4 lifting days a week, see logic/template.js scheduleFor
   editId: null, // id of the entry being edited on the History tab
   wSession: null, // workout session picked on the Workout tab (null = today's)
   rest: (() => { try { return loadRest(localStorage, Date.now()); } catch { return loadRest({ getItem: () => null }, Date.now()); } })(), // rest timer, see logic/rest.js
@@ -111,6 +112,8 @@ const actions = {
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
 
   setDayStart: (el) => { state.dayStartHour = Number(el.value); persistSettings(); },
+
+  setPlanDays: (el) => { state.planDays = Number(el.value); state.wSession = null; persistSettings(); },
 
   install: async () => {
     const ev = state.installEvent;

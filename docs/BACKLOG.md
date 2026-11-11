@@ -28,7 +28,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [ ] F25 Progression prompt on first lift (Should)
 - [ ] F29 Warm-up checklists and back-training cues (Could)
 - [ ] F30 Trim a set (Could)
-- [ ] F31 3-day and 4-day schedule switch (Should)
+- [x] F31 3-day and 4-day schedule switch (Should). Settings > PLAN; 3 days drops Sunday's Upper C, which stays pickable on the Workout tab
 - [ ] F32 Calisthenics blocks and BJJ done check (Should)
 - [ ] F33 Weekly export reminder (Should)
 - [ ] F16 Kumio prep and study log (Should)

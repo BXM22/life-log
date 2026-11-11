@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { SESSIONS, SCHEDULE, sessionById, findExercise } from '../src/logic/template.js';
+import { SESSIONS, SCHEDULE, SCHEDULE_3, sessionById, findExercise } from '../src/logic/template.js';
 import { weekday, sessionForDate, activeSessionId, parseSet, setText, setsFor, lastWorking, suggestWarmup, workoutMarkdown } from '../src/logic/workout.js';
 import { newEntry, parseEdit, editEntry } from '../src/logic/entries.js';
 import { buildExport } from '../src/logic/exportBuilder.js';
@@ -34,6 +34,18 @@ test('schedule: Tue Upper A, Thu Lower, Sat Upper B, Sun Upper C, others none', 
   assert.equal(sessionForDate('2026-11-08'), 'upper_c'); // Sunday
   for (const d of ['2026-11-09', '2026-11-11', '2026-11-13']) assert.equal(sessionForDate(d), null, d); // Mon, Wed, Fri
   assert.deepEqual(Object.keys(SCHEDULE).sort(), ['0', '2', '4', '6']);
+});
+
+test('3-day week: Sunday has no session, Tue/Thu/Sat are unchanged; anything but 3 means 4 days', () => {
+  assert.equal(sessionForDate('2026-11-08', 3), null); // Sunday
+  assert.equal(sessionForDate('2026-11-08', 4), 'upper_c');
+  assert.equal(sessionForDate('2026-11-08', 7), 'upper_c');
+  assert.equal(sessionForDate('2026-11-10', 3), 'upper_a');
+  assert.equal(sessionForDate('2026-11-12', 3), 'lower');
+  assert.equal(sessionForDate('2026-11-07', 3), 'upper_b');
+  assert.equal(activeSessionId(null, '2026-11-08', 3), 'upper_a'); // nothing scheduled: falls back to Upper A
+  assert.equal(activeSessionId('upper_c', '2026-11-08', 3), 'upper_c'); // Upper C stays pickable
+  assert.deepEqual(Object.keys(SCHEDULE_3).sort(), ['2', '4', '6']);
 });
 
 test('activeSessionId: picked beats today, today beats Upper A, bad pick falls back', () => {

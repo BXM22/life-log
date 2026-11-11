@@ -47,7 +47,7 @@ function exercisePanel(state, ex, i, day) {
 
 export function workoutView(state) {
   const day = logicalDate(Date.now(), state.dayStartHour);
-  const id = activeSessionId(state.wSession, day);
+  const id = activeSessionId(state.wSession, day, state.planDays);
   const session = sessionById(id);
   const picker = getSessions().map((s) => `<option value="${s.id}" ${s.id === id ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
   return `<div class="panel">

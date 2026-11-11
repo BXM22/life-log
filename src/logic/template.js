@@ -66,6 +66,12 @@ export const SESSIONS = [
 /** Weekday (0 = Sunday) to session id. Monday and Wednesday are BJJ and calisthenics, Friday is rest. */
 export const SCHEDULE = { 0: 'upper_c', 2: 'upper_a', 4: 'lower', 6: 'upper_b' };
 
+/** The 3-day version: Upper A, Lower and Upper B, with no Sunday session. */
+export const SCHEDULE_3 = { 2: 'upper_a', 4: 'lower', 6: 'upper_b' };
+
+/** The weekday schedule for a 3-day or 4-day week. Anything but 3 gives the 4-day schedule. */
+export const scheduleFor = (days) => (days === 3 ? SCHEDULE_3 : SCHEDULE);
+
 // SESSIONS is the built-in plan. The active plan is that, or the user's edited copy (see templateEdit.js).
 let active = SESSIONS;
 export const getSessions = () => active;

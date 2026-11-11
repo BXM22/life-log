@@ -6,7 +6,7 @@ import { activeSessionId } from '../logic/workout.js';
 import { addExercise, updateExercise, removeExercise } from '../logic/templateEdit.js';
 
 export function createTemplateActions({ state, saveTemplate, clearTemplate, saveFail, today }) {
-  const sessionId = () => activeSessionId(state.wSession, today());
+  const sessionId = () => activeSessionId(state.wSession, today(), state.planDays);
   const readForm = () => ({
     name: document.getElementById('te-name')?.value,
     mode: document.getElementById('te-mode')?.value,

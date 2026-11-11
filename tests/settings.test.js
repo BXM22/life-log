@@ -9,7 +9,9 @@ const memory = () => {
 };
 
 test('normalizeSettings: keeps valid values, replaces anything else with defaults', () => {
-  assert.deepEqual(normalizeSettings({ keepDays: 14, dayStartHour: 2 }), { keepDays: 14, dayStartHour: 2 });
+  assert.deepEqual(normalizeSettings({ keepDays: 14, dayStartHour: 2 }), { keepDays: 14, dayStartHour: 2, planDays: 4 });
+  assert.equal(normalizeSettings({ planDays: 3 }).planDays, 3);
+  for (const bad of [5, '3', 0, null]) assert.equal(normalizeSettings({ planDays: bad }).planDays, 4, String(bad));
   assert.deepEqual(normalizeSettings({ keepDays: 5, dayStartHour: 9 }), DEFAULT_SETTINGS);
   assert.deepEqual(normalizeSettings({ keepDays: '7' }), DEFAULT_SETTINGS);
   for (const bad of [null, undefined, 'x', 3, []]) assert.deepEqual(normalizeSettings(bad), DEFAULT_SETTINGS);
@@ -17,8 +19,8 @@ test('normalizeSettings: keeps valid values, replaces anything else with default
 
 test('save then load round-trips; missing, corrupt or throwing storage gives defaults', () => {
   const s = memory();
-  assert.equal(saveSettings(s, { keepDays: 0, dayStartHour: 5 }), true);
-  assert.deepEqual(loadSettings(s), { keepDays: 0, dayStartHour: 5 });
+  assert.equal(saveSettings(s, { keepDays: 0, dayStartHour: 5, planDays: 3 }), true);
+  assert.deepEqual(loadSettings(s), { keepDays: 0, dayStartHour: 5, planDays: 3 });
   assert.deepEqual(loadSettings(memory()), DEFAULT_SETTINGS);
   const corrupt = memory();
   corrupt.setItem(SETTINGS_KEY, '{not json');

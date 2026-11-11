@@ -35,7 +35,7 @@ function habitsPanel(state) {
 }
 
 function sessionPanel(state) {
-  const id = sessionForDate(today(state));
+  const id = sessionForDate(today(state), state.planDays);
   const s = id && sessionById(id);
   return `<div class="panel"><h2>TODAY'S SESSION</h2>
     <p>${s ? `${esc(s.name)}: ${esc(s.focus)}` : 'No lifting scheduled. BJJ, rest or a walk.'}</p>

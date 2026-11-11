@@ -4,7 +4,7 @@
 //   data { session, exercise, kind: 'warmup' | 'working', weight, reps, seconds, side: 'L' | 'R' | null }
 // One entry per set, so each set can be edited, deleted, exported and wiped like any other entry.
 
-import { SCHEDULE, sessionById } from './template.js';
+import { scheduleFor, sessionById } from './template.js';
 
 export const KINDS = ['warmup', 'working'];
 
@@ -14,11 +14,11 @@ export function weekday(date) {
   return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
 }
 
-/** The session scheduled for a date, or null on BJJ days and rest days. */
-export const sessionForDate = (date) => SCHEDULE[weekday(date)] ?? null;
+/** The session scheduled for a date (in a 3-day or 4-day week), or null on BJJ days and rest days. */
+export const sessionForDate = (date, days = 4) => scheduleFor(days)[weekday(date)] ?? null;
 
 /** The session to show: the one the user picked, else today's, else Upper A. */
-export const activeSessionId = (picked, date) => (sessionById(picked) ? picked : sessionForDate(date) ?? 'upper_a');
+export const activeSessionId = (picked, date, days = 4) => (sessionById(picked) ? picked : sessionForDate(date, days) ?? 'upper_a');
 
 const blank = (v) => String(v ?? '').trim() === '';
 

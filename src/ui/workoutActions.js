@@ -11,7 +11,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
 
     logSet: async (el) => {
       const day = today();
-      const id = activeSessionId(state.wSession, day);
+      const id = activeSessionId(state.wSession, day, state.planDays);
       const ex = sessionById(id)?.exercises[Number(el.dataset.i)];
       if (!ex) return;
       const kind = el.dataset.kind === 'warmup' ? 'warmup' : 'working';
