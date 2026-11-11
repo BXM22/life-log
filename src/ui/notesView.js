@@ -18,8 +18,10 @@ export function notesPanel(state) {
   const n = dirtyNotes(state.entries).length;
   return `<div class="panel">
     <h2>NOTES</h2>
-    <input id="note-title" class="field" maxlength="80" placeholder="Title (optional)" aria-label="Note title" autocomplete="off" value="${esc(draft.title)}">
-    <textarea id="note-body" class="field" rows="5" maxlength="5000" placeholder="Brainstorm: app ideas, features, anything" aria-label="Note">${esc(draft.body)}</textarea>
+    <label class="lbl" for="note-title">Title (optional)</label>
+    <input id="note-title" class="field" maxlength="80" placeholder="Streak view" autocomplete="off" value="${esc(draft.title)}">
+    <label class="lbl" for="note-body">Note</label>
+    <textarea id="note-body" class="field" rows="5" maxlength="5000" placeholder="App ideas, features, anything">${esc(draft.body)}</textarea>
     <button class="btn" data-action="logNote">SAVE NOTE</button>
     ${rows}
     <button class="btn secondary" data-action="exportNotes" ${n ? '' : 'disabled'}>SEND ${n} NOTE${n === 1 ? '' : 'S'} TO VAULT</button>

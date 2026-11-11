@@ -300,38 +300,51 @@ The app keeps the top 5 results for each record, best first, and they survive a 
 
 ## UI design and color palette
 
-The app uses a chunky pixel look (4px grid, 4px black borders, hard offset shadows, square corners) in four colors from Color Hunt: https://colorhunt.co/palette/000000233d4dfe7f2deaecf0
+The app uses the Signalbox layout (2026-11-10): rounded grouped cards, pill buttons and one orange accent on a warm black ground. It replaces the earlier chunky pixel look (Color Hunt orange and slate) and the lime, teal and indigo trials. Design note: `Claude outputs/Signalbox-design.md` in the vault; canvas: https://claude.ai/artifact/NoayAQ2Y8EWQynerdxB4PN
 
 | Token | Hex | Used for |
 | --- | --- | --- |
-| ink, bg | #000000 | Page background, all borders and hard shadows, dark text on light panels |
-| bg-alt | #233d4d | Checker pattern behind screens, meter troughs |
-| accent | #fe7f2d | Title ribbons, primary buttons, chips, habit meter fill, checkmarks, the number-one record row |
-| panel, text | #eaecf0 | Panels, secondary buttons, light text on dark |
+| bg-top, bg | #000000, #0d0b0a | Page background, a top-to-bottom gradient with a faint warm halo (#3d1c07) at the top right |
+| panel, panel-2 | #151210, #211b17 | Cards and rows, pressed state |
+| field | #0b0908 | Inputs, tab bar, wheels |
+| line | #2e2620 | Borders, progress troughs (faded to 18% for row hairlines) |
+| text | #f3ede6 | Body text |
+| dim | #a89d92 | Labels, hints, secondary text |
+| accent | #ff7a1a | Primary button, active tab and its top line, checkmarks, progress fill, streak and WAITING chips, rest-timer wheel lines |
+| accent alternates | #ffb83c, #ff4d2e, #f5f0e6 | Tweak options for the accent |
+| soft | #ffb066 | Soft status chips ("OK", "ON", "EXPORTED") |
+| danger | #ff6b6b | Wipe button and warning |
 
 **Rules**
 
-- Text on orange is always black (about 8:1 contrast). Orange is never used as text on the light panel (about 2:1).
-- Panel bevels and dotted dividers use a faded slate, rgba(35, 61, 77, 0.28), so no fifth color is needed.
-- The palette has no red, so the Wipe button and warning use the same orange and black as other primary actions. A separate warning color is an option if Wipe needs to stand out more.
-- Fonts: Press Start 2P for labels, buttons and numbers; VT323 for sentences and hints.
+- Text on orange is black (about 8:1). Body text on a card is about 16:1, dim text about 7:1, orange on a card about 7.2:1, soft about 10.4:1.
+- Wipe has its own warning color (danger) and a dashed border, so it differs by shape as well as color.
+- Fonts: Doto (dot-matrix) for screen titles and big numbers; JetBrains Mono for everything else at 10 to 16px. Labels are uppercase with wide spacing. Input text stays at 16px so iOS does not zoom.
+- Cards are grouped surfaces with no border: 20px corners, 20px between groups, hairline row dividers. Hero 24px, fields 14px, buttons and chips fully round. Tap targets stay at 44px or more.
 
 **CSS tokens**
 
 ```css
 :root {
-  --bg: #000000;
-  --bg-alt: #233d4d;
-  --panel: #eaecf0;
-  --ink: #000000;
-  --accent: #fe7f2d;
-  --text: #eaecf0;
+  --bg: #0d0b0a;
+  --bg-top: #000000;
+  --halo: #3d1c07;
+  --panel: #151210;
+  --panel-2: #211b17;
+  --field: #0b0908;
+  --line: #2e2620;
+  --text: #f3ede6;
+  --dim: #a89d92;
+  --accent: #ff7a1a;
   --on-accent: #000000;
-  --shade: rgba(35, 61, 77, 0.28);
+  --soft: #ffb066;
+  --danger: #ff6b6b;
 }
 ```
 
-**Mockup screens:** Today, Log workout, Personal records, Export, Wipe warning (https://claude.ai/artifact/Sf5fTMGGX7ZmExAoh9u4rE).
+**Screens:** Today (habit summary, waiting-to-export row, habits with streaks, today's session, weigh-in, then guitar log, meals with the protein bar against 160 g, notes); Workout (rest timer with presets and a wheel, sets, exercises); History (Entries and Workouts switch, edit form, WAITING and EXPORTED chips); Sync (Export, backup and restore, warning box, disabled Wipe); Settings (3-day or 4-day schedule, keep-days, day-start hour, Dropbox, install and storage status).
+
+**Mockup screens:** the original pixel-look mockups are at https://claude.ai/artifact/Sf5fTMGGX7ZmExAoh9u4rE and are out of date.
 
 ## Tech approach
 

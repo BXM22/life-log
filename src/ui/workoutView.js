@@ -4,7 +4,7 @@
 // Warm-up and working sets are logged separately. The weight box is pre-filled from the last working set.
 
 import { getSessions, sessionById } from '../logic/template.js';
-import { activeSessionId, lastWorking, setText, setsFor, suggestWarmup } from '../logic/workout.js';
+import { activeSessionId, lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
 import { esc } from './format.js';
 import { manageView } from './templateView.js';
@@ -36,6 +36,7 @@ function exercisePanel(state, ex, i, day) {
   return `<div class="panel">
     <h2>${esc(ex.name)}</h2>
     <p>Target ${esc(ex.target)}. Warm-up: ${esc(ex.warmup)}.</p>
+    ${i === 0 && progressionPrompt(last, ex) ? `<p class="try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : ''}
     <p>${last ? `Last: ${esc(setText(last))} on ${esc(last.date.slice(5))}.` : 'No history yet.'}${warm ? ` Warm-up about ${warm} lb.` : ''}</p>
     ${inputs}
     <div class="pair">
@@ -54,7 +55,7 @@ export function workoutView(state) {
   return `<div class="panel">
       <h2>WORKOUT ${esc(day.slice(5))}</h2>
       <p><select data-action="pickSession" aria-label="Session">${picker}</select></p>
-      <p>${session.focus ? `${esc(session.focus)}. ` : ''}Add weight or reps on the first exercise each week.</p>
+      <p>${session.focus ? `${esc(session.focus)}. ` : ''}Beat last time on the first exercise.</p>
       <div class="pair">
         <button class="btn secondary" data-action="toggleManage">${state.wManage ? 'DONE EDITING' : 'EDIT TEMPLATES'}</button>
         <button class="btn secondary" data-action="toggleHistory">${state.wHistory ? 'BACK TO WORKOUT' : 'HISTORY'}</button>

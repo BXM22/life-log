@@ -94,6 +94,30 @@ export function suggestWarmup(last) {
   return Math.max(Math.round((last.weight * 0.5) / 2.5) * 2.5, 2.5);
 }
 
+/** Top of the rep range in a target such as "3 x 8-12" (12), or null when there is no range. */
+export function repCeiling(target) {
+  const m = /(\d+)\s*-\s*(\d+)/.exec(String(target ?? ''));
+  return m ? Number(m[2]) : null;
+}
+
+/**
+ * What to try on the first lift of a session, from the last working set. At the top of the rep range
+ * (or with no range) add weight; otherwise add one rep. Timed holds add 5 seconds. Null with no history.
+ */
+export function progressionPrompt(last, exercise) {
+  if (!last) return null;
+  if (last.seconds != null) return `Try ${last.seconds + 5} sec, 5 more than last time.`;
+  if (last.reps == null) return null;
+  const ceiling = repCeiling(exercise.target);
+  if (last.weight == null) return `Try ${last.reps + 1} reps, one more than last time.`;
+  if (ceiling == null || last.reps >= ceiling) {
+    const step = last.weight >= 45 ? 5 : 2.5;
+    const reps = ceiling == null ? last.reps : Math.min(last.reps, ceiling);
+    return `Try ${last.weight + step} lb for ${reps} reps.${ceiling == null ? '' : ' You hit the top of the range.'}`;
+  }
+  return `Try ${last.weight} x ${last.reps + 1}, one more rep than last time.`;
+}
+
 /** Markdown lines for the workout sets in one day's entries. Empty array when there are none. */
 export function workoutMarkdown(dayEntries) {
   const sets = liveSets(dayEntries).sort((a, b) => a.updatedAt - b.updatedAt);

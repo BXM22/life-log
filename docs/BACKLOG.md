@@ -25,7 +25,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [x] F22 Warm-up and working sets logged separately (Must-M2)
 - [x] F23 Rest timer with a wheel for a custom time (Should)
 - [x] F24 Timed, per-side and bodyweight exercises (Must-M2)
-- [ ] F25 Progression prompt on first lift (Should)
+- [x] F25 Progression prompt on first lift (Should). A TRY TODAY line on the first exercise: one more rep below the top of the rep range, more weight at the top, 5 more seconds for holds
 - [ ] F29 Warm-up checklists and back-training cues (Could)
 - [ ] F30 Trim a set (Could)
 - [x] F31 3-day and 4-day schedule switch (Should). Settings > PLAN; 3 days drops Sunday's Upper C, which stays pickable on the Workout tab
@@ -38,7 +38,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [ ] F11 Streaks per habit and for guitar (Should)
 - [ ] F12 Practice timer (Could)
 - [x] F13 Protein tracking against a 160 g daily target; water is optional (Should). Optional grams on each meal, a daily total with a progress bar on Today; water is not built
-- [ ] F19 Personal records: top 5 per lift, bodyweight, guitar BPM and more, kept through wipe (Should)
+- [x] F19 Personal records: top 5 per lift, bodyweight, guitar BPM and more, kept through wipe (Should). History tab panel; lifts by estimated 1RM, holds by time, bodyweight moves by reps, lowest bodyweight, best BPM per focus, longest practice; a Personal records section ends every export. Not built: the New PR badge on Today, removing a record, the 'most workouts in a week' list
 
 ## M3 Vault link
 

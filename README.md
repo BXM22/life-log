@@ -2,7 +2,18 @@
 
 A phone-friendly web app (PWA) for fast daily logging: habits and food, workouts and bodyweight, and guitar practice. Offline-first, with JSON backup and a daily Markdown export for an Obsidian vault.
 
-**Status:** milestone 1 in progress. The app shell, offline support, backup and restore, Dropbox export and warned wipe are built; the spec and backlog track what remains.
+**Status:** milestones 1 and 2 are built; the backlog tracks what remains (week view, streak extras, personal records, Kumio log).
+
+## Features
+
+- **Today:** habit checklist with streaks, quick weigh-in, guitar log (minutes, focus, best BPM) and a progress summary.
+- **Workout:** Upper/Lower plan with a 3-day or 4-day schedule. Logs warm-up and working sets, and timed, per-side and bodyweight sets, pre-filling the last weight. Add, edit or delete exercises, create your own sessions, and use a rest timer with a wheel for a custom time.
+- **Meals:** breakfast, lunch, dinner and snack, with optional protein against a 160 g daily target and a progress bar.
+- **Notes:** a brainstorm box. Each note goes to the vault as its own Markdown file.
+- **History:** past entries and past workout days. Edit or delete anything.
+- **Sync:** daily Markdown export to Dropbox (or the share sheet), JSON backup and restore, and a warned wipe of exported logs that keeps the last 7 days.
+- **Settings:** schedule (3 or 4 days), keep-days and day-start hour.
+- **Look:** the Signalbox style (ink-teal background, lime accent, grouped cards).
 
 ## Run and test
 

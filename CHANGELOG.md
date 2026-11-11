@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- feat: personal records (F19): top 5 per lift by estimated 1RM, lowest bodyweight, best BPM per focus and longest practice, shown on History, kept through wipe and added to the end of every export; 117 tests; cache v23 (2026-11-10)
+- feat: progression prompt (F25): a TRY TODAY line on the first lift of a session suggests one more rep, more weight at the top of the rep range, or 5 more seconds for holds; 110 tests; cache v22 (2026-11-10)
+- feat: warm black and orange palette (orange #ff7a1a accent, soft #ffb066 status chips, warm halo) replaces the lime and indigo trials; contrast re-checked (text 16:1, dim 7:1, orange 7.2:1); cache v21 (2026-11-10)
+- feat: Apple-style grouped cards (soft surface instead of borders, one 20px radius, 20px gaps, hairline row dividers, tinted secondary buttons, press feedback that respects reduced motion) and visible labels on the meal and note fields with an empty state for meals; cache v19 (2026-11-10)
+- style: restyle the whole app to the Signalbox look: ink-teal ground, rounded cards, pill buttons, lime accent, Doto and JetBrains Mono fonts, round-cap tab icons, a separate warning color for Wipe; class names and screens are unchanged; also keeps the 100dvh, extra focus outlines and workout-history tap rows; service worker cache v18, new theme color; 105 tests (2026-11-10)
+- docs: replace the pixel palette in the SPEC with the Signalbox palette, tokens and rules (2026-11-10)
+
 - feat: protein tracking (F13): optional grams on each meal, a daily total against the 160 g target with a progress bar on Today, protein in the History edit form and in the export (`- Lunch: Chicken bowl (45 g protein)`); a refused meal save now keeps what you typed; 105 tests (2026-11-10)
 - feat: custom workout templates (create, copy, rename and delete your own sessions on the Workout tab, F34) and a workout history of past days with their sets (F35); 102 tests (2026-11-10)
 - feat: 3-day and 4-day schedule switch in Settings (F31); 3 days drops Sunday's Upper C from Today and the Workout default, and the choice is remembered on the phone (2026-11-10)

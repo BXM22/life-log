@@ -1,4 +1,5 @@
 import { buildExport } from '../logic/exportBuilder.js';
+import { mergeRecords, recordsMarkdown } from '../logic/records.js';
 import { markExported, planWipe } from '../logic/wipeEligibility.js';
 import { logicalDate } from '../logic/dates.js';
 import { addHabit, toggleCheck, starterHabits } from '../logic/habits.js';
@@ -209,7 +210,7 @@ const actions = {
   },
 
   build: () => {
-    const result = buildExport(state.entries, { now: Date.now(), existingFilenames: state.exportedNames });
+    const result = buildExport(state.entries, { now: Date.now(), existingFilenames: state.exportedNames, recordsMd: recordsMarkdown(mergeRecords(state.stats?.records, state.entries)) });
     if (!result) { state.msg = 'Nothing to export.'; return; }
     state.flow = { step: 'built', result, viaDownload: false };
     state.wipeTick = false;

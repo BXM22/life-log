@@ -13,7 +13,7 @@
   <title>Life Log</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="src/styles/main.css">
 </head>
 <body>
@@ -28,7 +28,7 @@
         if (!box) {
           box = document.createElement('pre');
           box.id = 'errbox';
-          box.style.cssText = 'white-space:pre-wrap;word-break:break-word;margin:12px;padding:8px;background:#000;color:#fe7f2d;border:4px dashed #fe7f2d;font:14px monospace';
+          box.style.cssText = 'white-space:pre-wrap;word-break:break-word;margin:12px;padding:8px;background:#000000;color:#ff7a6b;border:2px dashed #ff7a6b;font:14px monospace';
           el.parentNode.insertBefore(box, el);
         }
         box.textContent += msg + '\n';

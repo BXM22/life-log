@@ -75,7 +75,7 @@ function dayMarkdown(date, entries) {
  * The manifest freezes exactly which entry versions are in the file. Nothing is
  * marked exported here; call markExported() only after the share succeeds.
  */
-export function buildExport(entries, { now, existingFilenames = [] }) {
+export function buildExport(entries, { now, existingFilenames = [], recordsMd = [] }) {
   const dirty = entries.filter((e) => e.type !== 'note' && isDirty(e)); // notes export as their own files
   if (dirty.length === 0) return null;
 
@@ -98,7 +98,7 @@ export function buildExport(entries, { now, existingFilenames = [] }) {
     '',
   ].join('\n');
 
-  const body = dates.map((d) => dayMarkdown(d, byDate.get(d))).join('\n');
+  const body = [dates.map((d) => dayMarkdown(d, byDate.get(d))).join('\n'), ...(recordsMd.length ? ['', recordsMd.join('\n')] : [])].join('\n');
 
   return {
     filename,

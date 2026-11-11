@@ -5,16 +5,18 @@
 //     best:    { [name]: longest streak in days ever seen },
 //     anchors: { [name]: { date, streak } }   // streak ending on the latest done date
 //     lastSets:{ [focus]: { date, minutes, best_bpm } },
-//     weighIns:[ { date, weight_lb } ]        // last 7 days with a weigh-in )
+//     weighIns:[ { date, weight_lb } ]        // last 7 days with a weigh-in
+//     records: top 5 per personal-record list (see records.js) )
 // "name" is a habit name, or GUITAR for guitar practice days.
 
 import { addDays } from './dates.js';
 import { currentStreak } from './habits.js';
+import { emptyRecords, mergeRecords } from './records.js';
 
 export const GUITAR = '__guitar__';
 const MAX_WEIGH_INS = 7;
 
-export const emptyStats = () => ({ key: 'stats', updatedAt: 0, best: {}, anchors: {}, lastSets: {}, lastLifts: {}, weighIns: [] });
+export const emptyStats = () => ({ key: 'stats', updatedAt: 0, best: {}, anchors: {}, lastSets: {}, lastLifts: {}, weighIns: [], records: emptyRecords() });
 
 const alive = (e) => !e.deletedAt;
 
@@ -100,7 +102,9 @@ export function computeStats(entries, prev = emptyStats(), now = 0) {
     .slice(-MAX_WEIGH_INS)
     .map(({ date, weight_lb }) => ({ date, weight_lb }));
 
-  return { key: 'stats', updatedAt: now, best, anchors, lastSets, lastLifts, weighIns };
+  const records = mergeRecords(base.records, entries);
+
+  return { key: 'stats', updatedAt: now, best, anchors, lastSets, lastLifts, weighIns, records };
 }
 
 /**

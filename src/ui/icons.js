@@ -1,4 +1,4 @@
-// Tab bar icons: one outline set, 24px grid, 2px square strokes, to match the pixel look.
+// Tab bar icons: one outline set, 24px grid, 2px round strokes, to match the Signalbox look.
 const PATHS = {
   today: '<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>',
   workout: '<path d="M2 9v6M5 6v12M19 6v12M22 9v6M5 12h14"/>',
@@ -8,5 +8,5 @@ const PATHS = {
 };
 
 export function icon(name) {
-  return `<svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter" aria-hidden="true" focusable="false">${PATHS[name] || ''}</svg>`;
+  return `<svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${PATHS[name] || ''}</svg>`;
 }
