@@ -388,7 +388,7 @@ There are 17 must-have features: 11 Must-M1 (v1) and 6 Must-M2. Everything else 
 | F14 | Markdown export to Dropbox, then warned wipe of exported logs | Core | Must-M1 | M1 |
 | F15 | Synced backend | Core | Could | M3 |
 | F16 | Kumio prep and study log | Study | Should | M2 |
-| F17 | Inbox quick capture | Core | Could | M4 |
+| F17 | Inbox quick capture (shipped early as Notes: title + body on Today, one `YYYY-MM-DD-title.md` per note in `myVault/sources/life-log/notes/`, front matter `type: life-log-note`, `status: idea`) | Core | Could | M4 |
 | F18 | Content posting tracker | Guitar | Could | M4 |
 | F19 | Personal records: top 5 per lift, bodyweight, guitar BPM and more, kept through wipe | Core | Should | M2 |
 | F20 | Add and delete exercises (Upper and Lower lists) | Workouts | Must-M2 | M2 |

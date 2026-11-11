@@ -7,7 +7,7 @@ import { getConfig, isConnected } from '../dropbox/dropbox.js';
 import { renderBackupPanel } from './backupPanel.js';
 import { esc } from './format.js';
 
-export const waiting = (state) => state.entries.filter(isDirty).length;
+export const waiting = (state) => state.entries.filter((e) => e.type !== 'note' && isDirty(e)).length; // notes are sent from TODAY
 export const wipeOpts = (state) => ({ now: Date.now(), keepDays: state.keepDays, dayStartHour: state.dayStartHour });
 
 const WIPE_TEXT = (n, range) =>

@@ -11,6 +11,8 @@ import { sessionForDate } from '../logic/workout.js';
 import { sessionById } from '../logic/template.js';
 import { esc, label } from './format.js';
 import { waiting } from './exportWipeView.js';
+import { mealPanel } from './mealView.js';
+import { notesPanel } from './notesView.js';
 
 const today = (state) => logicalDate(Date.now(), state.dayStartHour);
 
@@ -80,6 +82,8 @@ export function todayView(state) {
       <datalist id="focuses"><option value="technique"><option value="songs"><option value="theory"><option value="improvisation"></datalist>
       <button class="btn" data-action="logGuitar">SAVE GUITAR</button>
     </div>
+    ${mealPanel(state, day)}
+    ${notesPanel(state)}
     <div class="panel">
       <h2>LATEST</h2>${rows || '<p>No entries yet.</p>'}
       ${state.entries.length === 0 ? '<button class="btn secondary" data-action="demo">LOAD DEMO DATA</button>' : ''}

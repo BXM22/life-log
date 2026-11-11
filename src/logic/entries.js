@@ -2,6 +2,7 @@
 //
 // Entry shape: { id, type, date, data, updatedAt, exportedAt, exportId, deletedAt }
 //   weigh_in { weight_lb } | guitar { minutes, focus, best_bpm } | habit_check { habit, done }
+//   meal { mealType, name } | note { title, body }  (notes export as their own files, see notesExport.js)
 //
 // Export safety: editing bumps updatedAt past exportedAt, so the entry is dirty again, exports
 // again and is never wiped until re-exported. Deleting sets deletedAt (a tombstone) so a restore
@@ -43,8 +44,42 @@ export function parseGuitar({ minutes, focus, bpm }) {
   return { data: { minutes: m, focus: f, best_bpm: best } };
 }
 
+export const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Snack'];
+export const MAX_MEAL_NAME = 60;
+export const MAX_NOTE_TITLE = 80;
+export const MAX_NOTE_BODY = 5000;
+
+/** The meal type that fits the hour of day (0 to 23). */
+export function defaultMealType(hour) {
+  if (hour >= 4 && hour < 10) return 'Breakfast';
+  if (hour >= 10 && hour < 15) return 'Lunch';
+  if (hour >= 15 && hour < 21) return 'Dinner';
+  return 'Snack';
+}
+
+/** Meal fields from the form. Returns { data } or { error }. */
+export function parseMeal({ mealType, name }) {
+  if (!MEAL_TYPES.includes(mealType)) return { error: 'Pick a meal type.' };
+  const n = String(name ?? '').replace(/\s+/g, ' ').trim();
+  if (!n) return { error: 'Enter what you ate.' };
+  if (n.length > MAX_MEAL_NAME) return { error: `Meal name must be ${MAX_MEAL_NAME} characters or fewer.` };
+  return { data: { mealType, name: n } };
+}
+
+/** Note fields from the form. The title is optional; the body is required. Returns { data } or { error }. */
+export function parseNote({ title, body }) {
+  const t = String(title ?? '').replace(/\s+/g, ' ').trim();
+  const b = String(body ?? '').replace(/\r\n/g, '\n').trim();
+  if (!b) return { error: 'Write something in the note.' };
+  if (t.length > MAX_NOTE_TITLE) return { error: `Title must be ${MAX_NOTE_TITLE} characters or fewer.` };
+  if (b.length > MAX_NOTE_BODY) return { error: `Note must be ${MAX_NOTE_BODY} characters or fewer.` };
+  return { data: { title: t, body: b } };
+}
+
 /** Validate edited fields for any entry type. Returns { data } (fields to merge) or { error }. */
 export function parseEdit(entry, fields) {
+  if (entry.type === 'meal') return parseMeal(fields);
+  if (entry.type === 'note') return parseNote(fields);
   if (entry.type === 'weigh_in') {
     const r = parseWeight(fields.weight);
     return r.error ? r : { data: { weight_lb: r.value } };

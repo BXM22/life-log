@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat: finish M2 with the meal log (F9): Breakfast/Lunch/Dinner/Snack plus a name on Today, edit or delete in History, a Meals section in the export; and Notes (F17 early): a brainstorm box on Today that sends one Markdown file per note (front matter, status idea) to myVault/sources/life-log/notes/ by Dropbox or share sheet; 92 tests (2026-11-10)
+
 - feat: rest timer on the Workout tab with 1:00 to 3:00 presets, an iOS-style wheel for a custom time, auto-start after a working set, and a countdown that survives closing the app (F23); 83 tests (2026-11-09)
 - feat: edit or delete each logged set right on the Workout tab (2026-11-09)
 - feat: add, edit and delete exercises in any workout session, or reset to the built-in plan; edits are kept on the phone and survive a wipe (F20); 77 tests (2026-11-09)

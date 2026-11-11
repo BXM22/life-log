@@ -16,6 +16,8 @@ import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
 import { createTemplateActions } from './templateActions.js';
 import { createRestActions } from './restActions.js';
+import { createMealActions } from './mealActions.js';
+import { createNotesActions } from './notesActions.js';
 import { positionWheels } from './restView.js';
 import { loadRest } from '../logic/rest.js';
 import { setTemplate } from '../logic/template.js';
@@ -94,6 +96,8 @@ const rest = createRestActions({ state, onChange: () => render() });
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
   ...rest.actions,
+  ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createNotesActions({ state, saveEntries, saveFail, inputValue, today, download, onChange: () => render() }),
   ...createTemplateActions({
     state, saveFail, today,
     saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); },
@@ -144,6 +148,7 @@ const actions = {
     const r = parseEdit(e, {
       weight: inputValue('ed-w'), minutes: inputValue('ed-m'), focus: inputValue('ed-f'), bpm: inputValue('ed-b'),
       reps: inputValue('ed-r'), seconds: inputValue('ed-s'),
+      mealType: inputValue('ed-mt'), name: inputValue('ed-mn'), title: inputValue('ed-nt'), body: inputValue('ed-nb'),
       done: document.getElementById('ed-d')?.checked,
     });
     if (r.error) { state.msg = r.error; return; }

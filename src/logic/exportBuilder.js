@@ -2,7 +2,7 @@
 //
 // Entry shape (all collections share it):
 //   { id, type, date, data, updatedAt, exportedAt, exportId, deletedAt }
-//   type: 'habit_check' | 'weigh_in' | 'guitar' | 'lift_set'
+//   type: 'habit_check' | 'weigh_in' | 'guitar' | 'lift_set' | 'meal'   ('note' is excluded, see notesExport.js)
 //   data: habit_check { habit, done } | weigh_in { weight_lb } | guitar { minutes, focus, best_bpm }
 //         | lift_set { session, exercise, kind, weight, reps, seconds, side }   (see logic/workout.js)
 //   updatedAt/exportedAt: ms timestamps; exportedAt and exportId are null until confirmed.
@@ -57,6 +57,13 @@ function dayMarkdown(date, entries) {
 
   lines.push(...workoutMarkdown(entries));
 
+  const meals = entries.filter((e) => e.type === 'meal');
+  if (meals.length) {
+    lines.push('## Meals');
+    for (const m of meals) lines.push(`- ${m.data.mealType}: ${m.data.name}`);
+    lines.push('');
+  }
+
   return lines.join('\n');
 }
 
@@ -69,7 +76,7 @@ function dayMarkdown(date, entries) {
  * marked exported here; call markExported() only after the share succeeds.
  */
 export function buildExport(entries, { now, existingFilenames = [] }) {
-  const dirty = entries.filter(isDirty);
+  const dirty = entries.filter((e) => e.type !== 'note' && isDirty(e)); // notes export as their own files
   if (dirty.length === 0) return null;
 
   const byDate = new Map();

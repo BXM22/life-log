@@ -190,6 +190,8 @@ button.btn.habit-del { width: 44px; min-height: 44px; flex: none; margin: 0 0 0 
 .pair button.btn { flex: 1; }
 .panel .field + .field { margin-top: 8px; }
 .panel select.field { font-family: 'VT323', monospace; font-size: 22px; }
+textarea.field { resize: vertical; line-height: 1.2; }
+.panel .btn + .row, .panel .row + .btn { margin-top: 8px; }
 
 /* History: entry rows with edit and delete */
 .entry { border-bottom: 2px dotted var(--shade); padding: 4px 0; }

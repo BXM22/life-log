@@ -3,7 +3,7 @@
 //   actions: data-action="startEdit" | "saveEdit" | "cancelEdit" | "deleteEntry" with data-id (handled in app.js)
 
 import { isDirty } from '../logic/exportBuilder.js';
-import { liveEntries, weightHistory } from '../logic/entries.js';
+import { liveEntries, weightHistory, MEAL_TYPES } from '../logic/entries.js';
 import { esc, label } from './format.js';
 
 const MAX_ROWS = 60;
@@ -17,6 +17,12 @@ export function editForm(e) {
     fields = `<input id="ed-m" class="field" type="number" inputmode="numeric" step="1" value="${esc(e.data.minutes)}" aria-label="Minutes">
       <input id="ed-f" class="field" maxlength="40" value="${esc(e.data.focus || '')}" aria-label="Focus" autocomplete="off">
       <input id="ed-b" class="field" type="number" inputmode="numeric" step="1" value="${esc(e.data.best_bpm ?? '')}" placeholder="Best BPM" aria-label="Best BPM">`;
+  } else if (e.type === 'meal') {
+    fields = `<select id="ed-mt" class="field" aria-label="Meal type">${MEAL_TYPES.map((t) => `<option ${t === e.data.mealType ? 'selected' : ''}>${t}</option>`).join('')}</select>
+      <input id="ed-mn" class="field" maxlength="60" value="${esc(e.data.name)}" aria-label="Meal name" autocomplete="off">`;
+  } else if (e.type === 'note') {
+    fields = `<input id="ed-nt" class="field" maxlength="80" value="${esc(e.data.title || '')}" placeholder="Title (optional)" aria-label="Note title" autocomplete="off">
+      <textarea id="ed-nb" class="field" rows="6" maxlength="5000" aria-label="Note">${esc(e.data.body)}</textarea>`;
   } else if (e.type === 'lift_set') {
     const d = e.data;
     fields = `<p>${esc(d.exercise)} ${d.kind === 'warmup' ? '(warm-up)' : ''} ${d.side ? esc(d.side) : ''}</p>

@@ -19,7 +19,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 ## M2 Training and food
 
 - [x] F8 Upper/Lower session logger with last-weight pre-fill (Must-M2)
-- [ ] F9 Meal log: name, type (Must-M2)
+- [x] F9 Meal log: name, type (Must-M2)
 - [x] F20 Add, edit and delete exercises in each session (Must-M2)
 - [x] F21 Workout template: Upper/Lower 3-4 day plan (Must-M2). Upper A, Lower, Upper B and optional Upper C are in; the 3/4-day switch is F31
 - [x] F22 Warm-up and working sets logged separately (Must-M2)
@@ -44,7 +44,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 ## M4 Later tracks
 
-- [ ] F17 Inbox quick capture (Could)
+- [x] F17 Inbox quick capture (Could). Shipped early as Notes on the Today tab: title and body, sent to the vault as one .md file per note in myVault/sources/life-log/notes/
 - [ ] F18 Content posting tracker (Could)
 
 ## Open questions

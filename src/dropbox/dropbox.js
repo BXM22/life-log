@@ -96,7 +96,8 @@ async function accessToken() {
  * reports the same byte size and content hash as what we sent.
  */
 export async function upload(filename, text, folder = DEFAULT_FOLDER) {
-  if (!/^life-log-[\d-]+\.md$/.test(filename)) throw new Error('Unexpected file name.');
+  // Daily exports are life-log-YYYY-MM-DD[-n].md; notes are YYYY-MM-DD-title-words.md in the notes/ folder.
+  if (!/^(life-log-[\d-]+|\d{4}-\d{2}-\d{2}-[a-z0-9-]+)\.md$/.test(filename)) throw new Error('Unexpected file name.');
   const bytes = new TextEncoder().encode(text);
   const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
     method: 'POST',
