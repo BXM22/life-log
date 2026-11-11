@@ -60,7 +60,7 @@ function dayMarkdown(date, entries) {
   const meals = entries.filter((e) => e.type === 'meal');
   if (meals.length) {
     lines.push('## Meals');
-    for (const m of meals) lines.push(`- ${m.data.mealType}: ${m.data.name}`);
+    for (const m of meals) lines.push(`- ${m.data.mealType}: ${m.data.name}${m.data.protein_g != null ? ` (${m.data.protein_g} g protein)` : ''}`);
     lines.push('');
   }
 

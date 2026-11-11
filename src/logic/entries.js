@@ -2,7 +2,7 @@
 //
 // Entry shape: { id, type, date, data, updatedAt, exportedAt, exportId, deletedAt }
 //   weigh_in { weight_lb } | guitar { minutes, focus, best_bpm } | habit_check { habit, done }
-//   meal { mealType, name } | note { title, body }  (notes export as their own files, see notesExport.js)
+//   meal { mealType, name, protein_g|null } | note { title, body }  (notes export as their own files, see notesExport.js)
 //
 // Export safety: editing bumps updatedAt past exportedAt, so the entry is dirty again, exports
 // again and is never wiped until re-exported. Deleting sets deletedAt (a tombstone) so a restore
@@ -57,13 +57,27 @@ export function defaultMealType(hour) {
   return 'Snack';
 }
 
-/** Meal fields from the form. Returns { data } or { error }. */
-export function parseMeal({ mealType, name }) {
+export const PROTEIN_TARGET = 160; // grams a day (F13)
+export const MAX_PROTEIN = 500;
+
+/** Meal fields from the form. Protein is optional whole grams. Returns { data } or { error }. */
+export function parseMeal({ mealType, name, protein }) {
   if (!MEAL_TYPES.includes(mealType)) return { error: 'Pick a meal type.' };
   const n = String(name ?? '').replace(/\s+/g, ' ').trim();
   if (!n) return { error: 'Enter what you ate.' };
   if (n.length > MAX_MEAL_NAME) return { error: `Meal name must be ${MAX_MEAL_NAME} characters or fewer.` };
-  return { data: { mealType, name: n } };
+  let p = null;
+  if (String(protein ?? '').trim() !== '') {
+    p = Number(protein);
+    if (!(Number.isInteger(p) && p >= 1 && p <= MAX_PROTEIN)) return { error: `Protein must be whole grams, 1 to ${MAX_PROTEIN}.` };
+  }
+  return { data: { mealType, name: n, protein_g: p } };
+}
+
+/** Grams of protein logged on a date, from live meals. Meals without protein count as 0. */
+export function dayProtein(entries, date) {
+  return entries.filter((e) => e.type === 'meal' && !e.deletedAt && e.date === date)
+    .reduce((sum, e) => sum + (e.data.protein_g ?? 0), 0);
 }
 
 /** Note fields from the form. The title is optional; the body is required. Returns { data } or { error }. */

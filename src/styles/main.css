@@ -191,6 +191,10 @@ button.btn.habit-del { width: 44px; min-height: 44px; flex: none; margin: 0 0 0 
 .panel .field + .field { margin-top: 8px; }
 .panel select.field { font-family: 'VT323', monospace; font-size: 22px; }
 textarea.field { resize: vertical; line-height: 1.2; }
+progress { display: block; width: 100%; height: 16px; margin: 4px 0 8px; appearance: none; -webkit-appearance: none; border: 4px solid var(--ink); background: var(--panel); }
+progress::-webkit-progress-bar { background: var(--panel); }
+progress::-webkit-progress-value { background: var(--ink); }
+progress::-moz-progress-bar { background: var(--ink); }
 .panel .btn + .row, .panel .row + .btn { margin-top: 8px; }
 
 /* History: entry rows with edit and delete */

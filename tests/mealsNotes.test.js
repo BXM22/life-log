@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { newEntry, parseMeal, parseNote, parseEdit, defaultMealType, MEAL_TYPES } from '../src/logic/entries.js';
+import { newEntry, parseMeal, parseNote, parseEdit, defaultMealType, dayProtein, MEAL_TYPES, PROTEIN_TARGET } from '../src/logic/entries.js';
 import { buildExport } from '../src/logic/exportBuilder.js';
 import { buildNoteFiles, slugify, noteTitle } from '../src/logic/notesExport.js';
 import { markExported } from '../src/logic/wipeEligibility.js';
@@ -10,11 +10,37 @@ const meal = () => newEntry('meal', '2026-11-10', { mealType: 'Lunch', name: 'Ch
 const note = (data, date = '2026-11-10', at = 1000) => newEntry('note', date, data, at);
 
 test('parseMeal: type must be known, name required and trimmed', () => {
-  assert.deepEqual(parseMeal({ mealType: 'Lunch', name: '  Chicken   bowl ' }).data, { mealType: 'Lunch', name: 'Chicken bowl' });
+  assert.deepEqual(parseMeal({ mealType: 'Lunch', name: '  Chicken   bowl ' }).data, { mealType: 'Lunch', name: 'Chicken bowl', protein_g: null });
   assert.ok(parseMeal({ mealType: 'Brunch', name: 'x' }).error);
   assert.ok(parseMeal({ mealType: 'Lunch', name: '  ' }).error);
   assert.ok(parseMeal({ mealType: 'Lunch', name: 'x'.repeat(61) }).error);
   assert.deepEqual(MEAL_TYPES, ['Breakfast', 'Lunch', 'Dinner', 'Snack']);
+});
+
+test('parseMeal: protein is optional whole grams, 1 to 500', () => {
+  assert.equal(parseMeal({ mealType: 'Lunch', name: 'x', protein: '40' }).data.protein_g, 40);
+  assert.equal(parseMeal({ mealType: 'Lunch', name: 'x', protein: '' }).data.protein_g, null);
+  assert.equal(parseMeal({ mealType: 'Lunch', name: 'x', protein: '  ' }).data.protein_g, null);
+  for (const bad of ['0', '-5', '501', '12.5', 'lots']) assert.match(parseMeal({ mealType: 'Lunch', name: 'x', protein: bad }).error, /Protein/, bad);
+});
+
+test('dayProtein sums live meals on one date; no protein counts as 0; deleted and other days are skipped', () => {
+  const m = (date, protein_g, extra = {}) => ({ ...newEntry('meal', date, { mealType: 'Lunch', name: 'x', protein_g }, 1), ...extra });
+  const entries = [m('2026-11-10', 40), m('2026-11-10', 35), m('2026-11-10', null), m('2026-11-10', 99, { deletedAt: 5 }), m('2026-11-09', 80),
+    newEntry('meal', '2026-11-10', { mealType: 'Snack', name: 'old entry' }, 2), newEntry('note', '2026-11-10', { title: '', body: 'x' }, 3)];
+  assert.equal(dayProtein(entries, '2026-11-10'), 75);
+  assert.equal(dayProtein(entries, '2026-11-08'), 0);
+  assert.equal(PROTEIN_TARGET, 160);
+});
+
+test('buildExport adds the protein to a meal line only when it was logged', () => {
+  const entries = [
+    newEntry('meal', '2026-11-10', { mealType: 'Lunch', name: 'Chicken bowl', protein_g: 45 }, 1),
+    newEntry('meal', '2026-11-10', { mealType: 'Snack', name: 'Apple', protein_g: null }, 2),
+    newEntry('meal', '2026-11-10', { mealType: 'Dinner', name: 'Old meal' }, 3),
+  ];
+  const out = buildExport(entries, { now: Date.parse('2026-11-10T12:00:00') });
+  assert.match(out.markdown, /- Lunch: Chicken bowl \(45 g protein\)\n- Snack: Apple\n- Dinner: Old meal\n/);
 });
 
 test('defaultMealType follows the hour of day', () => {

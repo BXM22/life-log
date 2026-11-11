@@ -152,7 +152,7 @@ const actions = {
     const r = parseEdit(e, {
       weight: inputValue('ed-w'), minutes: inputValue('ed-m'), focus: inputValue('ed-f'), bpm: inputValue('ed-b'),
       reps: inputValue('ed-r'), seconds: inputValue('ed-s'),
-      mealType: inputValue('ed-mt'), name: inputValue('ed-mn'), title: inputValue('ed-nt'), body: inputValue('ed-nb'),
+      mealType: inputValue('ed-mt'), name: inputValue('ed-mn'), protein: inputValue('ed-mp'), title: inputValue('ed-nt'), body: inputValue('ed-nb'),
       done: document.getElementById('ed-d')?.checked,
     });
     if (r.error) { state.msg = r.error; return; }

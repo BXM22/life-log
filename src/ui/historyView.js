@@ -19,7 +19,8 @@ export function editForm(e) {
       <input id="ed-b" class="field" type="number" inputmode="numeric" step="1" value="${esc(e.data.best_bpm ?? '')}" placeholder="Best BPM" aria-label="Best BPM">`;
   } else if (e.type === 'meal') {
     fields = `<select id="ed-mt" class="field" aria-label="Meal type">${MEAL_TYPES.map((t) => `<option ${t === e.data.mealType ? 'selected' : ''}>${t}</option>`).join('')}</select>
-      <input id="ed-mn" class="field" maxlength="60" value="${esc(e.data.name)}" aria-label="Meal name" autocomplete="off">`;
+      <input id="ed-mn" class="field" maxlength="60" value="${esc(e.data.name)}" aria-label="Meal name" autocomplete="off">
+      <input id="ed-mp" class="field" type="number" inputmode="numeric" step="1" value="${esc(e.data.protein_g ?? '')}" placeholder="Protein (g, optional)" aria-label="Protein in grams, optional">`;
   } else if (e.type === 'note') {
     fields = `<input id="ed-nt" class="field" maxlength="80" value="${esc(e.data.title || '')}" placeholder="Title (optional)" aria-label="Note title" autocomplete="off">
       <textarea id="ed-nb" class="field" rows="6" maxlength="5000" aria-label="Note">${esc(e.data.body)}</textarea>`;

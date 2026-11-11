@@ -37,7 +37,7 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [ ] F10 Week view: habit grid, weight trend with 170 lb line (Should)
 - [ ] F11 Streaks per habit and for guitar (Should)
 - [ ] F12 Practice timer (Could)
-- [ ] F13 Protein tracking against a 160 g daily target; water is optional (Should)
+- [x] F13 Protein tracking against a 160 g daily target; water is optional (Should). Optional grams on each meal, a daily total with a progress bar on Today; water is not built
 - [ ] F19 Personal records: top 5 per lift, bodyweight, guitar BPM and more, kept through wipe (Should)
 
 ## M3 Vault link

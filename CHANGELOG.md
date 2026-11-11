@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: protein tracking (F13): optional grams on each meal, a daily total against the 160 g target with a progress bar on Today, protein in the History edit form and in the export (`- Lunch: Chicken bowl (45 g protein)`); a refused meal save now keeps what you typed; 105 tests (2026-11-10)
 - feat: custom workout templates (create, copy, rename and delete your own sessions on the Workout tab, F34) and a workout history of past days with their sets (F35); 102 tests (2026-11-10)
 - feat: 3-day and 4-day schedule switch in Settings (F31); 3 days drops Sunday's Upper C from Today and the Workout default, and the choice is remembered on the phone (2026-11-10)
 - feat: finish M2 with the meal log (F9): Breakfast/Lunch/Dinner/Snack plus a name on Today, edit or delete in History, a Meals section in the export; and Notes (F17 early): a brainstorm box on Today that sends one Markdown file per note (front matter, status idea) to myVault/sources/life-log/notes/ by Dropbox or share sheet; 92 tests (2026-11-10)

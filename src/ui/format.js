@@ -12,7 +12,7 @@ export function label(e) {
       .filter(Boolean).join(', ');
     return `Guitar ${e.data.minutes} min${extra ? ` (${extra})` : ''}`;
   }
-  if (e.type === 'meal') return `${e.data.mealType}: ${e.data.name}`;
+  if (e.type === 'meal') return `${e.data.mealType}: ${e.data.name}${e.data.protein_g != null ? ` (${e.data.protein_g} g protein)` : ''}`;
   if (e.type === 'note') return `Note: ${(e.data.title || String(e.data.body).split('\n')[0]).slice(0, 40)}`;
   if (e.type === 'lift_set') return `${e.data.exercise} ${e.data.kind === 'warmup' ? '(warm-up) ' : ''}${setText(e.data)}`;
   return `${e.data.habit} ${e.data.done ? 'done' : 'missed'}`;
