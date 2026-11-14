@@ -298,3 +298,7 @@ summary small { flex: none; white-space: nowrap; }
 .trend .wline { fill: none; stroke: var(--accent); stroke-width: 2; }
 .trend .wdot { fill: var(--accent); }
 .trend .axis { fill: var(--dim); font-family: var(--mono); font-size: 9px; }
+/* Workout extras: trim buttons, back cues */
+.panel .actions { display: flex; gap: 8px; margin: 0 0 8px; }
+.panel p.cue { margin-top: 8px; padding: 10px 12px; border-radius: 14px; background: var(--panel-2); font-size: 13px; }
+.panel .btn.small[disabled] { opacity: .4; }

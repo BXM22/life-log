@@ -16,6 +16,7 @@ import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
 import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
+import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
 import { createTemplateActions } from './templateActions.js';
 import { createRestActions } from './restActions.js';
 import { createMealActions } from './mealActions.js';
@@ -105,6 +106,7 @@ const rest = createRestActions({ state, onChange: () => render() });
 const practice = createPracticeActions({ state, saveEntries, saveFail, inputValue, today });
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
+  ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
   ...rest.actions,
   ...practice.actions,
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
