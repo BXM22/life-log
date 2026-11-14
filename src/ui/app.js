@@ -11,6 +11,7 @@ import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
 import { icon } from './icons.js';
 import { historyView } from './historyView.js';
+import { lastExportAt, loadReminderEnabled, saveReminderEnabled, maybeNotify, requestNotifyPermission } from '../logic/exportReminder.js';
 import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
 import { todayView } from './todayView.js';
@@ -56,6 +57,8 @@ const state = {
   installKind: 'other',
   storageLine: '',
   exportedNames: [],
+  exportReminder: (() => { try { return loadReminderEnabled(localStorage); } catch { return true; } })(), // F33
+  lastExportAt: null, // newest confirmed export, null if never
   // flow.step: idle | built | shared | confirmed
   flow: { step: 'idle', result: null, viaDownload: false },
   wipeTick: false,
@@ -81,6 +84,7 @@ async function confirmExport(result, how) {
   if (state.storageOk) await confirmExportRecord(stamped, record);
   state.entries = stamped;
   state.exportedNames.push(result.filename);
+  state.lastExportAt = record.confirmedAt;
   state.flow.step = 'confirmed';
   state.msg = how;
 }
@@ -114,6 +118,12 @@ const actions = {
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
 
   setDayStart: (el) => { state.dayStartHour = Number(el.value); persistSettings(); },
+
+  setExportReminder: async (el) => {
+    state.exportReminder = el.checked;
+    try { saveReminderEnabled(localStorage, el.checked); } catch { /* storage blocked */ }
+    if (el.checked) await requestNotifyPermission();
+  },
 
   setPlanDays: (el) => { state.planDays = Number(el.value); state.wSession = null; persistSettings(); },
 
@@ -305,6 +315,7 @@ const actions = {
       state.entries = r.merged.entries;
       state.habits = r.merged.habits.sort((a, b) => a.name.localeCompare(b.name));
       state.exportedNames = r.merged.exports.map((x) => x.filename);
+      state.lastExportAt = lastExportAt(r.merged.exports);
     }
   },
 
@@ -413,6 +424,7 @@ async function boot() {
     state.entries = saved.entries;
     state.habits = (saved.habits || []).sort((a, b) => a.name.localeCompare(b.name));
     state.exportedNames = saved.exports.map((x) => x.filename);
+    state.lastExportAt = lastExportAt(saved.exports);
     state.stats = saved.stats || null;
     setTemplate(normalizeTemplate(saved.template)); // null keeps the built-in plan
   } catch {
@@ -420,6 +432,7 @@ async function boot() {
     state.msg = 'Storage is unavailable here, so entries will not be saved.';
   }
   await seedStarterHabits();
+  try { maybeNotify({ enabled: state.exportReminder, lastAt: state.lastExportAt, storage: localStorage }); } catch { /* optional */ }
   try {
     if (navigator.storage?.persist) await navigator.storage.persist();
     if (navigator.storage?.persisted) state.persisted = await navigator.storage.persisted();

@@ -3,6 +3,7 @@
 //   actions: data-action="setKeep" | "setDayStart" | "install" | "disconnect" (handled in app.js)
 
 import { KEEP_OPTIONS, DAY_START_OPTIONS, PLAN_DAYS_OPTIONS } from '../logic/settings.js';
+import { reminderNotifySupported } from '../logic/exportReminder.js';
 import { installMessage } from '../logic/install.js';
 import { getConfig, isConnected } from '../dropbox/dropbox.js';
 import { esc } from './format.js';
@@ -23,6 +24,10 @@ export function settingsView(state) {
     <div class="panel"><h2>DAY</h2>
       <p>A new day starts at <select data-action="setDayStart" aria-label="Day start hour">${options(DAY_START_OPTIONS, state.dayStartHour, hour)}</select></p>
       <p>Logs made before then count toward the previous day.</p>
+    </div>
+    <div class="panel"><h2>EXPORT REMINDER</h2>
+      <label class="check"><input type="checkbox" data-action="setExportReminder" ${state.exportReminder === false ? '' : 'checked'}><span>Remind me to export weekly</span></label>
+      <p>Shows a banner on Today when your last export is 7 or more days old${reminderNotifySupported() ? ', and a notification if you allow them' : ''}.</p>
     </div>
     <div class="panel"><h2>STORAGE</h2>
       <p>${esc(state.storageLine)}</p>

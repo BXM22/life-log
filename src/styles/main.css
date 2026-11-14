@@ -211,6 +211,8 @@ pre {
   white-space: pre-wrap;
 }
 
+.reminder { display: block; width: 100%; margin-bottom: 12px; padding: 12px; min-height: 44px; text-align: left; font: inherit; background: var(--panel); color: var(--text); border: 1px solid var(--accent); border-radius: 14px; cursor: pointer; }
+.reminder b { color: var(--accent); }
 .msg { margin-bottom: 12px; padding: 10px 12px; background: var(--panel); color: var(--text); border: 1px solid var(--accent); border-radius: 14px; }
 /* Messages float above the tab bar so they are seen wherever you scrolled. Tap to dismiss. */
 .toast {

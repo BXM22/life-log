@@ -13,6 +13,7 @@ import { esc, label } from './format.js';
 import { waiting } from './exportWipeView.js';
 import { mealPanel } from './mealView.js';
 import { notesPanel } from './notesView.js';
+import { reminderBanner } from '../logic/exportReminder.js';
 
 const today = (state) => logicalDate(Date.now(), state.dayStartHour);
 
@@ -53,7 +54,7 @@ export function todayView(state) {
   const cells = state.habits.map((h) => `<i class="${isChecked(state.entries, h, day) ? 'on' : ''}"></i>`).join('');
   const n = waiting(state);
   const note = state.storageLine;
-  return `
+  return `${reminderBanner(state)}
     <div class="panel hero">
       <div class="big">${done}/${total}</div>
       <p>habits done today</p>
