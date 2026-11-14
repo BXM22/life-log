@@ -6,6 +6,7 @@
 import { CHECKLISTS, checklistKey, checkKey, checkedCount, backCue, trimmedFor, trimmedTarget, setCount, bjjDone, calisthenicsFor, isBjjDay } from '../logic/workoutExtras.js';
 import { setsFor, setText } from '../logic/workout.js';
 import { esc } from './format.js';
+import { editForm } from './historyView.js';
 
 function checklist(state, day, list) {
   const spec = CHECKLISTS[list];
@@ -59,8 +60,9 @@ function caliExercise(state, ex, i, day, block) {
   const input = ex.mode === 'timed'
     ? `<input id="cs-${i}" class="field" type="number" inputmode="numeric" step="1" placeholder="Seconds" aria-label="Seconds">`
     : `<input id="cr-${i}" class="field" type="number" inputmode="numeric" step="1" placeholder="Reps" aria-label="Reps">`;
-  const rows = sets.map((e) => `<div class="entry"><div class="row"><span>Set ${esc(setText(e.data))}</span>
-      <span class="actions"><button class="btn secondary small" data-action="deleteEntry" data-id="${esc(e.id)}" aria-label="Delete this set">DEL</button></span></div></div>`).join('');
+  const rows = sets.map((e) => (state.editId === e.id ? editForm(e) : `<div class="entry"><div class="row"><span>Set ${esc(setText(e.data))}</span>
+      <span class="actions"><button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}" aria-label="Edit this set">EDIT</button>
+      <button class="btn secondary small" data-action="deleteEntry" data-id="${esc(e.id)}" aria-label="Delete this set">DEL</button></span></div></div>`)).join('');
   return `<div class="panel"><h2>${esc(ex.name)}</h2>
     <p>Target ${esc(ex.target)}. Quality reps, stop with about 2 left.</p>
     ${input}

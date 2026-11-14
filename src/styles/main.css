@@ -245,7 +245,7 @@ select { min-height: 48px; font-family: var(--mono); font-size: 16px; background
 .bar i { display: block; height: 100%; background: var(--accent); }
 .chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding-bottom: 4px; }
 button.btn.chip { margin-top: 0; padding: 8px 0; font-size: 12px; }
-.wheels { display: flex; align-items: center; justify-content: center; gap: 8px; position: relative; }
+.wheels { display: flex; align-items: center; justify-content: center; gap: 8px; position: relative; width: fit-content; margin: 0 auto; }
 .colon { font-family: var(--dot); font-weight: 700; font-size: 24px; }
 .wheel {
   position: relative;

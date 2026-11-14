@@ -47,6 +47,9 @@ export function createTemplateActions({ state, saveTemplate, clearTemplate, save
 
     tAdd: () => { state.tEdit = { mode: 'add' }; state.tDraft = null; state.msg = ''; },
 
+    // From an exercise panel: open edit mode with that exercise's form already open.
+    tEditHere: (el) => { state.wManage = true; state.wHistory = false; state.tEdit = { mode: 'edit', i: Number(el.dataset.i) }; state.tDraft = null; state.msg = ''; window.scrollTo(0, 0); },
+
     tEditStart: (el) => { state.tEdit = { mode: 'edit', i: Number(el.dataset.i) }; state.tDraft = null; state.msg = ''; },
 
     tCancel: () => { close(); state.msg = ''; },

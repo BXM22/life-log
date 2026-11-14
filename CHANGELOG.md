@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: EDIT EXERCISE and DELETE EXERCISE buttons on each workout panel (opens the template editor on that exercise), EDIT on calisthenics sets, and the rest timer's selection lines now match the width of the wheels; cache v25 (2026-11-13)
 - feat: finish M2 in four parallel tracks: workout warm-up checklists, back cues, trim a set, calisthenics blocks and BJJ check (F29, F30, F32); week view and streaks on History (F10, F11); practice timer and Kumio study log on Today (F12, F16); weekly export reminder banner and Settings toggle (F33); the new files are added to the offline cache; 145 tests; cache v24 (2026-11-13)
 - feat: personal records (F19): top 5 per lift by estimated 1RM, lowest bodyweight, best BPM per focus and longest practice, shown on History, kept through wipe and added to the end of every export; 117 tests; cache v23 (2026-11-10)
 - feat: progression prompt (F25): a TRY TODAY line on the first lift of a session suggests one more rep, more weight at the top of the rep range, or 5 more seconds for holds; 110 tests; cache v22 (2026-11-10)
