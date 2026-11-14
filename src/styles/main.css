@@ -284,3 +284,17 @@ summary { display: flex; align-items: center; justify-content: space-between; ga
 .panel p.try { padding: 10px 12px; border-radius: 14px; background: var(--panel-2); border-left: 3px solid var(--accent); }
 .panel p.try b { display: block; margin-bottom: 2px; font-size: 10px; letter-spacing: .12em; color: var(--accent); }
 summary small { flex: none; white-space: nowrap; }
+
+/* History: week grid (F10), weight trend, streaks (F11). */
+.wkrow { display: grid; grid-template-columns: minmax(64px, 1.6fr) repeat(7, 1fr) 30px; align-items: center; gap: 4px; min-height: 30px; }
+.wkh { text-align: center; font-size: 10px; color: var(--dim); }
+.wkh.now { color: var(--accent); }
+.wkname { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wkcell { height: 20px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); }
+.wkcell.on { background: var(--accent); border-color: var(--accent); }
+.wkcell.future { opacity: .35; }
+.trend { width: 100%; height: auto; display: block; }
+.trend .goal { stroke: var(--soft); stroke-width: 1; stroke-dasharray: 4 4; }
+.trend .wline { fill: none; stroke: var(--accent); stroke-width: 2; }
+.trend .wdot { fill: var(--accent); }
+.trend .axis { fill: var(--dim); font-family: var(--mono); font-size: 9px; }

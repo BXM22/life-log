@@ -6,6 +6,8 @@ import { isDirty } from '../logic/exportBuilder.js';
 import { liveEntries, weightHistory, MEAL_TYPES } from '../logic/entries.js';
 import { esc, label } from './format.js';
 import { recordsPanel } from './recordsView.js';
+import { weekPanel, streaksPanel } from './weekPanel.js';
+import { logicalDate } from '../logic/dates.js';
 
 const MAX_ROWS = 60;
 const MAX_WEIGHTS = 14;
@@ -59,7 +61,8 @@ export function historyView(state) {
   const all = liveEntries(state.entries).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt);
   const rows = all.slice(0, MAX_ROWS).map((e) => (state.editId === e.id ? editForm(e) : entryRow(e))).join('');
 
-  return `${recordsPanel(state)}
+  const today = logicalDate(Date.now(), state.dayStartHour);
+  return `${weekPanel(state, today)}${streaksPanel(state, today)}${recordsPanel(state)}
     <div class="panel"><h2>BODYWEIGHT</h2>${wRows || '<p>No weigh-ins yet.</p>'}</div>
     <div class="panel"><h2>ALL ENTRIES</h2>${rows || '<p>No entries yet.</p>'}
       ${all.length > MAX_ROWS ? `<p>Showing the newest ${MAX_ROWS} of ${all.length}.</p>` : ''}</div>`;
