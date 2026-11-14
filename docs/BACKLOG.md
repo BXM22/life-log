@@ -26,17 +26,17 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 - [x] F23 Rest timer with a wheel for a custom time (Should)
 - [x] F24 Timed, per-side and bodyweight exercises (Must-M2)
 - [x] F25 Progression prompt on first lift (Should). A TRY TODAY line on the first exercise: one more rep below the top of the rep range, more weight at the top, 5 more seconds for holds
-- [ ] F29 Warm-up checklists and back-training cues (Could)
-- [ ] F30 Trim a set (Could)
+- [x] F29 Warm-up checklists and back-training cues (Could). Upper, Lower and post-BJJ checklists before the first set (custom sessions get none); a BACK CUES toggle on each back exercise. Ticks are kept per day in localStorage
+- [x] F30 Trim a set (Could). TRIM A SET / PUT BACK lowers the shown set count for that day only (minimum 1); logged sets and history are untouched
 - [x] F31 3-day and 4-day schedule switch (Should). Settings > PLAN; 3 days drops Sunday's Upper C, which stays pickable on the Workout tab
 - [x] F34 Custom workout templates: create, copy, rename and delete your own sessions, filled with the exercise editor (Should). Custom sessions are picked by hand; they are not on the weekday schedule
 - [x] F35 Workout history: past workout days with each session's exercises and sets, newest first (Should)
-- [ ] F32 Calisthenics blocks and BJJ done check (Should)
-- [ ] F33 Weekly export reminder (Should)
-- [ ] F16 Kumio prep and study log (Should)
-- [ ] F10 Week view: habit grid, weight trend with 170 lb line (Should)
-- [ ] F11 Streaks per habit and for guitar (Should)
-- [ ] F12 Practice timer (Could)
+- [x] F32 Calisthenics blocks and BJJ done check (Should). Monday push block, Wednesday pull block, logged as lift_set entries; a BJJ class done check is a habit_check entry. Not built: editing a logged calisthenics set (delete and re-log)
+- [x] F33 Weekly export reminder (Should). Banner on Today after 7+ days (or never) linking to Export, once-a-day notification where supported and permitted, Settings toggle stored under its own localStorage key
+- [x] F16 Kumio prep and study log (Should). Today panel: type (prep or study), topic, minutes, notes; a ## Kumio section in the export; backed up and wiped like other entries. Not built: editing in History, weekly total
+- [x] F10 Week view: habit grid, weight trend with 170 lb line (Should). History tab: THIS WEEK grid (Mon-Sun) and a 28-day WEIGHT TREND chart with a dashed 170 lb line. Not built: browsing earlier weeks
+- [x] F11 Streaks per habit and for guitar (Should). History tab STREAKS panel: current and best per habit and for guitar practice; today still undone does not break a streak
+- [x] F12 Practice timer (Could). Today, under the guitar form: Start with optional focus, Stop with optional best BPM; saves an ordinary guitar entry. Survives sleep and reload. Not built: end sound, countdown
 - [x] F13 Protein tracking against a 160 g daily target; water is optional (Should). Optional grams on each meal, a daily total with a progress bar on Today; water is not built
 - [x] F19 Personal records: top 5 per lift, bodyweight, guitar BPM and more, kept through wipe (Should). History tab panel; lifts by estimated 1RM, holds by time, bodyweight moves by reps, lowest bodyweight, best BPM per focus, longest practice; a Personal records section ends every export. Not built: the New PR badge on Today, removing a record, the 'most workouts in a week' list
 
