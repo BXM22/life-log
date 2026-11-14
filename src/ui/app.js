@@ -15,6 +15,7 @@ import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
 import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
+import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
 import { createTemplateActions } from './templateActions.js';
 import { createRestActions } from './restActions.js';
 import { createMealActions } from './mealActions.js';
@@ -98,6 +99,7 @@ function download(file) {
 const rest = createRestActions({ state, onChange: () => render() });
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
+  ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
   ...rest.actions,
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createNotesActions({ state, saveEntries, saveFail, inputValue, today, download, onChange: () => render() }),

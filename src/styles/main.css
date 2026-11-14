@@ -282,3 +282,8 @@ summary { display: flex; align-items: center; justify-content: space-between; ga
 .panel p.try { padding: 10px 12px; border-radius: 14px; background: var(--panel-2); border-left: 3px solid var(--accent); }
 .panel p.try b { display: block; margin-bottom: 2px; font-size: 10px; letter-spacing: .12em; color: var(--accent); }
 summary small { flex: none; white-space: nowrap; }
+
+/* Workout extras: trim buttons, back cues */
+.panel .actions { display: flex; gap: 8px; margin: 0 0 8px; }
+.panel p.cue { margin-top: 8px; padding: 10px 12px; border-radius: 14px; background: var(--panel-2); font-size: 13px; }
+.panel .btn.small[disabled] { opacity: .4; }

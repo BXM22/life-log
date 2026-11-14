@@ -11,6 +11,7 @@ import { manageView } from './templateView.js';
 import { editForm } from './historyView.js';
 import { restPanel } from './restView.js';
 import { workoutHistoryView } from './workoutHistoryView.js';
+import { warmupPanel, bjjPanel, caliPanel, targetText, trimButtons, cueBlock } from './workoutExtrasView.js';
 
 function exercisePanel(state, ex, i, day) {
   const last = lastWorking(state.entries, state.stats, ex.name);
@@ -35,7 +36,8 @@ function exercisePanel(state, ex, i, day) {
 
   return `<div class="panel">
     <h2>${esc(ex.name)}</h2>
-    <p>Target ${esc(ex.target)}. Warm-up: ${esc(ex.warmup)}.</p>
+    <p>${targetText(state, ex, day)}. Warm-up: ${esc(ex.warmup)}.</p>
+    ${trimButtons(state, ex, i, day)}${cueBlock(state, ex, i)}
     ${i === 0 && progressionPrompt(last, ex) ? `<p class="try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : ''}
     <p>${last ? `Last: ${esc(setText(last))} on ${esc(last.date.slice(5))}.` : 'No history yet.'}${warm ? ` Warm-up about ${warm} lb.` : ''}</p>
     ${inputs}
@@ -63,5 +65,6 @@ export function workoutView(state) {
     </div>
     ${state.wHistory ? workoutHistoryView(state) : ''}
     ${state.wManage || state.wHistory ? '' : restPanel(state)}
+    ${state.wHistory || state.wManage ? '' : bjjPanel(state, day) + caliPanel(state, day) + warmupPanel(state, session, day)}
     ${state.wHistory ? '' : state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
 }
