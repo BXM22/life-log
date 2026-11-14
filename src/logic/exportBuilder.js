@@ -9,6 +9,7 @@
 
 import { toDateString } from './dates.js';
 import { workoutMarkdown } from './workout.js';
+import { studyMarkdown } from './study.js';
 
 /** An entry needs exporting if it was never exported or was edited after export. */
 export function isDirty(entry) {
@@ -63,6 +64,8 @@ function dayMarkdown(date, entries) {
     for (const m of meals) lines.push(`- ${m.data.mealType}: ${m.data.name}${m.data.protein_g != null ? ` (${m.data.protein_g} g protein)` : ''}`);
     lines.push('');
   }
+
+  lines.push(...studyMarkdown(entries));
 
   return lines.join('\n');
 }
