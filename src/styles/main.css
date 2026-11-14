@@ -302,3 +302,10 @@ summary small { flex: none; white-space: nowrap; }
 .panel .actions { display: flex; gap: 8px; margin: 0 0 8px; }
 .panel p.cue { margin-top: 8px; padding: 10px 12px; border-radius: 14px; background: var(--panel-2); font-size: 13px; }
 .panel .btn.small[disabled] { opacity: .4; }
+
+/* Exercise options dropdown on each workout panel */
+details.menu { margin: 0 0 8px; }
+details.menu > summary { min-height: 36px; padding: 4px 0; font-size: 12px; letter-spacing: .08em; color: var(--accent); }
+details.menu > summary::after { content: '\25BE'; }
+details.menu[open] > summary::after { content: '\25B4'; }
+details.menu .actions { flex-wrap: wrap; padding-top: 4px; }

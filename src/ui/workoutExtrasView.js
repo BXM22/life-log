@@ -42,9 +42,8 @@ export function trimButtons(state, ex, i, day) {
   const total = setCount(ex.target);
   if (total == null) return '';
   const trimmed = trimmedFor(state.wTrims, day, ex.name, ex.target);
-  return `<div class="actions">
-      <button class="btn secondary small" data-action="trimSet" data-i="${i}" ${total - trimmed > 1 ? '' : 'disabled'}>TRIM A SET</button>
-      ${trimmed ? `<button class="btn secondary small" data-action="untrimSet" data-i="${i}">PUT BACK</button>` : ''}</div>`;
+  return `<button class="btn secondary small" data-action="trimSet" data-i="${i}" ${total - trimmed > 1 ? '' : 'disabled'}>TRIM A SET</button>
+      ${trimmed ? `<button class="btn secondary small" data-action="untrimSet" data-i="${i}">PUT BACK</button>` : ''}`;
 }
 
 /** Back-training cue toggle for back exercises, '' for anything else. */

@@ -37,11 +37,14 @@ function exercisePanel(state, ex, i, day) {
   return `<div class="panel">
     <h2>${esc(ex.name)}</h2>
     <p>${targetText(state, ex, day)}. Warm-up: ${esc(ex.warmup)}.</p>
-    <div class="actions">
-      <button class="btn secondary small" data-action="tEditHere" data-i="${i}" aria-label="Edit ${esc(ex.name)}">EDIT EXERCISE</button>
-      <button class="btn secondary small" data-action="tDelete" data-i="${i}" aria-label="Delete ${esc(ex.name)}">DELETE EXERCISE</button>
-    </div>
-    ${trimButtons(state, ex, i, day)}${cueBlock(state, ex, i)}
+    <details class="menu"><summary>OPTIONS</summary>
+      <div class="actions">
+        <button class="btn secondary small" data-action="tEditHere" data-i="${i}" aria-label="Edit ${esc(ex.name)}">EDIT</button>
+        <button class="btn secondary small" data-action="tDelete" data-i="${i}" aria-label="Delete ${esc(ex.name)}">DELETE</button>
+        ${trimButtons(state, ex, i, day)}
+      </div>
+    </details>
+    ${cueBlock(state, ex, i)}
     ${i === 0 && progressionPrompt(last, ex) ? `<p class="try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : ''}
     <p>${last ? `Last: ${esc(setText(last))} on ${esc(last.date.slice(5))}.` : 'No history yet.'}${warm ? ` Warm-up about ${warm} lb.` : ''}</p>
     ${inputs}
