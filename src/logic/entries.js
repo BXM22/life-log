@@ -94,6 +94,7 @@ export function parseNote({ title, body }) {
 export function parseEdit(entry, fields) {
   if (entry.type === 'meal') return parseMeal(fields);
   if (entry.type === 'note') return parseNote(fields);
+  if (entry.type === 'study') return { error: 'Delete this Kumio entry and log it again to change it.' };
   if (entry.type === 'weigh_in') {
     const r = parseWeight(fields.weight);
     return r.error ? r : { data: { weight_lb: r.value } };

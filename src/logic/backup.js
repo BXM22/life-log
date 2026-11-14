@@ -7,7 +7,7 @@
 import { toDateString } from './dates.js';
 
 export const SCHEMA_VERSION = 1;
-const ENTRY_TYPES = new Set(['habit_check', 'weigh_in', 'guitar', 'lift_set', 'meal', 'note']);
+const ENTRY_TYPES = new Set(['habit_check', 'weigh_in', 'guitar', 'lift_set', 'meal', 'note', 'study']);
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** Build the backup object from everything saved on the phone. */
