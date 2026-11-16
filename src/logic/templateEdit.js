@@ -2,6 +2,8 @@
 // Logged sets keep the exercise NAME they were saved under, so renaming or deleting an exercise
 // never touches past entries; they stay in the log and in Dropbox exports as they were.
 
+import { normalizeTags } from './templateTags.js';
+
 export const MODES = ['weight', 'bodyweight', 'timed'];
 export const MAX_NAME = 60;
 const MAX_NOTE = 80;
@@ -82,7 +84,7 @@ export function addSession(sessions, name, copyOf = null) {
   const src = copyOf ? find(sessions, copyOf) : null;
   if (copyOf && !src) return { error: 'That session does not exist.' };
   const id = newSessionId(sessions, r.name);
-  const session = { id, name: r.name, focus: src?.focus ?? '', exercises: src ? src.exercises.map((e) => ({ ...e })) : [] };
+  const session = { id, name: r.name, focus: src?.focus ?? '', tags: src?.tags ? [...src.tags] : [], exercises: src ? src.exercises.map((e) => ({ ...e })) : [] };
   return { sessions: [...sessions, session], id };
 }
 
@@ -113,7 +115,7 @@ export function normalizeTemplate(raw) {
       if (r.error) return null;
       exercises.push(r.exercise);
     }
-    out.push({ id: s.id, name: s.name, focus: typeof s.focus === 'string' ? s.focus : '', exercises });
+    out.push({ id: s.id, name: s.name, focus: typeof s.focus === 'string' ? s.focus : '', tags: normalizeTags(s.tags), ...(typeof s.active === 'boolean' ? { active: s.active } : {}), exercises });
   }
   return out;
 }

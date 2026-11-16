@@ -309,3 +309,33 @@ details.menu > summary { min-height: 36px; padding: 4px 0; font-size: 12px; lett
 details.menu > summary::after { content: '\25BE'; }
 details.menu[open] > summary::after { content: '\25B4'; }
 details.menu .actions { flex-wrap: wrap; padding-top: 4px; }
+
+/* Sync: backup meter, collapsible backup, own-window dialogs */
+.meter { height: 8px; margin: 0 0 12px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+.meter i.ok { background: var(--soft); }
+.meter i.due, .meter i.never { background: var(--danger); }
+details.fold > summary h2 { margin: 0; }
+details.fold > summary::after { content: '\25BE'; color: var(--accent); }
+details.fold[open] > summary::after { content: '\25B4'; }
+.modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, .75); overflow-y: auto; }
+.modal-card { width: 100%; max-width: 420px; padding: 20px; border-radius: 20px; background: var(--panel-2); }
+.modal-card .btn { margin-top: 12px; }
+/* History: PR banner (F39), habit heatmap (F40), collapsible panels (F43) */
+.prbanner { display: block; width: 100%; margin-bottom: 12px; padding: 12px; min-height: 44px; text-align: left; font: inherit; font-family: var(--mono); background: var(--accent); color: var(--on-accent); border: 0; border-radius: 14px; cursor: pointer; }
+.hm { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
+.hmc { height: 24px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); }
+.hmc.l1 { background: #4a2a10; } .hmc.l2 { background: #8a4a14; } .hmc.l3 { background: #cc6618; } .hmc.l4 { background: var(--accent); border-color: var(--accent); }
+.hmc.future { opacity: .35; }
+details.panel > summary h2 { margin: 0; }
+details.panel > summary::after { content: '\25BE'; color: var(--accent); }
+details.panel[open] > summary::after { content: '\25B4'; }
+/* Workout F38/F42/F43: scrolling chip row, template tags, collapsible warm-up header, plate calculator */
+.chiprow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.chiprow button.btn.chip { flex: 0 0 auto; width: auto; min-height: 44px; padding: 8px 16px; white-space: nowrap; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.tplswitch { margin: 0; min-height: 44px; align-items: center; font-size: 12px; letter-spacing: .08em; }
+button.fold { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 44px; margin: 0; padding: 0; background: none; border: 0; color: inherit; cursor: pointer; }
+button.fold h2 { margin: 0; }
+.plates { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+.plates .btn + .lbl, .plates .field + .btn { margin-top: 8px; }

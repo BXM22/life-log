@@ -4,12 +4,12 @@
 //            data-action="restore" -> backupActions.restore(state) (returns { msg, merged? })
 
 import { buildBackup, backupFilename, parseBackup, mergeBackup } from '../logic/backup.js';
+import { saveLastBackup } from '../logic/backupNudge.js';
 import { loadForBackup, applyRestore } from '../db/backupStore.js';
 
 export function renderBackupPanel(state) {
   const n = state.entries ? state.entries.length : 0;
-  return `<div class="panel">
-    <h2>BACKUP</h2>
+  return `<div>
     <p>A copy of everything on this phone (${n} entries) as one file. Save it somewhere off this phone.</p>
     <button class="btn" data-action="backup">BACKUP NOW</button>
     <p style="margin-top:12px">Restore adds back anything missing and keeps the newest version of each entry. It never deletes.</p>
@@ -42,14 +42,17 @@ export const backupActions = {
     try {
       if (navigator.canShare && navigator.canShare({ files: [file] })) {
         await navigator.share({ files: [file], title: file.name });
+        try { saveLastBackup(localStorage, Date.now()); } catch { /* storage blocked */ }
         return `Backup shared: ${file.name}. Check that it landed somewhere safe.`;
       }
       download(file);
+          try { saveLastBackup(localStorage, Date.now()); } catch { /* storage blocked */ }
       return `Backup downloaded: ${file.name}. Move it off this phone.`;
     } catch (err) {
       if (err && err.name === 'AbortError') return 'Backup cancelled. Nothing changed.';
       try {
         download(file);
+        try { saveLastBackup(localStorage, Date.now()); } catch { /* storage blocked */ }
         return `Share unavailable (${err && err.name}). Downloaded ${file.name} instead.`;
       } catch (dlErr) {
         return `Backup failed (${err && err.name}; ${dlErr && dlErr.name}). Nothing changed.`;

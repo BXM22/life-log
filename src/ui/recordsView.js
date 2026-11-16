@@ -19,5 +19,5 @@ export function recordsPanel(state) {
     ...Object.entries(rec.guitar).map(([name, rows]) => list(`Guitar: ${name}`, rows)),
     list('Longest practice', rec.session),
   ].join('');
-  return `<div class="panel"><h2>PERSONAL RECORDS</h2>${blocks || '<p class="note">No records yet. Log a working set, a weigh-in or guitar BPM and they appear here.</p>'}</div>`;
+  return `<details class="panel"><summary><h2>PERSONAL RECORDS</h2></summary>${blocks || '<p class="note">No records yet. Log a working set, a weigh-in or guitar BPM and they appear here.</p>'}</details>`;
 }

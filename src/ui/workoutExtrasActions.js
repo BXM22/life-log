@@ -37,6 +37,9 @@ export function createWorkoutExtrasActions({ state, saveEntries, saveFail, input
       write(state, day);
     },
 
+    // Fold or unfold a warm-up list (F43). Kept in memory only; lists start unfolded.
+    toggleWarm: (el) => { state.wFold = { ...state.wFold, [el.dataset.list]: !state.wFold?.[el.dataset.list] }; },
+
     toggleCue: (el) => { state.wCues[el.dataset.i] = !state.wCues[el.dataset.i]; },
 
     trimSet: (el) => {

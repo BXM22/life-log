@@ -6,6 +6,7 @@ import { planWipe } from '../logic/wipeEligibility.js';
 import { getConfig, isConnected } from '../dropbox/dropbox.js';
 import { renderBackupPanel } from './backupPanel.js';
 import { esc } from './format.js';
+import { nudgePanel, reviewPanel, backupDue, modal } from './syncView.js';
 
 export const waiting = (state) => state.entries.filter((e) => e.type !== 'note' && isDirty(e)).length; // notes are sent from TODAY
 export const wipeOpts = (state) => ({ now: Date.now(), keepDays: state.keepDays, dayStartHour: state.dayStartHour });
@@ -21,9 +22,12 @@ function dropboxBlock() {
       <button class="btn secondary" data-action="disconnect">DISCONNECT DROPBOX</button>`;
   }
   return `<p>Connect once to upload straight to your vault.</p>
-    <input id="appKey" class="field" placeholder="Dropbox app key" value="${esc(getConfig().appKey || '')}" autocomplete="off">
-    <button class="btn" data-action="connect">CONNECT DROPBOX</button>`;
+    <button class="btn" data-action="openDropbox">SET UP DROPBOX</button>`;
 }
+
+export const dropboxModal = () => modal('SET UP DROPBOX', `<p>Connect once to upload straight to your vault.</p>
+  <input id="appKey" class="field" placeholder="Dropbox app key" value="${esc(getConfig().appKey || '')}" autocomplete="off">
+  <button class="btn" data-action="connect">CONNECT DROPBOX</button>`);
 
 export function exportView(state) {
   const { step, result, viaDownload } = state.flow;
@@ -46,7 +50,10 @@ export function exportView(state) {
     body = `<p>Confirmed: ${esc(result.filename)}. Go to WIPE when you are ready.</p>
       <button class="btn secondary" data-tab="wipe" data-action="tab">GO TO WIPE</button>`;
   }
-  return `<div class="panel"><h2>EXPORT</h2>${body}</div>${renderBackupPanel(state)}`;
+  const dbx = state.syncModal === 'dropbox' && !isConnected() ? dropboxModal() : '';
+  const open = state.backupOpen ?? backupDue(state);
+  return `${nudgePanel(state)}<div class="panel"><h2>EXPORT</h2>${body}</div>${reviewPanel(state)}
+    <details class="panel fold" ${open ? 'open' : ''}><summary data-action="toggleBackup"><h2>BACKUP</h2></summary>${renderBackupPanel(state)}</details>${dbx}`;
 }
 
 export function wipeView(state) {
@@ -62,9 +69,11 @@ export function wipeView(state) {
   const plan = planWipe(state.entries, result.manifest, wipeOpts(state));
   const ready = state.wipeTick && plan.count > 0;
   return `<div class="panel"><h2>WIPE</h2>${keep}
-    <div class="warn">${esc(WIPE_TEXT(plan.count, plan.range))}</div>
-    <label class="check"><input type="checkbox" data-action="tick" ${state.wipeTick ? 'checked' : ''}>
-      <span>I opened the file in Dropbox and it is complete</span></label>
-    <button class="btn danger" data-action="wipe" ${ready ? '' : 'disabled'}>WIPE ${plan.count} !!</button>
-    ${plan.count === 0 ? '<p>Nothing is old enough to wipe yet.</p>' : ''}</div>`;
+    <p>${plan.count} entries are ready to wipe.</p>
+    <button class="btn danger" data-action="openWipe" ${plan.count > 0 ? '' : 'disabled'}>WIPE ${plan.count} !!</button>
+    ${plan.count === 0 ? '<p>Nothing is old enough to wipe yet.</p>' : ''}</div>
+    ${state.syncModal === 'wipe' && plan.count > 0 ? modal('CONFIRM WIPE', `<div class="warn">${esc(WIPE_TEXT(plan.count, plan.range))}</div>
+      <label class="check"><input type="checkbox" data-action="tick" ${state.wipeTick ? 'checked' : ''}>
+        <span>I opened the file in Dropbox and it is complete</span></label>
+      <button class="btn danger" data-action="wipe" ${ready ? '' : 'disabled'}>WIPE ${plan.count} !!</button>`) : ''}`;
 }

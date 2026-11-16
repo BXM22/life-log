@@ -11,6 +11,7 @@ import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
 import { icon } from './icons.js';
 import { historyView } from './historyView.js';
+import { prBanner } from './progressView.js';
 import { lastExportAt, loadReminderEnabled, saveReminderEnabled, maybeNotify, requestNotifyPermission } from '../logic/exportReminder.js';
 import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
@@ -18,17 +19,22 @@ import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
 import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
 import { createTemplateActions } from './templateActions.js';
+import { createTemplateTagsActions } from './templateTagsActions.js';
+import { createPlatesActions } from './platesActions.js';
 import { createRestActions } from './restActions.js';
 import { createMealActions } from './mealActions.js';
 import { createNotesActions } from './notesActions.js';
 import { createPracticeActions } from './practiceActions.js';
 import { createStudyActions } from './studyActions.js';
-import { positionWheels } from './restView.js';
+import { createTodayActions } from './todayActions.js';
+import { createTodayWinActions } from './todayWinActions.js';
+import { positionWheels, restPage } from './restView.js';
 import { loadRest } from '../logic/rest.js';
 import { setTemplate } from '../logic/template.js';
 import { normalizeTemplate } from '../logic/templateEdit.js';
 import { exportView, wipeView, wipeOpts } from './exportWipeView.js';
 import { backupActions } from './backupPanel.js';
+import { createSyncActions } from './syncActions.js';
 import { getConfig, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
 import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, deleteHabit, saveTemplate, clearTemplate } from '../db/store.js';
 
@@ -43,6 +49,7 @@ const navGroup = (t) => (t === 'wipe' ? 'export' : t);
 
 const state = {
   tab: 'today',
+  restOpen: false, // the full rest timer page is showing (Workout tab)
   entries: [],
   habits: [], // [{ id, name }]
   stats: null, // retained_stats record kept across wipes (best streaks, anchors, last sets, weigh-ins)
@@ -50,6 +57,9 @@ const state = {
   dayStartHour: settings.dayStartHour,
   planDays: settings.planDays, // 3 or 4 lifting days a week, see logic/template.js scheduleFor
   editId: null, // id of the entry being edited on the History tab
+  histWin: null, // History own window: null | 'lifts' | 'entries'
+  histLift: null, // lift shown in the Lift progress window
+  exOpen: {}, // exercise panels expanded on the Workout tab, by exercise name
   wSession: null, // workout session picked on the Workout tab (null = today's)
   rest: (() => { try { return loadRest(localStorage, Date.now()); } catch { return loadRest({ getItem: () => null }, Date.now()); } })(), // rest timer, see logic/rest.js
   wManage: false, // Workout tab in edit-templates mode
@@ -71,7 +81,7 @@ const state = {
 };
 
 const $app = document.getElementById('app');
-const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; };
+const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; state.syncModal = null; };
 const inputValue = (id) => document.getElementById(id)?.value ?? '';
 const today = () => logicalDate(Date.now(), state.dayStartHour);
 
@@ -107,9 +117,14 @@ const practice = createPracticeActions({ state, saveEntries, saveFail, inputValu
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
   ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTemplateTagsActions({ state, saveFail, saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); } }),
+  ...createPlatesActions({ state, inputValue }),
   ...rest.actions,
+  ...createSyncActions({ state, onChange: () => render() }),
   ...practice.actions,
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTodayActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTodayWinActions({ state }),
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createNotesActions({ state, saveEntries, saveFail, inputValue, today, download, onChange: () => render() }),
   ...createTemplateActions({
@@ -118,9 +133,10 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
+  dismissPR: () => { state.pr = null; },
 
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
 
@@ -132,6 +148,7 @@ const actions = {
     if (el.checked) await requestNotifyPermission();
   },
 
+  toggleEx: (el) => { const n = el.dataset.name; state.exOpen[n] = !(state.exOpen[n] === true); },
   setPlanDays: (el) => { state.planDays = Number(el.value); state.wSession = null; persistSettings(); },
 
   install: async () => {
@@ -159,6 +176,10 @@ const actions = {
     state.entries.push(e);
     state.msg = `Saved ${r.data.minutes} min of guitar.`;
   },
+
+  openHistWin: (el) => { state.histWin = el.dataset.win; state.editId = null; window.scrollTo(0, 0); },
+  closeHistWin: () => { state.histWin = null; state.editId = null; window.scrollTo(0, 0); },
+  pickLift: (el) => { state.histLift = el.dataset.lift; },
 
   startEdit: (el) => { state.editId = el.dataset.id; state.msg = ''; },
 
@@ -390,10 +411,11 @@ function render() {
   const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
-  $app.innerHTML = `${header()}${segmented()}${views[state.tab](state)}
+  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${state.tab === 'history' && state.histWin ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
+  $app.innerHTML = `${page}
     ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
-  if (state.tab === 'workout' && !state.wManage) positionWheels(state);
+  if (state.tab === 'workout' && state.restOpen) positionWheels(state);
   clearTimeout(toastTimer);
   if (state.msg && state.msg.length < 60) toastTimer = setTimeout(() => { state.msg = ''; $app.querySelector('.toast')?.remove(); }, 4500);
 }

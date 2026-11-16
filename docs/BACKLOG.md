@@ -48,6 +48,30 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 - [x] F17 Inbox quick capture (Could). Shipped early as Notes on the Today tab: title and body, sent to the vault as one .md file per note in myVault/sources/life-log/notes/
 
+## M5 Design board ideas
+
+From the Life Log design board (Forma layout). Mock-ups exist for screens marked (mock-up). Not built yet.
+
+- [x] F36 Quick add sheet (Should) (mock-up). Plus button on Today opens a sheet for weigh-in, guitar, meal or note, with "log again" rows for recent entries. Two taps or fewer
+- [x] F37 Weekly review (Should) (mock-up). Sunday summary: habit percent vs last week, weight change, lifts done, new PRs, average protein, guitar and study time, one suggestion. Send to vault as Markdown
+- [x] F38 Plate calculator (Could) (mock-up). Opens from the set button on the Workout card; shows plates per side for the working weight; settings for bar weight and plates owned; offline
+- [x] F39 PR banner and lift progress chart (Should) (mock-up). New PR banner after a set (completes the F19 gap) and a per-lift estimated 1RM chart over 8 weeks on History
+- [x] F40 Habit heatmap and goal projection (Could) (mock-up). 5-week heatmap of habits done and a projected date to reach 170 lb from the recent weigh-in pace
+- [x] F41 Custom study subjects (Should). Generalises F16: any subject as a chip, add and edit subjects, per-subject minutes today and weekly total; the export section is named after the subject instead of ## Kumio. Closes the "weekly total" gap in F16
+- [x] F42 Workout template tags (Should) (mock-up). Extends F34: a templates window listing all sessions with tags and a tag filter; an edit screen with name, tags, custom tags and exercises. Long template names scroll in the Workout chip row instead of cutting off. Each template has an Active switch (active ones show on the Workout tab, inactive are hidden); the edit screen has Set as active, a remove button on every exercise, Add exercise and Delete template
+- [x] F43 Collapsible sections and own-window screens (Should) (mock-up). Collapsed rows with a chevron: weigh-in once logged, Notes, Meals, Warm-up checklist and Back cues on Workout, Personal records and All entries on History, Backup on Sync. Own windows: practice timer (full screen, big clock, Stop and save), Edit entry (bottom sheet from History), Wipe confirmation (modal with the Dropbox checkbox), Dropbox setup (Settings sub-page with export folder, last upload, reconnect, disconnect)
+- [x] F49 Screen flow wiring (Should). Design board flow: Today plus button opens Quick add, and Today rows open Log and Study; Log's Start timer opens the practice timer; History's Records row opens Lift progress and All entries opens Edit entry; Sync's Wipe opens the confirmation modal; Settings' Dropbox row opens Dropbox setup; Workout's Templates link opens the template list, which opens Edit template. Every window has a close or back control to its parent tab. Check the built app matches
+- [x] F48 Restyle the real app to the Forma layout and tokens (Should). Design board: https://claude.ai/artifact/PAsD96x1mvrnTiuGb4TtfB
+
+## Updates
+
+Smaller improvements to shipped features, from the design board ideas. Not mocked up.
+
+- [ ] F44 Rest-day tokens that protect a streak (Could). Earn a token for each full week of habits; spend one to mark a missed day as rest so the streak holds. Builds on the REST DAY button and F11 streaks
+- [ ] F45 Deload suggestion after 6 weeks of progressive lifting (Could). A card on Workout suggests a lighter week when weights have risen for 6 weeks running; dismiss or accept. Uses F25 progression data
+- [ ] F46 Metronome in the practice timer (Could). BPM stepper and tick while the F12 timer runs; saves the BPM as the entry's best BPM on Stop. Works offline
+- [x] F47 Backup nudge meter on Sync (Could). Shows days since the last export and last JSON backup, turning from calm to urgent as entries wait; complements the F33 reminder
+
 ## Open questions
 
 - [x] Starter habit list: Guitar, Coding, Workout (editable)
