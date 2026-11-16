@@ -330,3 +330,12 @@ details.fold[open] > summary::after { content: '\25B4'; }
 details.panel > summary h2 { margin: 0; }
 details.panel > summary::after { content: '\25BE'; color: var(--accent); }
 details.panel[open] > summary::after { content: '\25B4'; }
+/* Workout F38/F42/F43: scrolling chip row, template tags, collapsible warm-up header, plate calculator */
+.chiprow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 8px; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.chiprow button.btn.chip { flex: 0 0 auto; width: auto; min-height: 44px; padding: 8px 16px; white-space: nowrap; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0; }
+.tplswitch { margin: 0; min-height: 44px; align-items: center; font-size: 12px; letter-spacing: .08em; }
+button.fold { display: flex; justify-content: space-between; align-items: center; width: 100%; min-height: 44px; margin: 0; padding: 0; background: none; border: 0; color: inherit; cursor: pointer; }
+button.fold h2 { margin: 0; }
+.plates { margin-top: 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+.plates .btn + .lbl, .plates .field + .btn { margin-top: 8px; }

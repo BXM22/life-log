@@ -7,7 +7,7 @@ import { esc } from './format.js';
 
 const MODE_TEXT = { weight: 'weight and reps', bodyweight: 'reps, weight optional', timed: 'seconds, weight optional' };
 
-function form(state, session) {
+export function exerciseForm(state, session) {
   const ed = state.tEdit;
   const base = ed.mode === 'edit' ? session.exercises[ed.i] : { name: '', mode: 'weight', warmup: '', target: '' };
   const v = state.tDraft ?? base; // keep what was typed when a save is refused
@@ -39,7 +39,7 @@ export function manageView(state, session) {
         <button class="btn small secondary" data-action="tDelete" data-i="${i}" aria-label="Delete ${esc(ex.name)}">DEL</button>
       </div>
     </div>`).join('');
-  return `${state.tEdit ? form(state, session) : ''}
+  return `${state.tEdit ? exerciseForm(state, session) : ''}
     <div class="panel">
       <h2>SESSIONS</h2>
       <p>Editing <b>${esc(session.name)}</b>. Pick another session above to edit it.</p>

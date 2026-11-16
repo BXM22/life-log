@@ -13,7 +13,7 @@ const timed = (name, warmup, target) => ({ name, mode: 'timed', warmup, target }
 
 export const SESSIONS = [
   {
-    id: 'upper_a', name: 'Upper A', focus: 'Upper chest and back',
+    id: 'upper_a', tags: ['upper'], name: 'Upper A', focus: 'Upper chest and back',
     exercises: [
       w('Incline press (machine or barbell)', '1 x 8 at about 50%', '3 x 6-8'),
       w('Chest-supported row (semi-pronated grip)', '1 x 8 at about 50%', '2 x 5-8'),
@@ -26,7 +26,7 @@ export const SESSIONS = [
     ],
   },
   {
-    id: 'lower', name: 'Lower', focus: 'Hamstrings and glutes first, then quads',
+    id: 'lower', tags: ['lower', 'legs'], name: 'Lower', focus: 'Hamstrings and glutes first, then quads',
     exercises: [
       w('Seated leg curl', '2 x 10 (light, then about 60%)', '3 x 8-12'),
       w('Hip thrust', '1 x 8 at about 50%', '3 x 10'),
@@ -39,7 +39,7 @@ export const SESSIONS = [
     ],
   },
   {
-    id: 'upper_b', name: 'Upper B', focus: 'Bench, shoulders, rear delts',
+    id: 'upper_b', tags: ['upper'], name: 'Upper B', focus: 'Bench, shoulders, rear delts',
     exercises: [
       w('Bench press', '1 x 8 at about 50%', '3 x 5-8'),
       w('T-bar or single-arm cable row (straps)', '1 x 8 at about 50%', '2 x 5-8'),
@@ -53,7 +53,7 @@ export const SESSIONS = [
     ],
   },
   {
-    id: 'upper_c', name: 'Upper C (optional)', focus: 'Upper back and rear delts, 30-40 min',
+    id: 'upper_c', tags: ['upper', 'quick'], name: 'Upper C (optional)', focus: 'Upper back and rear delts, 30-40 min',
     exercises: [
       bw('Weighted pull-up or overhand lat pulldown (straps)', '1 scap-pull-only set x 8, then 1 x 6 at about 50%', '3 x 6-10'),
       w('Chest-supported row (semi-pronated grip)', '1 x 8 at about 50%', '3 x 8-10'),
