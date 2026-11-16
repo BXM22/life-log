@@ -25,7 +25,7 @@ function dropboxBlock() {
     <button class="btn" data-action="openDropbox">SET UP DROPBOX</button>`;
 }
 
-const dropboxModal = () => modal('SET UP DROPBOX', `<p>Connect once to upload straight to your vault.</p>
+export const dropboxModal = () => modal('SET UP DROPBOX', `<p>Connect once to upload straight to your vault.</p>
   <input id="appKey" class="field" placeholder="Dropbox app key" value="${esc(getConfig().appKey || '')}" autocomplete="off">
   <button class="btn" data-action="connect">CONNECT DROPBOX</button>`);
 

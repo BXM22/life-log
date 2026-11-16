@@ -8,6 +8,7 @@ import { reminderNotifySupported } from '../logic/exportReminder.js';
 import { installMessage } from '../logic/install.js';
 import { getConfig, isConnected } from '../dropbox/dropbox.js';
 import { esc } from './format.js';
+import { dropboxModal } from './exportWipeView.js';
 
 const options = (list, current, fmt = String) =>
   list.map((v) => `<option value="${v}" ${v === current ? 'selected' : ''}>${esc(fmt(v))}</option>`).join('');
@@ -30,9 +31,12 @@ export function settingsView(state) {
     <p class="setnote">Shows a banner on Today when your last export is 7 or more days old${reminderNotifySupported() ? ', and a notification if you allow them' : ''}.</p>
     <h2 class="setlabel">STORAGE AND DROPBOX</h2>
     <div class="setgroup">
-      <div class="setrow"><span>Dropbox</span><b>${isConnected() ? 'Connected' : 'Not connected'}</b></div>
+      ${isConnected()
+    ? '<div class="setrow"><span>Dropbox</span><b>Connected</b></div>'
+    : '<button class="setrow setbtn" data-action="openDropbox"><span>Dropbox</span><b>Set up</b></button>'}
     </div>
     <p class="setnote">${esc(state.storageLine)}${msg ? ` ${esc(msg)}` : ''}</p>
     ${isConnected() ? `<p class="setnote">Exports go to ${esc(getConfig().folder)}/</p><button class="btn secondary" data-action="disconnect">DISCONNECT DROPBOX</button>` : '<p class="setnote">Connect from the EXPORT tab.</p>'}
-    ${state.installKind === 'prompt' ? '<button class="btn" data-action="install">ADD TO HOME SCREEN</button>' : ''}`;
+    ${state.installKind === 'prompt' ? '<button class="btn" data-action="install">ADD TO HOME SCREEN</button>' : ''}
+    ${state.syncModal === 'dropbox' && !isConnected() ? dropboxModal() : ''}`;
 }
