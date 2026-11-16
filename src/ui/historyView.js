@@ -5,7 +5,7 @@
 import { isDirty } from '../logic/exportBuilder.js';
 import { liveEntries, weightHistory, MEAL_TYPES } from '../logic/entries.js';
 import { esc, label } from './format.js';
-import { recordsPanel } from './recordsView.js';
+import { liftWindow, windowBack } from './historyWindows.js';
 import { weekPanel, streaksPanel } from './weekPanel.js';
 import { progressPanels } from './progressView.js';
 import { logicalDate } from '../logic/dates.js';
@@ -63,8 +63,14 @@ export function historyView(state) {
   const rows = all.slice(0, MAX_ROWS).map((e) => (state.editId === e.id ? editForm(e) : entryRow(e))).join('');
 
   const today = logicalDate(Date.now(), state.dayStartHour);
-  return `${weekPanel(state, today)}${streaksPanel(state, today)}${progressPanels(state, today)}${recordsPanel(state)}
+  if (state.histWin === 'lifts') return liftWindow(state, today);
+  if (state.histWin === 'entries') {
+    return `${windowBack('All entries', `${all.length} entries`)}<div class="panel">${rows || '<p>No entries yet.</p>'}
+      ${all.length > MAX_ROWS ? `<p>Showing the newest ${MAX_ROWS} of ${all.length}.</p>` : ''}</div>`;
+  }
+  const open = (win, text) => `<button class="rowbtn" data-action="openHistWin" data-win="${win}"><span>${text}</span><span class="chev" aria-hidden="true">&gt;</span></button>`;
+  return `${weekPanel(state, today)}${streaksPanel(state, today)}${progressPanels(state, today)}
+    ${open('lifts', 'PERSONAL RECORDS <small>lift progress</small>')}
     <div class="panel"><h2>BODYWEIGHT</h2>${wRows || '<p>No weigh-ins yet.</p>'}</div>
-    <details class="panel" ${state.editId ? 'open' : ''}><summary><h2>ALL ENTRIES <small>${all.length}</small></h2></summary>${rows || '<p>No entries yet.</p>'}
-      ${all.length > MAX_ROWS ? `<p>Showing the newest ${MAX_ROWS} of ${all.length}.</p>` : ''}</details>`;
+    ${open('entries', `ALL ENTRIES <small>${all.length}</small>`)}`;
 }

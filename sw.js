@@ -40,6 +40,7 @@ const SHELL = [
   'src/logic/settings.js',
   'src/logic/install.js',
   'src/ui/format.js',
+  'src/ui/historyWindows.js',
   'src/ui/icons.js',
   'src/logic/templateEdit.js',
   'src/ui/templateView.js',

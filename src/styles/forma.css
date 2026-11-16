@@ -231,3 +231,17 @@ h2.setlabel { margin: 24px 0 8px; }
 label.check.setrow { align-items: center; margin: 0; min-height: 64px; }
 button.setrow.setbtn { width: 100%; padding: 0; border: 0; border-bottom: 0; background: transparent; color: var(--ink); font-family: var(--mono); text-align: left; cursor: pointer; }
 button.setrow.setbtn b::after { content: ''; display: inline-block; width: 20px; height: 20px; margin-left: 4px; vertical-align: middle; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236B6B70' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") no-repeat center / 20px; }
+
+/* History own windows (F49): Lift progress and All entries */
+.hwin-head { margin-bottom: 16px; }
+.hwin-back { min-height: 44px; margin: 0 0 4px -8px; padding: 0 8px; background: none; border: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; }
+.hwin-back:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.hwin-title { margin: 0; font-size: 28px; line-height: 34px; font-weight: 800; }
+.lwchips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 12px; }
+.lwchart { display: block; width: 100%; height: auto; }
+.lwbase { stroke: var(--line); }
+.lwmid { stroke: var(--shade); }
+.lwline { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lwend { fill: var(--accent); stroke: var(--ink); stroke-width: 3; }
+.lwtitle, .lwaxis { border-bottom: 0; }
+.lwaxis { font-size: 12px; font-weight: 600; color: var(--dim); }
