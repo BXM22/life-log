@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: screen flow wiring (F49): Today's Log and Study rows open their own windows (Log holds weigh-in, guitar, meals and the practice timer), History's Personal records row opens Lift progress and All entries opens an entries list with Edit entry, Settings' Dropbox row opens Dropbox setup; every window has a back control and closes on tab switch; 180 tests; cache v35 (2026-11-15)
 - feat: rest timer is now its own cream page like the design board (back button, progress ring that fills, preset chips, wheel, auto-start, Stop/Start), opened from a peach row on Workout; templates window as one card per template with toggle switches; settings as grouped rows; solid red wipe button; same timer logic and actions; 175 tests; cache v32 (2026-11-15)
 - feat: restyle to the Forma design board (F48): white screens, cream cards, peach accent, ink text, Plus Jakarta Sans, 24px cards, 56px pill buttons and fields, soft-pill tab bar; CSS only in src/styles/forma.css, no logic changed; 175 tests; cache v29 (2026-11-15)
 - feat: Today quick add sheet (F36), custom Kumio study subjects (F41) and collapsible Meals and Notes (F43, Today part); 154 tests; cache v28 (2026-11-15)
