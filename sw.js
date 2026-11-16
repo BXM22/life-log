@@ -48,6 +48,8 @@ const SHELL = [
   'src/ui/restView.js',
   'src/ui/restActions.js',
   'src/ui/historyView.js',
+  'src/logic/progress.js',
+  'src/ui/progressView.js',
   'src/logic/workoutHistory.js',
   'src/ui/workoutHistoryView.js',
   'src/ui/mealView.js',

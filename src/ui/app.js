@@ -11,6 +11,7 @@ import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
 import { icon } from './icons.js';
 import { historyView } from './historyView.js';
+import { prBanner } from './progressView.js';
 import { lastExportAt, loadReminderEnabled, saveReminderEnabled, maybeNotify, requestNotifyPermission } from '../logic/exportReminder.js';
 import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
@@ -125,6 +126,7 @@ const actions = {
   tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
+  dismissPR: () => { state.pr = null; },
 
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
 
@@ -394,7 +396,7 @@ function render() {
   const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
-  $app.innerHTML = `${header()}${segmented()}${views[state.tab](state)}
+  $app.innerHTML = `${header()}${segmented()}${prBanner(state)}${views[state.tab](state)}
     ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
   if (state.tab === 'workout' && !state.wManage) positionWheels(state);

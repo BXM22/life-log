@@ -3,6 +3,7 @@
 
 import { newEntry } from '../logic/entries.js';
 import { sessionById } from '../logic/template.js';
+import { prCheck } from '../logic/progress.js';
 import { activeSessionId, parseSet, setText } from '../logic/workout.js';
 
 export function createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet }) {
@@ -27,6 +28,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
       const e = newEntry('lift_set', day, { session: id, exercise: ex.name, kind, ...r.data }, Date.now());
       try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
       state.entries.push(e);
+      state.pr = prCheck(state.entries, e, state.stats);
       state.msg = `${kind === 'warmup' ? 'Warm-up' : 'Set'} saved: ${setText(r.data)}.`;
       if (kind === 'working' && onWorkingSet) onWorkingSet();
     },
