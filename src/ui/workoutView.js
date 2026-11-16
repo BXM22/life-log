@@ -4,7 +4,7 @@
 // Warm-up and working sets are logged separately. The weight box is pre-filled from the last working set.
 
 import { sessionById } from '../logic/template.js';
-import { sessionChips, templatesWindow, editScreen } from './templateTagsView.js';
+import { templatesWindow, editScreen } from './templateTagsView.js';
 import { platesButton, platesPanel } from './platesView.js';
 import { activeSessionId, lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
@@ -36,8 +36,9 @@ function exercisePanel(state, ex, i, day) {
       <span class="actions"><button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}" aria-label="Edit this set">EDIT</button>
       <button class="btn secondary small" data-action="deleteEntry" data-id="${esc(e.id)}" aria-label="Delete this set">DEL</button></span></div></div>`)).join('');
 
-  return `<div class="panel">
-    <h2>${esc(ex.name)}</h2>
+  const open = state.exOpen?.[ex.name] === true;
+  return `<details class="panel fold exfold" ${open ? 'open' : ''}>
+    <summary data-action="toggleEx" data-name="${esc(ex.name)}"><h2>${esc(ex.name)}</h2></summary>
     <p>${targetText(state, ex, day)}. Warm-up: ${esc(ex.warmup)}.</p>
     <details class="menu"><summary>OPTIONS</summary>
       <div class="actions">
@@ -57,7 +58,7 @@ function exercisePanel(state, ex, i, day) {
     ${ex.mode === 'weight' ? platesButton(i) : ''}
     ${platesPanel(state, i)}
     ${rows}
-  </div>`;
+  </details>`;
 }
 
 export function workoutView(state) {
@@ -68,7 +69,8 @@ export function workoutView(state) {
   if (state.tWin) return templatesWindow(state);
   return `<div class="panel">
       <h2>WORKOUT ${esc(day.slice(5))}</h2>
-      ${sessionChips(state, id)}
+      <div class="activetpl"><span>Active template</span><b>${esc(session.name)}</b>
+        <button class="editlink" data-action="tplOpenWin" aria-label="Switch template">Switch</button></div>
       <p>${session.focus ? `${esc(session.focus)}. ` : ''}Beat last time on the first exercise.</p>
       <div class="pair">
         <button class="btn secondary" data-action="toggleManage">${state.wManage ? 'DONE EDITING' : 'EDIT TEMPLATES'}</button>

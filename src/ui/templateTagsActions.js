@@ -33,23 +33,21 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
   }
 
   return {
-    pickChip: (el) => { state.wSession = id(el); state.msg = ''; },
-
     tplOpenWin: () => { state.tWin = true; state.wManage = false; state.wHistory = false; state.tEdit = null; state.msg = ''; window.scrollTo(0, 0); },
-    tplCloseWin: () => { state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
+    tplCloseWin: () => { state.tWin = false; state.wSession = null; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
     tplFilter: (el) => { state.tFilter = el.dataset.tag || ''; },
 
     tplActive: async (el) => {
-      const r = setActive(getSessions(), id(el), el.checked);
+      const r = setActive(getSessions(), id(el));
       if (r.error) { state.msg = r.error; return; }
-      await commit(r.sessions, el.checked ? 'Template is active.' : 'Template hidden from the Workout tab.');
+      await commit(r.sessions, `${getSessions().find((s) => s.id === id(el))?.name ?? 'Template'} is now the active template.`);
     },
 
     tplOpen: (el) => {
       state.tScreen = id(el); state.wSession = id(el); state.tplDraft = null; state.tEdit = null; state.msg = '';
       window.scrollTo(0, 0);
     },
-    tplBack: () => { state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
+    tplBack: () => { state.tScreen = null; state.wSession = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
 
     tplToggleTag: (el) => {
       const d = syncDraft();
@@ -76,9 +74,9 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
     },
 
     tplSetActive: async () => {
-      const r = setActive(getSessions(), state.tScreen, true);
+      const r = setActive(getSessions(), state.tScreen);
       if (r.error) { state.msg = r.error; return; }
-      if (await commit(r.sessions, `${current()?.name ?? 'Template'} is now the active template.`)) state.wSession = state.tScreen;
+      await commit(r.sessions, `${current()?.name ?? 'Template'} is now the active template.`);
     },
 
     tplDelete: async () => {

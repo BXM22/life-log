@@ -115,7 +115,7 @@ export function normalizeTemplate(raw) {
       if (r.error) return null;
       exercises.push(r.exercise);
     }
-    out.push({ id: s.id, name: s.name, focus: typeof s.focus === 'string' ? s.focus : '', tags: normalizeTags(s.tags), ...(s.active === false ? { active: false } : {}), exercises });
+    out.push({ id: s.id, name: s.name, focus: typeof s.focus === 'string' ? s.focus : '', tags: normalizeTags(s.tags), ...(typeof s.active === 'boolean' ? { active: s.active } : {}), exercises });
   }
   return out;
 }

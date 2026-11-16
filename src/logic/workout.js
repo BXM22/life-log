@@ -20,6 +20,8 @@ export const sessionForDate = (date, days = 4) => scheduleFor(days)[weekday(date
 /** The session to show: the one the user picked, else today's, else Upper A. */
 export function activeSessionId(picked, date, days = 4) {
   if (sessionById(picked)) return picked;
+  const on = getSessions().find((s) => s.active === true); // the one active template, if the user set one
+  if (on) return on.id;
   const scheduled = sessionForDate(date, days);
   if (sessionById(scheduled)) return scheduled; // a scheduled session may have been deleted
   return sessionById('upper_a') ? 'upper_a' : getSessions()[0].id;

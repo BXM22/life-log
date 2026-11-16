@@ -18,14 +18,8 @@ export function normalizeTags(raw) {
   return out;
 }
 
-export const isActive = (s) => s.active !== false;
+export const isActive = (s) => s.active === true;
 export const tagsOf = (s) => normalizeTags(s.tags);
-
-/** Sessions shown on the Workout tab; the picked session stays visible even if it is inactive. */
-export function visibleSessions(sessions, pickedId) {
-  const act = sessions.filter((s) => isActive(s) || s.id === pickedId);
-  return act.length ? act : sessions;
-}
 
 /** Suggested tags plus every custom tag in use, in a stable order. */
 export function allTags(sessions) {
@@ -47,9 +41,11 @@ export function setTags(sessions, id, tags) {
   return { sessions: patch(sessions, id, { tags: normalizeTags(tags) }) };
 }
 
-/** Turn a session on or off. At least one session must stay active. */
-export function setActive(sessions, id, on) {
+/** Make one session the active template; every other session becomes inactive. */
+export function setActive(sessions, id) {
   if (!has(sessions, id)) return { error: 'That session does not exist.' };
-  if (!on && sessions.filter((s) => isActive(s) && s.id !== id).length === 0) return { error: 'Keep at least one session active.' };
-  return { sessions: patch(sessions, id, { active: Boolean(on) }) };
+  return { sessions: sessions.map((s) => ({ ...s, active: s.id === id })) };
 }
+
+/** The explicitly active session, or null when none was ever set (older plans). */
+export const activeTemplate = (sessions) => sessions.find((s) => s.active === true) ?? null;

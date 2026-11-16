@@ -2,7 +2,7 @@ import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { SESSIONS, setTemplate } from '../src/logic/template.js';
 import { addSession, normalizeTemplate } from '../src/logic/templateEdit.js';
-import { normalizeTags, visibleSessions, allTags, usedTags, filterByTag, setTags, setActive, isActive } from '../src/logic/templateTags.js';
+import { normalizeTags, allTags, usedTags, filterByTag, setTags, setActive, isActive } from '../src/logic/templateTags.js';
 
 after(() => setTemplate(null));
 
@@ -28,24 +28,21 @@ test('allTags adds custom tags after the suggested ones; usedTags lists only tag
   assert.deepEqual(usedTags(s), ['heavy', 'quick', 'upper']);
 });
 
-test('setActive: hides a session, never the last active one; undefined means active', () => {
-  assert.equal(isActive({}), true);
-  const off = setActive(SESSIONS, 'upper_c', false).sessions;
-  assert.equal(isActive(off.find((s) => s.id === 'upper_c')), false);
-  assert.ok(!visibleSessions(off, null).some((s) => s.id === 'upper_c'));
-  assert.ok(visibleSessions(off, 'upper_c').some((s) => s.id === 'upper_c'));
-  let few = SESSIONS;
-  for (const id of ['upper_a', 'lower', 'upper_b']) few = setActive(few, id, false).sessions;
-  assert.match(setActive(few, 'upper_c', false).error, /at least one/);
-  assert.equal(setActive(few, 'upper_a', true).sessions.find((s) => s.id === 'upper_a').active, true);
+test('setActive: exactly one session is active', () => {
+  assert.equal(isActive({}), false);
+  const a = setActive(SESSIONS, 'lower').sessions;
+  assert.deepEqual(a.filter(isActive).map((s) => s.id), ['lower']);
+  const b = setActive(a, 'upper_c').sessions;
+  assert.deepEqual(b.filter(isActive).map((s) => s.id), ['upper_c']);
+  assert.match(setActive(SESSIONS, 'nope').error, /does not exist/);
 });
 
 test('normalizeTemplate keeps tags and active=false; addSession copies tags', () => {
-  const stored = JSON.parse(JSON.stringify(setActive(setTags(SESSIONS, 'lower', ['heavy']).sessions, 'upper_c', false).sessions));
+  const stored = JSON.parse(JSON.stringify(setActive(setTags(SESSIONS, 'lower', ['heavy']).sessions, 'upper_c').sessions));
   const n = normalizeTemplate(stored);
   assert.deepEqual(n.find((s) => s.id === 'lower').tags, ['heavy']);
-  assert.equal(n.find((s) => s.id === 'upper_c').active, false);
-  assert.equal('active' in n.find((s) => s.id === 'lower'), false);
+  assert.equal(n.find((s) => s.id === 'upper_c').active, true);
+  assert.equal(n.find((s) => s.id === 'lower').active, false);
   const old = normalizeTemplate([{ id: 'x', name: 'X', exercises: [] }]);
   assert.deepEqual(old[0].tags, []);
   const copy = addSession(SESSIONS, 'Lower 2', 'lower').sessions.at(-1);

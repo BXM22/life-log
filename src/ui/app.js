@@ -59,6 +59,7 @@ const state = {
   editId: null, // id of the entry being edited on the History tab
   histWin: null, // History own window: null | 'lifts' | 'entries'
   histLift: null, // lift shown in the Lift progress window
+  exOpen: {}, // exercise panels expanded on the Workout tab, by exercise name
   wSession: null, // workout session picked on the Workout tab (null = today's)
   rest: (() => { try { return loadRest(localStorage, Date.now()); } catch { return loadRest({ getItem: () => null }, Date.now()); } })(), // rest timer, see logic/rest.js
   wManage: false, // Workout tab in edit-templates mode
@@ -147,6 +148,7 @@ const actions = {
     if (el.checked) await requestNotifyPermission();
   },
 
+  toggleEx: (el) => { const n = el.dataset.name; state.exOpen[n] = !(state.exOpen[n] === true); },
   setPlanDays: (el) => { state.planDays = Number(el.value); state.wSession = null; persistSettings(); },
 
   install: async () => {

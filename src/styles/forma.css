@@ -251,3 +251,13 @@ button.setrow.setbtn b::after { content: ''; display: inline-block; width: 20px;
 .winrow > span:first-child { display: flex; flex-direction: column; text-align: left; }
 .winrow-k { font-size: 12px; line-height: 16px; font-weight: 700; color: #5A5A5F; letter-spacing: .04em; }
 .winrow-v { font-size: 15px; line-height: 22px; font-weight: 600; }
+
+/* Active template line on Workout, collapsible exercises */
+.activetpl { display: flex; align-items: center; gap: 8px; margin: 8px 0; }
+.activetpl span { color: var(--muted, #6B6B70); font-size: 13px; }
+.activetpl b { flex: 1; }
+.exfold > summary { cursor: pointer; list-style: none; }
+.exfold > summary::-webkit-details-marker { display: none; }
+.exfold > summary h2 { margin: 0; }
+.exfold > summary::after { content: '+'; float: right; font-size: 22px; line-height: 1; margin-top: -24px; }
+.exfold[open] > summary::after { content: '\2212'; }
