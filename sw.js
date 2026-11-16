@@ -1,6 +1,6 @@
 // Life Log service worker: cache-first app shell so the app opens offline.
 // Bump CACHE on every deploy that changes a shell file, so old files are dropped.
-const CACHE = 'life-log-shell-v27';
+const CACHE = 'life-log-shell-v28';
 const FONT_CACHE = 'life-log-fonts-v1';
 
 const SHELL = [
@@ -39,6 +39,8 @@ const SHELL = [
   'src/ui/restView.js',
   'src/ui/restActions.js',
   'src/ui/historyView.js',
+  'src/logic/progress.js',
+  'src/ui/progressView.js',
   'src/logic/workoutHistory.js',
   'src/ui/workoutHistoryView.js',
   'src/ui/mealView.js',

@@ -48,6 +48,12 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 - [x] F17 Inbox quick capture (Could). Shipped early as Notes on the Today tab: title and body, sent to the vault as one .md file per note in myVault/sources/life-log/notes/
 
+## M5 Design board ideas
+
+- [x] F39 PR banner and per-lift estimated 1RM chart (Should). A NEW PR banner on the Workout tab after a working set beats that lift's earlier best (live sets plus records kept through wipe; a first-ever set is not a PR); History tab LIFT TREND panel: best estimated 1RM per week for 8 weeks, one collapsible chart per lift
+- [x] F40 Habit heatmap and goal projection (Should). History tab: HABITS, 5 WEEKS heatmap (shade = share of habits done that day) and a GOAL 170 LB panel projecting the date from a straight line through the last 28 days of weigh-ins
+- [x] F43 Collapsible records and entry list, History part (Could). PERSONAL RECORDS and ALL ENTRIES are collapsed by default; ALL ENTRIES opens while an entry is being edited
+
 ## Open questions
 
 - [x] Starter habit list: Guitar, Coding, Workout (editable)

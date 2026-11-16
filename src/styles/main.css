@@ -309,3 +309,13 @@ details.menu > summary { min-height: 36px; padding: 4px 0; font-size: 12px; lett
 details.menu > summary::after { content: '\25BE'; }
 details.menu[open] > summary::after { content: '\25B4'; }
 details.menu .actions { flex-wrap: wrap; padding-top: 4px; }
+
+/* History: PR banner (F39), habit heatmap (F40), collapsible panels (F43) */
+.prbanner { display: block; width: 100%; margin-bottom: 12px; padding: 12px; min-height: 44px; text-align: left; font: inherit; font-family: var(--mono); background: var(--accent); color: var(--on-accent); border: 0; border-radius: 14px; cursor: pointer; }
+.hm { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
+.hmc { height: 24px; border-radius: 6px; background: var(--panel-2); border: 1px solid var(--line); }
+.hmc.l1 { background: #4a2a10; } .hmc.l2 { background: #8a4a14; } .hmc.l3 { background: #cc6618; } .hmc.l4 { background: var(--accent); border-color: var(--accent); }
+.hmc.future { opacity: .35; }
+details.panel > summary h2 { margin: 0; }
+details.panel > summary::after { content: '\25BE'; color: var(--accent); }
+details.panel[open] > summary::after { content: '\25B4'; }
