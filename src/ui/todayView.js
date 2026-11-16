@@ -11,13 +11,9 @@ import { sessionForDate } from '../logic/workout.js';
 import { sessionById } from '../logic/template.js';
 import { esc, label } from './format.js';
 import { waiting } from './exportWipeView.js';
-import { mealPanel } from './mealView.js';
-import { notesPanel } from './notesView.js';
 import { reminderBanner } from '../logic/exportReminder.js';
-import { practicePanel } from './practiceView.js';
-import { studyPanel } from './studyView.js';
-import { quickAddButton, quickAddSheet, collapsible } from './quickAddView.js';
-import { dayProtein } from '../logic/entries.js';
+import { todayRows, todayWindow } from './todayWindows.js';
+import { quickAddButton, quickAddSheet } from './quickAddView.js';
 
 const today = (state) => logicalDate(Date.now(), state.dayStartHour);
 
@@ -60,6 +56,7 @@ function sessionPanel(state) {
 }
 
 export function todayView(state) {
+  if (state.todayWin) return `${todayWindow(state, today(state))}${quickAddSheet(state)}`; // F49: Log, timer or Study window
   const recent = liveEntries(state.entries).sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 8);
   const rows = recent.map((e) =>
     `<div class="row"><span>${esc(e.date.slice(5))} ${esc(label(e))}</span>` +
@@ -82,27 +79,7 @@ export function todayView(state) {
     ${note ? `<p class="note">${esc(note)}</p>` : ''}
     ${habitsPanel(state)}
     ${sessionPanel(state)}
-    <div class="panel">
-      <h2>WEIGH-IN</h2>
-      <div class="inline">
-        <input id="wt" class="field" type="number" inputmode="decimal" step="0.1" placeholder="Weight (lb)" aria-label="Weight in pounds">
-        <button class="btn" data-action="logWeighIn">SAVE</button>
-      </div>
-    </div>
-    <div class="panel">
-      <h2>GUITAR</h2>
-      <div class="inline">
-        <input id="gm" class="field" type="number" inputmode="numeric" step="1" placeholder="Minutes" aria-label="Guitar minutes">
-        <input id="gb" class="field" type="number" inputmode="numeric" step="1" placeholder="Best BPM" aria-label="Best BPM, optional">
-      </div>
-      <input id="gf" class="field" maxlength="40" list="focuses" placeholder="Focus (optional)" aria-label="Focus, optional" autocomplete="off">
-      <datalist id="focuses"><option value="technique"><option value="songs"><option value="theory"><option value="improvisation"></datalist>
-      <button class="btn" data-action="logGuitar">SAVE GUITAR</button>
-    </div>
-    ${practicePanel(state)}
-    ${studyPanel(state, day)}
-    ${collapsible(state, 'meals', 'MEALS', `${dayProtein(state.entries, day)} g protein today`, mealPanel(state, day))}
-    ${collapsible(state, 'notes', 'NOTES', `${liveEntries(state.entries).filter((e) => e.type === 'note').length} saved`, notesPanel(state))}
+    ${todayRows(state, day)}
     <div class="panel">
       <h2>LATEST</h2>${rows || '<p>No entries yet.</p>'}
       ${state.entries.length === 0 ? '<button class="btn secondary" data-action="demo">LOAD DEMO DATA</button>' : ''}
