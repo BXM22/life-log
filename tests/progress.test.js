@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { newEntry } from '../src/logic/entries.js';
-import { prCheck, oneRmSeries, recentLifts, habitHeatmap, goalProjection } from '../src/logic/progress.js';
+import { prCheck, liftSummary, pickLift, oneRmSeries, recentLifts, habitHeatmap, goalProjection } from '../src/logic/progress.js';
 import { toggleCheck } from '../src/logic/habits.js';
 
 const lift = (exercise, weight, reps, date, extra = {}) => newEntry('lift_set', date, { session: 'upper_a', exercise, kind: 'working', weight, reps, seconds: null, side: null, ...extra }, 1);
@@ -85,4 +85,18 @@ test('goalProjection statuses: none, reached, few, wrong', () => {
   assert.equal(goalProjection([{ date: TODAY, weight_lb: 175 }], TODAY).status, 'few');
   const up = [['2026-10-25', 175], ['2026-11-01', 176], ['2026-11-10', 178]].map(([date, weight_lb]) => ({ date, weight_lb }));
   assert.equal(goalProjection(up, TODAY).status, 'wrong');
+});
+
+test('liftSummary and pickLift drive the Lift progress window', () => {
+  const es = [lift('Bench', 100, 5, '2026-10-05'), lift('Bench', 110, 5, TODAY)];
+  const s = liftSummary(es, 'Bench', TODAY);
+  assert.equal(s.first, 117);
+  assert.equal(s.latest, 128);
+  assert.equal(s.delta, 11);
+  assert.equal(s.lastWeek, '2026-11-09');
+  assert.equal(liftSummary(es, 'Squat', TODAY).latest, null);
+  assert.equal(liftSummary([lift('Bench', 100, 5, TODAY)], 'Bench', TODAY).delta, null);
+  assert.equal(pickLift(['Bench', 'Row'], 'Row'), 'Row');
+  assert.equal(pickLift(['Bench', 'Row'], 'Gone'), 'Bench');
+  assert.equal(pickLift([], 'Bench'), null);
 });

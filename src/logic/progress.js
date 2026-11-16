@@ -49,6 +49,18 @@ export function oneRmSeries(entries, exercise, today, weeks = 8) {
   });
 }
 
+/** Headline numbers for one lift's 8-week est. 1RM series: { latest, first, delta, lastWeek } (nulls when no data). */
+export function liftSummary(entries, exercise, today, weeks = 8) {
+  const pts = oneRmSeries(entries, exercise, today, weeks).filter((w) => w.best != null);
+  if (!pts.length) return { latest: null, first: null, delta: null, lastWeek: null };
+  const latest = pts[pts.length - 1].best;
+  const first = pts[0].best;
+  return { latest, first, delta: pts.length > 1 ? latest - first : null, lastWeek: pts[pts.length - 1].weekStart };
+}
+
+/** The lift to show: the chosen one when it is still in `names`, else the first. Null when there are none. */
+export const pickLift = (names, chosen) => (names.includes(chosen) ? chosen : names[0] ?? null);
+
 /** Heatmap of `weeks` Monday-Sunday weeks ending with this one: rows of 7 cells with a 0-4 level (share of habits done). */
 export function habitHeatmap(entries, habits, today, weeks = 5) {
   return Array.from({ length: weeks }, (_, i) => weekDates(today, i - (weeks - 1)).map((date) => {

@@ -56,6 +56,8 @@ const state = {
   dayStartHour: settings.dayStartHour,
   planDays: settings.planDays, // 3 or 4 lifting days a week, see logic/template.js scheduleFor
   editId: null, // id of the entry being edited on the History tab
+  histWin: null, // History own window: null | 'lifts' | 'entries'
+  histLift: null, // lift shown in the Lift progress window
   wSession: null, // workout session picked on the Workout tab (null = today's)
   rest: (() => { try { return loadRest(localStorage, Date.now()); } catch { return loadRest({ getItem: () => null }, Date.now()); } })(), // rest timer, see logic/rest.js
   wManage: false, // Workout tab in edit-templates mode
@@ -128,7 +130,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
   dismissPR: () => { state.pr = null; },
@@ -170,6 +172,10 @@ const actions = {
     state.entries.push(e);
     state.msg = `Saved ${r.data.minutes} min of guitar.`;
   },
+
+  openHistWin: (el) => { state.histWin = el.dataset.win; state.editId = null; window.scrollTo(0, 0); },
+  closeHistWin: () => { state.histWin = null; state.editId = null; window.scrollTo(0, 0); },
+  pickLift: (el) => { state.histLift = el.dataset.lift; },
 
   startEdit: (el) => { state.editId = el.dataset.id; state.msg = ''; },
 
@@ -401,7 +407,7 @@ function render() {
   const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
-  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
+  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${state.tab === 'history' && state.histWin ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
   $app.innerHTML = `${page}
     ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;

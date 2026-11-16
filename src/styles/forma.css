@@ -229,3 +229,17 @@ h2.setlabel { margin: 24px 0 8px; }
 .setnote { margin: 8px 0 0; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--dim); }
 .setgroup + .setnote + button.btn, .setnote + button.btn { margin-top: 16px; }
 label.check.setrow { align-items: center; margin: 0; min-height: 64px; }
+
+/* History own windows (F49): Lift progress and All entries */
+.hwin-head { margin-bottom: 16px; }
+.hwin-back { min-height: 44px; margin: 0 0 4px -8px; padding: 0 8px; background: none; border: 0; font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); cursor: pointer; }
+.hwin-back:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.hwin-title { margin: 0; font-size: 28px; line-height: 34px; font-weight: 800; }
+.lwchips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 12px; }
+.lwchart { display: block; width: 100%; height: auto; }
+.lwbase { stroke: var(--line); }
+.lwmid { stroke: var(--shade); }
+.lwline { fill: none; stroke: var(--ink); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.lwend { fill: var(--accent); stroke: var(--ink); stroke-width: 3; }
+.lwtitle, .lwaxis { border-bottom: 0; }
+.lwaxis { font-size: 12px; font-weight: 600; color: var(--dim); }
