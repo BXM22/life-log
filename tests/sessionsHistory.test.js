@@ -11,7 +11,7 @@ after(() => setTemplate(null));
 test('addSession: empty session with a readable id; blank, long and duplicate names are refused', () => {
   const r = addSession(SESSIONS, '  Push   day ');
   assert.equal(r.id, 'c-push-day');
-  assert.deepEqual(r.sessions.at(-1), { id: 'c-push-day', name: 'Push day', focus: '', exercises: [] });
+  assert.deepEqual(r.sessions.at(-1), { id: 'c-push-day', name: 'Push day', focus: '', tags: [], exercises: [] });
   assert.equal(r.sessions.length, SESSIONS.length + 1);
   assert.match(addSession(SESSIONS, '   ').error, /name/i);
   assert.match(addSession(SESSIONS, 'x'.repeat(41)).error, /40/);

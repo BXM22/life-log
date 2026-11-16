@@ -3,7 +3,9 @@
 //   actions: data-action="pickSession" | "toggleManage" | "logSet" (data-i = exercise index, data-kind = warmup | working), see workoutActions.js
 // Warm-up and working sets are logged separately. The weight box is pre-filled from the last working set.
 
-import { getSessions, sessionById } from '../logic/template.js';
+import { sessionById } from '../logic/template.js';
+import { sessionChips, templatesWindow, editScreen } from './templateTagsView.js';
+import { platesButton, platesPanel } from './platesView.js';
 import { activeSessionId, lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
 import { esc } from './format.js';
@@ -52,6 +54,8 @@ function exercisePanel(state, ex, i, day) {
       <button class="btn secondary" data-action="logSet" data-kind="warmup" data-i="${i}">WARM-UP SET</button>
       <button class="btn" data-action="logSet" data-kind="working" data-i="${i}">WORKING SET</button>
     </div>
+    ${ex.mode === 'weight' ? platesButton(i) : ''}
+    ${platesPanel(state, i)}
     ${rows}
   </div>`;
 }
@@ -60,15 +64,17 @@ export function workoutView(state) {
   const day = logicalDate(Date.now(), state.dayStartHour);
   const id = activeSessionId(state.wSession, day, state.planDays);
   const session = sessionById(id);
-  const picker = getSessions().map((s) => `<option value="${s.id}" ${s.id === id ? 'selected' : ''}>${esc(s.name)}</option>`).join('');
+  if (state.tScreen) return editScreen(state);
+  if (state.tWin) return templatesWindow(state);
   return `<div class="panel">
       <h2>WORKOUT ${esc(day.slice(5))}</h2>
-      <p><select data-action="pickSession" aria-label="Session">${picker}</select></p>
+      ${sessionChips(state, id)}
       <p>${session.focus ? `${esc(session.focus)}. ` : ''}Beat last time on the first exercise.</p>
       <div class="pair">
         <button class="btn secondary" data-action="toggleManage">${state.wManage ? 'DONE EDITING' : 'EDIT TEMPLATES'}</button>
         <button class="btn secondary" data-action="toggleHistory">${state.wHistory ? 'BACK TO WORKOUT' : 'HISTORY'}</button>
       </div>
+      <button class="btn secondary" data-action="tplOpenWin">TEMPLATES AND TAGS</button>
     </div>
     ${state.wHistory ? workoutHistoryView(state) : ''}
     ${state.wManage || state.wHistory ? '' : restPanel(state)}

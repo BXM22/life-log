@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: Workout tab: plate calculator (F38, PLATES button under each weight exercise, bar and plates owned kept on the device), template tags with a templates window, tag filter, Active switch, edit screen and a scrolling session chip row (F42), and fold/unfold warm-up lists (Workout part of F43); new files added to the offline cache; 157 tests; cache v28 (2026-11-15)
 - feat: REST DAY button on Today's session panel marks today as a rest day on the Workout habit so the streak keeps going; undo it with the same button, it exports as "(rest day)" and a real workout check is never overwritten; 146 tests; cache v27 (2026-11-15)
 - feat: EDIT EXERCISE and DELETE EXERCISE buttons on each workout panel (opens the template editor on that exercise), EDIT on calisthenics sets, and the rest timer's selection lines now match the width of the wheels; cache v25 (2026-11-13)
 - feat: finish M2 in four parallel tracks: workout warm-up checklists, back cues, trim a set, calisthenics blocks and BJJ check (F29, F30, F32); week view and streaks on History (F10, F11); practice timer and Kumio study log on Today (F12, F16); weekly export reminder banner and Settings toggle (F33); the new files are added to the offline cache; 145 tests; cache v24 (2026-11-13)

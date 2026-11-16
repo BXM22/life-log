@@ -18,6 +18,8 @@ import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
 import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
 import { createTemplateActions } from './templateActions.js';
+import { createTemplateTagsActions } from './templateTagsActions.js';
+import { createPlatesActions } from './platesActions.js';
 import { createRestActions } from './restActions.js';
 import { createMealActions } from './mealActions.js';
 import { createNotesActions } from './notesActions.js';
@@ -107,6 +109,8 @@ const practice = createPracticeActions({ state, saveEntries, saveFail, inputValu
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
   ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTemplateTagsActions({ state, saveFail, saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); } }),
+  ...createPlatesActions({ state, inputValue }),
   ...rest.actions,
   ...practice.actions,
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),

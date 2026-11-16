@@ -12,8 +12,9 @@ function checklist(state, day, list) {
   const spec = CHECKLISTS[list];
   const ticks = state.wChecks?.[checkKey(day, list)] ?? {};
   const done = checkedCount(state.wChecks, day, list);
-  const rows = spec.items.map((text, i) => `<label class="check"><input type="checkbox" data-action="toggleCheck" data-list="${list}" data-i="${i}" ${ticks[i] ? 'checked' : ''}><span>${esc(text)}</span></label>`).join('');
-  return `<div class="panel"><h2>${spec.title} ${done}/${spec.items.length}</h2>${rows}</div>`;
+  const open = !state.wFold?.[list];
+  const rows = open ? spec.items.map((text, i) => `<label class="check"><input type="checkbox" data-action="toggleCheck" data-list="${list}" data-i="${i}" ${ticks[i] ? 'checked' : ''}><span>${esc(text)}</span></label>`).join('') : '';
+  return `<div class="panel"><button class="fold" data-action="toggleWarm" data-list="${list}" aria-expanded="${open}"><h2>${spec.title} ${done}/${spec.items.length}</h2><span aria-hidden="true">${open ? '▴' : '▾'}</span></button>${rows}</div>`;
 }
 
 /** Upper or Lower warm-up checklist for the session, or '' for custom sessions. */

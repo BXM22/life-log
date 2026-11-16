@@ -48,6 +48,12 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 - [x] F17 Inbox quick capture (Could). Shipped early as Notes on the Today tab: title and body, sent to the vault as one .md file per note in myVault/sources/life-log/notes/
 
+## M5 Design board ideas
+
+- [x] F38 Plate calculator (Could) (mock-up). PLATES button under each weight exercise on the Workout card; plates per side for the working weight, bar weight and plates owned kept on the device, works offline
+- [x] F42 Workout template tags (Should) (mock-up). Templates window with tag filter and Active switch, edit screen (name, tags, custom tags, exercises with Remove, Add exercise, Set as active, Delete template), long names scroll in the Workout chip row
+- [~] F43 Collapsible sections and own-window screens (Should). Workout part done: warm-up lists fold and unfold. Today, History, Sync collapsibles and the own-window screens are not part of this change
+
 ## Open questions
 
 - [x] Starter habit list: Guitar, Coding, Workout (editable)
