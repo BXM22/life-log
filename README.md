@@ -2,7 +2,7 @@
 
 A phone-friendly web app (PWA) for fast daily logging: habits and food, workouts and bodyweight, and guitar practice. Offline-first, with JSON backup and a daily Markdown export for an Obsidian vault.
 
-**Status:** milestones 1 and 2 are built. Left in the backlog: the synced backend (M3) and the content tracker (M4).
+**Status:** milestones 1 and 2 are built. Nothing is left in the backlog.
 
 ## Features
 
@@ -32,8 +32,8 @@ A phone-friendly web app (PWA) for fast daily logging: habits and food, workouts
 
 1. **M1 MVP:** Today screen, habits, weigh-in, guitar log, backup, Markdown export to Dropbox with warned local wipe
 2. **M2 Training and food:** template-driven session logger, meals, protein, personal records, week view, streaks, practice timer, Kumio study log, export reminder
-3. **M3 Vault link:** daily Markdown export, optional synced backend
-4. **M4 Later tracks:** Inbox capture, content tracker
+3. **M3 Vault link:** daily Markdown export, direct Dropbox upload
+4. **M4 Later tracks:** Inbox capture
 
 ## Workflow
 

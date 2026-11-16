@@ -42,12 +42,11 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 ## M3 Vault link
 
-- [ ] F15 Synced backend and direct Dropbox upload (Could)
+- [x] F15 Direct Dropbox upload (Could). Shipped in M1 with OAuth PKCE and no backend. The synced backend idea is dropped.
 
 ## M4 Later tracks
 
 - [x] F17 Inbox quick capture (Could). Shipped early as Notes on the Today tab: title and body, sent to the vault as one .md file per note in myVault/sources/life-log/notes/
-- [ ] F18 Content posting tracker (Could)
 
 ## Open questions
 

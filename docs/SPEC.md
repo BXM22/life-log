@@ -368,8 +368,8 @@ Build in four milestones, each usable on its own.
 
 1. **MVP:** Today screen, habit checklist, quick weigh-in, guitar minutes and BPM, JSON backup, Markdown export to Dropbox with warned local wipe.
 2. **Training and food:** Upper/Lower session logger from the workout template with warm-up and working sets, rest timer, last-weight pre-fill, add and delete exercises, Kumio study log, meal log, week view, bodyweight chart and personal records.
-3. **Vault link:** Optional synced backend and direct Dropbox upload.
-4. **Later tracks:** Inbox capture, content posting tracker.
+3. **Vault link:** Direct Dropbox upload.
+4. **Later tracks:** Inbox capture.
 
 **Open questions**
 
@@ -399,10 +399,9 @@ There are 17 must-have features: 11 Must-M1 (v1) and 6 Must-M2. Everything else 
 | F12 | Practice timer | Guitar | Could | M2 |
 | F13 | Protein tracking against a 160 g daily target; water optional | Food | Should | M2 |
 | F14 | Markdown export to Dropbox, then warned wipe of exported logs | Core | Must-M1 | M1 |
-| F15 | Synced backend | Core | Could | M3 |
+| F15 | Direct Dropbox upload (synced backend dropped) | Core | Could | M3 |
 | F16 | Kumio prep and study log | Study | Should | M2 |
 | F17 | Inbox quick capture (shipped early as Notes: title + body on Today, one `YYYY-MM-DD-title.md` per note in `myVault/sources/life-log/notes/`, front matter `type: life-log-note`, `status: idea`) | Core | Could | M4 |
-| F18 | Content posting tracker | Guitar | Could | M4 |
 | F19 | Personal records: top 5 per lift, bodyweight, guitar BPM and more, kept through wipe | Core | Should | M2 |
 | F20 | Add and delete exercises (Upper and Lower lists) | Workouts | Must-M2 | M2 |
 | F21 | Workout template (Upper/Lower 3-4 day plan) | Workouts | Must-M2 | M2 |

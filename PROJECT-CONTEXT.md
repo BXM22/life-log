@@ -2,7 +2,7 @@
 
 **Purpose.** A phone-friendly web app (PWA) for fast daily logging of habits and food, workouts and bodyweight, and guitar practice. Entries save on the phone, then export as one Markdown file to Dropbox, which syncs into Brennen's Obsidian vault.
 
-**Stack.** PWA with IndexedDB storage, offline-first, no backend in v1. Export through the phone share sheet (Save to Dropbox) with a file-download fallback. A synced backend (FastAPI with Postgres or SQLite) is an optional M3 idea.
+**Stack.** PWA with IndexedDB storage, offline-first, no backend in v1. Export through the phone share sheet (Save to Dropbox) with a file-download fallback. The synced backend idea was dropped.
 
 **Phase.** Milestone 1 in progress. The spec, backlog, workout template and UI mockup are written, and the export and wipe logic and its UI are built.
 
