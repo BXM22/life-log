@@ -4,7 +4,7 @@
 
 import { isDirty } from '../logic/exportBuilder.js';
 import { logicalDate } from '../logic/dates.js';
-import { isChecked } from '../logic/habits.js';
+import { isChecked, isRestDay } from '../logic/habits.js';
 import { streakWithStats } from '../logic/retainedStats.js';
 import { liveEntries } from '../logic/entries.js';
 import { sessionForDate } from '../logic/workout.js';
@@ -37,12 +37,24 @@ function habitsPanel(state) {
   </div>`;
 }
 
+function restButton(state) {
+  const habit = state.habits.find((h) => h.id === 'workout');
+  if (!habit) return '';
+  const day = today(state);
+  const rest = isRestDay(state.entries, habit, day);
+  const real = isChecked(state.entries, habit, day) && !rest;
+  if (real) return '';
+  return `<button class="btn secondary" data-action="toggleRestDay">${rest ? 'UNDO REST DAY' : 'REST DAY'}</button>
+    <p class="note">${rest ? 'Rest day logged. Your Workout streak keeps going.' : 'Marks today as rest so your Workout streak keeps going.'}</p>`;
+}
+
 function sessionPanel(state) {
   const id = sessionForDate(today(state), state.planDays);
   const s = id && sessionById(id);
   return `<div class="panel"><h2>TODAY'S SESSION</h2>
     <p>${s ? `${esc(s.name)}: ${esc(s.focus)}` : 'No lifting scheduled. BJJ, rest or a walk.'}</p>
-    <button class="btn" data-tab="workout" data-action="tab">${s ? 'START WORKOUT' : 'PICK A WORKOUT'}</button></div>`;
+    <button class="btn" data-tab="workout" data-action="tab">${s ? 'START WORKOUT' : 'PICK A WORKOUT'}</button>
+    ${restButton(state)}</div>`;
 }
 
 export function todayView(state) {

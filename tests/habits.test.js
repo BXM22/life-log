@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { addHabit, toggleCheck, isChecked, currentStreak, normalizeName } from '../src/logic/habits.js';
+import { addHabit, toggleCheck, toggleRestDay, isRestDay, isChecked, currentStreak, normalizeName } from '../src/logic/habits.js';
 import { isDirty, buildExport } from '../src/logic/exportBuilder.js';
 import { markExported, planWipe } from '../src/logic/wipeEligibility.js';
 
@@ -85,4 +85,23 @@ test('streak crosses a month boundary', () => {
   const days = ['2026-10-30', '2026-10-31', '2026-11-01'];
   const entries = days.map((d) => toggleCheck([], water, d, Date.parse(`${d}T12:00:00`)));
   assert.equal(currentStreak(entries, water, '2026-11-01'), 3);
+});
+
+test('rest day keeps the streak alive, undoes cleanly and never overwrites a real check', () => {
+  const w = { id: 'workout', name: 'Workout' };
+  let entries = [toggleCheck([], w, '2026-11-10', T(10)), toggleCheck([], w, '2026-11-12', T(12))];
+  const rest = toggleRestDay(entries, w, '2026-11-11', T(11));
+  entries = [...entries, rest];
+  assert.equal(isRestDay(entries, w, '2026-11-11'), true);
+  assert.equal(currentStreak(entries, w, '2026-11-12'), 3);
+  assert.match(buildExport(entries, { now: T(13), id: 'x' }).markdown, /\[x\] Workout \(rest day\)/);
+
+  const undone = toggleRestDay(entries, w, '2026-11-11', T(11, 13));
+  assert.equal(isRestDay([...entries.slice(0, 2), undone], w, '2026-11-11'), false);
+
+  assert.equal(toggleRestDay(entries, w, '2026-11-12', T(12, 13)), null); // real workout stays
+  const base = [...entries.slice(0, 2), undone];
+  const checked = toggleCheck(base, w, '2026-11-11', T(11, 14)); // ticking the box after undoing the rest day
+  assert.equal(checked.data.done, true);
+  assert.equal(checked.data.rest, undefined);
 });

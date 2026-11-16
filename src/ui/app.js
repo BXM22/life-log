@@ -2,7 +2,7 @@ import { buildExport } from '../logic/exportBuilder.js';
 import { mergeRecords, recordsMarkdown } from '../logic/records.js';
 import { markExported, planWipe } from '../logic/wipeEligibility.js';
 import { logicalDate } from '../logic/dates.js';
-import { addHabit, toggleCheck, starterHabits } from '../logic/habits.js';
+import { addHabit, toggleCheck, toggleRestDay, starterHabits } from '../logic/habits.js';
 import { computeStats, emptyStats } from '../logic/retainedStats.js';
 import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry } from '../logic/entries.js';
 import { demoEntries } from '../logic/demo.js';
@@ -214,6 +214,17 @@ const actions = {
     if (!habit) return;
     const e = toggleCheck(state.entries, habit, today(), Date.now());
     try { await saveEntries([e]); } catch (e) { state.msg = saveFail(e); return; }
+    const i = state.entries.findIndex((x) => x.id === e.id);
+    if (i >= 0) state.entries[i] = e; else state.entries.push(e);
+    state.msg = '';
+  },
+
+  toggleRestDay: async () => {
+    const habit = state.habits.find((h) => h.id === 'workout');
+    if (!habit) return;
+    const e = toggleRestDay(state.entries, habit, today(), Date.now());
+    if (!e) return;
+    try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
     const i = state.entries.findIndex((x) => x.id === e.id);
     if (i >= 0) state.entries[i] = e; else state.entries.push(e);
     state.msg = '';

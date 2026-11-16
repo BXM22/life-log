@@ -16,5 +16,5 @@ export function label(e) {
   if (e.type === 'study') return `Kumio ${e.data.kind}: ${e.data.topic} (${e.data.minutes} min)`;
   if (e.type === 'note') return `Note: ${(e.data.title || String(e.data.body).split('\n')[0]).slice(0, 40)}`;
   if (e.type === 'lift_set') return `${e.data.exercise} ${e.data.kind === 'warmup' ? '(warm-up) ' : ''}${setText(e.data)}`;
-  return `${e.data.habit} ${e.data.done ? 'done' : 'missed'}`;
+  return `${e.data.habit} ${e.data.done ? (e.data.rest ? 'rest day' : 'done') : 'missed'}`;
 }

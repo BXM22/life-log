@@ -26,6 +26,7 @@ A phone-friendly web app (PWA) for fast daily logging: habits and food, workouts
 - [docs/SPEC.md](docs/SPEC.md): purpose, modules, data model, tech approach, feature scope, SDLC, risks
 - [docs/BACKLOG.md](docs/BACKLOG.md): features F1 to F35 as a checklist by milestone
 - [docs/TEMPLATE-upper-lower.md](docs/TEMPLATE-upper-lower.md): the Upper/Lower 3-4 day workout plan the app ships as its template
+- [docs/MAINTENANCE.md](docs/MAINTENANCE.md): how to triage, fix, release and roll back bugs, plus routine upkeep
 - [CHANGELOG.md](CHANGELOG.md): what changed and when
 
 ## Milestones

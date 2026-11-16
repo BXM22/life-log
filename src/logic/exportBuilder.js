@@ -33,7 +33,7 @@ function dayMarkdown(date, entries) {
   const habits = entries.filter((e) => e.type === 'habit_check');
   if (habits.length) {
     lines.push('## Habits');
-    for (const h of habits) lines.push(`- [${h.data.done ? 'x' : ' '}] ${h.data.habit}`);
+    for (const h of habits) lines.push(`- [${h.data.done ? 'x' : ' '}] ${h.data.habit}${h.data.done && h.data.rest ? ' (rest day)' : ''}`);
     lines.push('');
   }
 

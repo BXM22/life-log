@@ -66,7 +66,25 @@ export function toggleCheck(entries, habit, date, now) {
     if (existing.exportedAt == null) return { ...existing, deletedAt: now, updatedAt: now };
     return { ...existing, data: { ...existing.data, done: false }, updatedAt: now };
   }
-  return { ...existing, data: { ...existing.data, habit: habit.name, done: true }, deletedAt: null, updatedAt: now };
+  return { ...existing, data: { habit: habit.name, done: true }, deletedAt: null, updatedAt: now };
+}
+
+/** True when this habit's check for the date is a rest day (done, flagged rest). */
+export const isRestDay = (entries, habit, date) => {
+  const e = findCheck(entries, habit, date);
+  return Boolean(e && !e.deletedAt && e.data.done && e.data.rest);
+};
+
+/**
+ * Toggle a rest day on a habit, so the day still counts toward its streak.
+ * Returns the one entry to save, or null when the day is already a real check (nothing to do).
+ * Undoing follows toggleCheck, so an exported rest day flips to not done and exports again.
+ */
+export function toggleRestDay(entries, habit, date, now) {
+  const existing = findCheck(entries, habit, date);
+  if (existing && !existing.deletedAt && existing.data.done && !existing.data.rest) return null;
+  const e = toggleCheck(entries, habit, date, now);
+  return e.data.done ? { ...e, data: { ...e.data, rest: true } } : e;
 }
 
 /** Consecutive done days ending today. If today is not done yet, counts back from yesterday. */
