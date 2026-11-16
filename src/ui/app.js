@@ -29,6 +29,7 @@ import { setTemplate } from '../logic/template.js';
 import { normalizeTemplate } from '../logic/templateEdit.js';
 import { exportView, wipeView, wipeOpts } from './exportWipeView.js';
 import { backupActions } from './backupPanel.js';
+import { createSyncActions } from './syncActions.js';
 import { getConfig, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
 import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, deleteHabit, saveTemplate, clearTemplate } from '../db/store.js';
 
@@ -71,7 +72,7 @@ const state = {
 };
 
 const $app = document.getElementById('app');
-const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; };
+const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; state.syncModal = null; };
 const inputValue = (id) => document.getElementById(id)?.value ?? '';
 const today = () => logicalDate(Date.now(), state.dayStartHour);
 
@@ -108,6 +109,7 @@ const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
   ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
   ...rest.actions,
+  ...createSyncActions({ state, onChange: () => render() }),
   ...practice.actions,
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),

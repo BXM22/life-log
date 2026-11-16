@@ -48,6 +48,12 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 - [x] F17 Inbox quick capture (Could). Shipped early as Notes on the Today tab: title and body, sent to the vault as one .md file per note in myVault/sources/life-log/notes/
 
+## M5 Design board ideas
+
+- [x] F37 Weekly review (Should). Sync tab panel: Monday to Sunday summary (habit days, weight change, guitar minutes, working sets, protein average) sent to the vault as one Markdown file under reviews/ by Dropbox or share sheet; highlighted on Sundays
+- [x] F43 Collapsible sections, Sync part (Should). Backup is a collapsible section (open when a copy is overdue); the wipe confirmation and Dropbox setup each open in their own window. Other tabs are owned by other tracks
+- [x] F47 Backup nudge meter (Should). Sync tab bars for days since the last export and the last JSON backup (ok under 4 days, warn 4-6, due 7+ or never)
+
 ## Open questions
 
 - [x] Starter habit list: Guitar, Coding, Workout (editable)
