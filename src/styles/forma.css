@@ -245,3 +245,9 @@ button.setrow.setbtn b::after { content: ''; display: inline-block; width: 20px;
 .lwend { fill: var(--accent); stroke: var(--ink); stroke-width: 3; }
 .lwtitle, .lwaxis { border-bottom: 0; }
 .lwaxis { font-size: 12px; font-weight: 600; color: var(--dim); }
+
+/* Today windows (F49): rows that open Log and Study. */
+.winrow { margin-bottom: 12px; min-height: 72px; }
+.winrow > span:first-child { display: flex; flex-direction: column; text-align: left; }
+.winrow-k { font-size: 12px; line-height: 16px; font-weight: 700; color: #5A5A5F; letter-spacing: .04em; }
+.winrow-v { font-size: 15px; line-height: 22px; font-weight: 600; }

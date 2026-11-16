@@ -27,6 +27,7 @@ import { createNotesActions } from './notesActions.js';
 import { createPracticeActions } from './practiceActions.js';
 import { createStudyActions } from './studyActions.js';
 import { createTodayActions } from './todayActions.js';
+import { createTodayWinActions } from './todayWinActions.js';
 import { positionWheels, restPage } from './restView.js';
 import { loadRest } from '../logic/rest.js';
 import { setTemplate } from '../logic/template.js';
@@ -122,6 +123,7 @@ const actions = {
   ...practice.actions,
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createTodayActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTodayWinActions({ state }),
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createNotesActions({ state, saveEntries, saveFail, inputValue, today, download, onChange: () => render() }),
   ...createTemplateActions({
@@ -130,7 +132,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
   dismissPR: () => { state.pr = null; },
