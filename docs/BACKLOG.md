@@ -48,6 +48,12 @@ Priority: Must-M1, Must-M2, Should, Could. Tick items as they ship and note them
 
 - [x] F17 Inbox quick capture (Could). Shipped early as Notes on the Today tab: title and body, sent to the vault as one .md file per note in myVault/sources/life-log/notes/
 
+## M5 Design board ideas
+
+- [x] F36 Quick add sheet (Should). A + button on Today opens a bottom sheet with WEIGHT, MEAL, GUITAR, STUDY and NOTE chips and only the essential fields; saves an ordinary entry. Meal type follows the hour
+- [x] F41 Custom study subjects (Should). Kumio panel: add and remove your own subjects (kept on the phone, up to 20), tap one to fill the topic, or pick from the topic suggestions
+- [x] F43 Today part: Meals and Notes fold into one-line bars (collapsed by default) and the quick add is its own sheet. Not built here: the other tabs' parts of F43
+
 ## Open questions
 
 - [x] Starter habit list: Guitar, Coding, Workout (editable)
