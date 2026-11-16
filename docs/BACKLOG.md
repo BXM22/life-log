@@ -60,7 +60,7 @@ From the Life Log design board (Forma layout). Mock-ups exist for screens marked
 - [x] F41 Custom study subjects (Should). Generalises F16: any subject as a chip, add and edit subjects, per-subject minutes today and weekly total; the export section is named after the subject instead of ## Kumio. Closes the "weekly total" gap in F16
 - [x] F42 Workout template tags (Should) (mock-up). Extends F34: a templates window listing all sessions with tags and a tag filter; an edit screen with name, tags, custom tags and exercises. Long template names scroll in the Workout chip row instead of cutting off. Each template has an Active switch (active ones show on the Workout tab, inactive are hidden); the edit screen has Set as active, a remove button on every exercise, Add exercise and Delete template
 - [x] F43 Collapsible sections and own-window screens (Should). Collapse notes and meals on Today, warm-up lists on Workout, records and entry list on History, backup on Sync. Own window: practice timer, entry edit, quick add, wipe confirmation, Dropbox setup
-- [ ] F48 Restyle the real app to the Forma layout and tokens (Should). Design board: https://claude.ai/artifact/PAsD96x1mvrnTiuGb4TtfB
+- [x] F48 Restyle the real app to the Forma layout and tokens (Should). Design board: https://claude.ai/artifact/PAsD96x1mvrnTiuGb4TtfB
 
 ## Updates
 

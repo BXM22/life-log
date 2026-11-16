@@ -1,0 +1,150 @@
+/* Forma layout and tokens (F48). Loaded last: re-skins the app from the design board without touching any markup or logic.
+   Cream #FBF3EC cards on white, peach #F4A28C accent, ink #1C1B1F, muted #6B6B70, Plus Jakarta Sans, 8pt grid. */
+:root {
+  --bg: #FFFFFF;
+  --bg-top: #FFFFFF;
+  --halo: transparent;
+  --panel: #FBF3EC;
+  --panel-2: #FFFFFF;
+  --field: #FFFFFF;
+  --line: #E3D6CB;
+  --shade: #EEE6E0;
+  --text: #1C1B1F;
+  --dim: #6B6B70;
+  --accent: #F4A28C;
+  --on-accent: #1C1B1F;
+  --soft: #FDE8E0;
+  --danger: #B3261E;
+  --ink: #1C1B1F;
+  --peach-soft: #FDE8E0;
+  --peach-mid: #F9C9BB;
+  --pill: #FDE0D6;
+  --mono: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --dot: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --code: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html { background: var(--bg); }
+body { background: #FFFFFF; font-size: 15px; line-height: 22px; font-weight: 500; }
+#app { padding: calc(32px + env(safe-area-inset-top)) max(24px, env(safe-area-inset-right)) calc(112px + env(safe-area-inset-bottom)) max(24px, env(safe-area-inset-left)); }
+
+/* Type scale: screen title 28/34 800, overline 12/16 700, body 15/22 500. */
+h1, h2, .pixel { font-family: var(--mono); letter-spacing: -0.02em; }
+h1 { font-size: 28px; line-height: 34px; font-weight: 800; text-transform: none; }
+.top { margin: 0 0 24px; }
+.kicker { margin-bottom: 0; font-size: 13px; line-height: 18px; font-weight: 600; letter-spacing: 0; text-transform: none; color: var(--dim); }
+h2 { margin: 0 0 12px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; color: #5A5A5F; }
+.big, .hero .big { font-weight: 800; letter-spacing: -0.02em; }
+button, .tab { letter-spacing: 0; }
+small { font-size: 12px; font-weight: 600; color: #5A5A5F; }
+.lbl { font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: #5A5A5F; }
+
+/* Cards: 24 radius, 20 padding, no shadow, 12 between cards. */
+.panel { margin-bottom: 12px; padding: 20px; background: var(--panel); border-radius: 24px; box-shadow: none; }
+.panel p { line-height: 22px; }
+.note { color: var(--dim); font-size: 13px; line-height: 18px; font-weight: 600; }
+
+/* Today hero: peach card, big count, ink progress. */
+.hero { background: var(--accent); color: var(--ink); border-radius: 24px; }
+.hero .big { font-size: 48px; line-height: 52px; margin: 0 0 2px; color: var(--ink); }
+.hero p { margin: 0 0 12px; color: var(--ink); font-size: 15px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+.pips i { background: var(--peach-mid); }
+.pips i.on { background: var(--ink); }
+
+/* Status row. */
+.rowbtn { min-height: 56px; margin: 0 0 12px; padding: 0 16px; background: var(--panel); border-radius: 16px; box-shadow: none; font-size: 15px; font-weight: 700; }
+.rowbtn:active { background: var(--peach-soft); }
+.chev { color: var(--dim); }
+
+/* Buttons: peach primary, 56 high, full pill. Secondary is white with a hairline. */
+button.btn { min-height: 56px; margin-top: 12px; padding: 0 20px; background: var(--accent); color: var(--ink); border: 0; border-radius: 28px; font-size: 15px; font-weight: 700; text-transform: none; }
+button.btn.secondary { background: #FFFFFF; color: var(--ink); border: 1px solid var(--line); }
+button.btn:disabled { background: #FFFFFF; color: var(--dim); border: 1px dashed var(--line); }
+button.btn.danger { background: #FFFFFF; color: var(--danger); border: 1.5px solid var(--danger); }
+button.btn.danger:disabled { color: var(--dim); border: 1px dashed var(--line); }
+button.btn.small { min-height: 44px; font-size: 13px; padding: 0 16px; }
+button.btn.chip { min-height: 44px; margin-top: 0; padding: 0 16px; font-size: 14px; background: var(--panel); color: var(--ink); border-radius: 22px; }
+button.btn.chip.on, button.btn.chip[aria-pressed="true"] { background: var(--ink); color: #FFFFFF; }
+.inline button.btn { padding: 0 20px; }
+
+/* Fields: 56 high, 16 radius, white. 16px type so iOS does not zoom. */
+.field, select { min-height: 56px; padding: 0 16px; background: #FFFFFF; border: 1px solid var(--line); border-radius: 16px; font-size: 16px; font-weight: 600; color: var(--ink); }
+textarea.field { padding: 14px 16px; }
+.field::placeholder { color: var(--dim); opacity: 1; }
+.field:focus { border-color: var(--ink); }
+.panel .field + .field { margin-top: 12px; }
+
+/* Segmented control. */
+.seg { margin-bottom: 16px; padding: 4px; gap: 0; border: 0; border-radius: 24px; background: var(--panel); }
+.seg button { min-height: 40px; border-radius: 20px; font-size: 14px; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--ink); }
+.seg button[aria-current="page"] { background: var(--ink); color: #FFFFFF; font-weight: 700; }
+
+/* Bottom tab bar: white, hairline on top, pill behind the active icon. */
+.tabbar { padding: 8px 4px calc(10px + env(safe-area-inset-bottom)); background: #FFFFFF; border-top: 1px solid var(--shade); }
+.tab { min-height: 56px; gap: 4px; padding: 0; font-size: 11px; line-height: 14px; font-weight: 700; text-transform: none; letter-spacing: 0; color: var(--dim); }
+.tab .ico { box-sizing: border-box; width: 56px; height: 32px; padding: 4px 16px; border-radius: 16px; stroke-width: 1.8; }
+.tab[aria-current="page"] { color: var(--ink); box-shadow: none; }
+.tab[aria-current="page"] .ico { background: var(--pill); }
+
+/* Lists, tags, checkboxes. */
+.row, .habit, .entry { border-bottom: 1px solid var(--shade); }
+.habit { min-height: 56px; }
+.tag, .streak { padding: 3px 10px; font-size: 12px; font-weight: 700; letter-spacing: 0; color: var(--ink); background: var(--peach-soft); border: 0; border-radius: 12px; }
+.tag.waiting { background: var(--accent); }
+.tag.done { background: var(--peach-soft); }
+label.check input { width: 28px; height: 28px; border: 2px solid #C9B8AB; border-radius: 14px; background: #FFFFFF; }
+label.check input:checked { background: var(--ink); border-color: var(--ink); }
+label.check input:checked::after { border-color: #FFFFFF; border-width: 0 2px 2px 0; }
+label.check input:focus-visible, .tab:focus-visible, .seg button:focus-visible, .rowbtn:focus-visible, button.btn:focus-visible, .field:focus-visible, select:focus-visible, summary:focus-visible, .toast:focus-visible, .qa-fab:focus-visible, .qa-chip:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Messages, reminders, warnings. */
+.reminder, .msg { background: var(--peach-soft); color: var(--ink); border: 0; border-radius: 16px; }
+.reminder b { color: var(--ink); }
+.toast { background: var(--ink); color: #FFFFFF; border: 0; border-radius: 16px; font-weight: 600; box-shadow: 0 6px 20px rgba(28, 27, 31, .25); }
+.warn { background: var(--peach-soft); color: var(--danger); border: 1px solid var(--danger); border-radius: 16px; font-weight: 600; }
+pre { background: #FFFFFF; color: var(--ink); border: 1px solid var(--line); border-radius: 16px; font-family: var(--code); }
+
+/* Progress, meters, rest timer. */
+progress, .bar, .meter { background: var(--shade); }
+progress::-webkit-progress-bar { background: var(--shade); }
+progress::-webkit-progress-value { background: var(--accent); }
+progress::-moz-progress-bar { background: var(--accent); }
+.meter i.ok { background: var(--ink); }
+.meter i.due, .meter i.never { background: var(--danger); }
+.wheel { border: 1px solid var(--line); background: #FFFFFF; border-radius: 16px; }
+.wheel i, .colon { font-weight: 800; }
+.wheels::before { border-color: var(--accent); }
+
+/* Workout: progression prompt, cues, chip row. */
+.panel p.try, .panel p.cue { background: var(--peach-soft); border: 0; border-radius: 12px; }
+.panel p.try b { font-size: 12px; letter-spacing: 0.04em; color: var(--ink); }
+details.menu > summary, details.fold > summary::after, details.panel > summary::after { color: var(--ink); }
+.plates { border-top-color: var(--line); }
+
+/* History: week grid as dots, trend line in ink, heatmap in peach. */
+.wkh { font-size: 12px; font-weight: 700; color: #5A5A5F; }
+.wkh.now { color: var(--ink); font-weight: 800; }
+.wkcell { height: 20px; width: 20px; justify-self: center; border: 0; border-radius: 10px; background: var(--line); }
+.wkcell.on { background: var(--ink); }
+.trend .goal { stroke: var(--dim); stroke-width: 1.5; }
+.trend .wline { stroke: var(--ink); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.trend .wdot { fill: var(--accent); stroke: var(--ink); stroke-width: 2; }
+.trend .axis { fill: #5A5A5F; font-family: var(--mono); font-size: 11px; font-weight: 700; }
+.hmc { border: 0; border-radius: 8px; background: var(--shade); }
+.hmc.l1 { background: var(--peach-soft); } .hmc.l2 { background: var(--peach-mid); } .hmc.l3 { background: var(--accent); } .hmc.l4 { background: #D9694A; border: 0; }
+.prbanner { background: var(--accent); color: var(--ink); border-radius: 16px; font-weight: 700; }
+
+/* Own-window screens and the quick add sheet. */
+.modal { background: rgba(28, 27, 31, .5); }
+.modal-card { background: #FFFFFF; border-radius: 24px; }
+.qa-fab { background: var(--accent); color: var(--ink); box-shadow: 0 6px 18px rgba(244, 162, 140, .55); }
+.qa-scrim { background: rgba(28, 27, 31, .45); }
+.qa-sheet { background: #FFFFFF; border-radius: 24px 24px 0 0; box-shadow: 0 -8px 28px rgba(28, 27, 31, .18); }
+.qa-chip { min-height: 44px; padding: 0 16px; background: var(--panel); color: var(--ink); border: 0; border-radius: 22px; font-weight: 700; }
+.qa-chip[aria-pressed="true"] { background: var(--ink); color: #FFFFFF; }
+button.btn.qa-close { background: var(--panel); color: var(--ink); }
+.qa-fold small { color: var(--dim); }
+
+/* Screen titles and tab labels are single plain words typed in capitals; show them as Forma does ("Today"). */
+h1, .tab span { text-transform: lowercase; }
+h1::first-letter, .tab span::first-letter { text-transform: uppercase; }

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: restyle to the Forma design board (F48): white screens, cream cards, peach accent, ink text, Plus Jakarta Sans, 24px cards, 56px pill buttons and fields, soft-pill tab bar; CSS only in src/styles/forma.css, no logic changed; 175 tests; cache v29 (2026-11-15)
 - feat: Today quick add sheet (F36), custom Kumio study subjects (F41) and collapsible Meals and Notes (F43, Today part); 154 tests; cache v28 (2026-11-15)
 
 - feat: Sync tab gets a weekly review sent to the vault (F37), a backup nudge meter (F47), a collapsible backup section and own-window wipe confirmation and Dropbox setup (F43); 151 tests; cache v28 (2026-11-15)
