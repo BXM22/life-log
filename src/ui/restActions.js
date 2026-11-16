@@ -2,7 +2,7 @@
 // what it owns (state, a re-render callback), so this file has no globals except the one interval and audio context.
 
 import { clampRest, fmt, fromWheel, remaining, saveRest } from '../logic/rest.js';
-import { ITEM } from './restView.js';
+import { ITEM, ringOffset } from './restView.js';
 
 export function createRestActions({ state, onChange }) {
   let timer = 0;
@@ -35,11 +35,13 @@ export function createRestActions({ state, onChange }) {
   function paint() {
     const r = state.rest;
     const time = document.getElementById('rest-time');
-    const bar = document.getElementById('rest-bar');
+    const ring = document.getElementById('rest-ring');
+    const rowTime = document.getElementById('rest-row-time');
     if (r.endAt == null) return;
     const left = remaining(r.endAt, Date.now());
     if (time) time.textContent = fmt(left);
-    if (bar) bar.style.width = `${r.total ? Math.round((1 - left / r.total) * 100) : 0}%`;
+    if (rowTime) rowTime.textContent = fmt(left);
+    if (ring) ring.setAttribute('stroke-dashoffset', String(ringOffset(r)));
   }
 
   function tick() {
@@ -89,6 +91,8 @@ export function createRestActions({ state, onChange }) {
 
   return {
     actions: {
+      restOpen: () => { state.restOpen = true; window.scrollTo(0, 0); },
+      restClose: () => { state.restOpen = false; window.scrollTo(0, 0); },
       restStart: () => { start(); },
       restStop: () => { state.rest.endAt = null; state.rest.total = null; persist(); stop(); },
       restPreset: (el) => { start(Number(el.dataset.s)); },

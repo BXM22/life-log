@@ -148,3 +148,84 @@ button.btn.qa-close { background: var(--panel); color: var(--ink); }
 /* Screen titles and tab labels are single plain words typed in capitals; show them as Forma does ("Today"). */
 h1, .tab span { text-transform: lowercase; }
 h1::first-letter, .tab span::first-letter { text-transform: uppercase; }
+
+/* Rest timer: the peach row on Workout and the full cream page (Forma "Rest timer"). */
+.rest-row { display: flex; align-items: center; justify-content: space-between; width: 100%; height: 64px; margin: 0 0 12px; padding: 0 20px; border: 0; border-radius: 20px; background: var(--accent); color: var(--ink); font-family: var(--mono); text-align: left; cursor: pointer; }
+.rest-row:active { opacity: .8; }
+.rest-row:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.rest-row-text { display: flex; flex-direction: column; gap: 2px; }
+.rest-row-label { font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; }
+.rest-row-time { font-size: 20px; line-height: 26px; font-weight: 800; }
+.rest-row-open { display: flex; align-items: center; height: 40px; padding: 0 20px; border-radius: 20px; background: var(--ink); color: #FFFFFF; font-size: 14px; font-weight: 700; }
+html:has(.restpage), body:has(.restpage) { background: var(--panel); }
+.restpage { display: flex; flex-direction: column; align-items: center; }
+.rest-head { align-self: stretch; display: flex; align-items: center; justify-content: space-between; height: 44px; }
+.rest-head h1 { margin: 0; font-size: 20px; line-height: 26px; font-weight: 700; letter-spacing: 0; }
+.rest-back { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -4px; padding: 0; border: 0; border-radius: 22px; background: #FFFFFF; color: var(--ink); cursor: pointer; }
+.rest-spacer { width: 44px; }
+.rest-ring { position: relative; width: 220px; height: 220px; margin-top: 24px; }
+.rest-ring svg { display: block; }
+.rest-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.rest-time { font-size: 56px; line-height: 60px; font-weight: 800; letter-spacing: -0.02em; }
+.rest-sub { font-size: 15px; line-height: 20px; font-weight: 600; color: #5A5A5F; }
+.rest-chips { display: flex; gap: 8px; margin-top: 24px; }
+.rest-chip { height: 44px; padding: 0 18px; border: 0; border-radius: 22px; background: #FFFFFF; color: var(--ink); font-family: var(--mono); font-size: 15px; font-weight: 700; cursor: pointer; }
+.rest-chip[aria-pressed="true"] { background: var(--ink); color: #FFFFFF; }
+.rest-chip:focus-visible, .rest-back:focus-visible, .rest-go:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.rest-label { align-self: stretch; margin: 24px 0 8px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; color: #5A5A5F; }
+.restpage .wheels { align-self: stretch; width: auto; height: 120px; margin: 0; gap: 16px; justify-content: center; border-radius: 20px; background: #FFFFFF; }
+.restpage .wheels::before { left: 16px; right: 16px; top: 40px; height: 40px; border: 0; border-radius: 12px; background: var(--peach-soft); z-index: 0; }
+.restpage .wheel { z-index: 1; width: 72px; border: 0; border-radius: 0; background: transparent; -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .35), #000 35%, #000 65%, rgba(0, 0, 0, .35)); mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .35), #000 35%, #000 65%, rgba(0, 0, 0, .35)); }
+.restpage .wheel i { font-size: 20px; font-weight: 800; }
+.restpage .colon { position: relative; z-index: 1; font-size: 20px; font-weight: 800; }
+.rest-auto { align-self: stretch; margin: 12px 0 0; min-height: 44px; align-items: center; font-weight: 600; }
+.rest-go { align-self: stretch; height: 56px; margin-top: 12px; border: 0; border-radius: 28px; background: var(--accent); color: var(--ink); font-family: var(--mono); font-size: 16px; font-weight: 700; cursor: pointer; }
+.rest-go.stop { background: var(--ink); color: #FFFFFF; }
+
+/* Toggle switches (Forma .sw 52 x 32) for the template Active switch and the export reminder. */
+label.check input[data-action="tplActive"], label.check input[data-action="setExportReminder"] { position: relative; display: block; width: 52px; height: 32px; margin: 0; padding: 0; flex: none; border: 0; border-radius: 16px; background: #C9B8AB; cursor: pointer; }
+label.check input[data-action="tplActive"]::after, label.check input[data-action="setExportReminder"]::after { content: ''; position: absolute; top: 4px; left: 4px; width: 24px; height: 24px; margin: 0; border: 0; border-radius: 12px; background: #FFFFFF; transform: none; transition: left 150ms ease-out; }
+label.check input[data-action="tplActive"]:checked, label.check input[data-action="setExportReminder"]:checked { background: var(--ink); border: 0; }
+label.check input[data-action="tplActive"]:checked::after, label.check input[data-action="setExportReminder"]:checked::after { left: 24px; border: 0; transform: none; }
+@media (prefers-reduced-motion: reduce) { label.check input[data-action="tplActive"]::after, label.check input[data-action="setExportReminder"]::after { transition: none; } }
+
+/* Wipe: solid red button, red-ringed warning (Forma "Sync: wipe"). */
+button.btn.danger { background: var(--danger); color: #FFFFFF; border: 0; }
+button.btn.danger:disabled { background: #FFFFFF; color: var(--dim); border: 1px dashed var(--line); }
+.warn { padding: 18px; color: var(--ink); border: 2px solid var(--danger); border-radius: 24px; font-weight: 500; }
+
+/* Templates window and edit screen (Forma "Workout templates", "Edit template"). */
+.backrow { display: flex; align-items: center; justify-content: space-between; margin: -8px 0 0; }
+.back-link { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-left: -10px; padding: 0; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.back-link:focus-visible, .editlink:focus-visible, .trash:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+h2.subtitle { margin: 0 0 12px; font-size: 20px; line-height: 26px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+.tplfilter button.btn.chip { min-height: 36px; padding: 0 14px; font-size: 13px; }
+.tpllist { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+.tplcard { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-radius: 20px; background: var(--panel); }
+.tplcard.off { opacity: .85; }
+.tplcard-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tplcard-name { min-width: 0; font-size: 17px; line-height: 22px; font-weight: 700; }
+.editlink { flex: none; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--ink); font-family: var(--mono); font-size: 13px; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.tplcard .tags { margin: 0; }
+.tplcard .tag { background: #FFFFFF; }
+.tplcard .tag:first-child { background: var(--peach-soft); }
+.tplrow { justify-content: space-between; align-items: center; min-height: 44px; margin: 4px 0 0; border-top: 1px solid #EADFD5; font-size: 14px; font-weight: 700; }
+.tplrow small { font-size: 14px; font-weight: 600; color: #5A5A5F; }
+.exrow { display: grid; grid-template-columns: 1fr auto auto auto; align-items: center; gap: 8px; min-height: 56px; border-bottom: 1px solid var(--shade); font-size: 15px; font-weight: 600; }
+.exrow .exname { min-width: 0; }
+.exrow small { font-size: 13px; color: #5A5A5F; }
+.trash { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: -10px; padding: 0; border: 0; background: transparent; color: var(--danger); cursor: pointer; }
+h2.subtitle { text-transform: none; }
+label.check.tplrow { align-items: center; justify-content: space-between; min-height: 44px; margin: 4px 0 0; }
+button.btn[data-action="tplAddTag"] { background: var(--ink); color: #FFFFFF; border: 0; min-height: 56px; }
+
+/* Settings: grouped rows, label left and value right (Forma "Settings"). */
+h2.setlabel { margin: 24px 0 8px; }
+.setgroup { display: flex; flex-direction: column; padding: 0 16px; border-radius: 20px; background: var(--panel); }
+.setrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; margin: 0; border-bottom: 1px solid #EADFD5; font-size: 15px; font-weight: 600; }
+.setrow:last-child { border-bottom: 0; }
+.setrow b { font-weight: 700; }
+.setrow select { width: auto; min-height: 44px; padding: 0 26px 0 8px; border: 0; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%236B6B70' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 5l7 7-7 7'/%3E%3C/svg%3E") no-repeat right center / 20px; -webkit-appearance: none; appearance: none; font-weight: 700; color: var(--ink); text-align: right; text-align-last: right; cursor: pointer; }
+.setnote { margin: 8px 0 0; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--dim); }
+.setgroup + .setnote + button.btn, .setnote + button.btn { margin-top: 16px; }
+label.check.setrow { align-items: center; margin: 0; min-height: 64px; }

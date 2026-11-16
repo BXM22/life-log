@@ -11,7 +11,7 @@ import { logicalDate } from '../logic/dates.js';
 import { esc } from './format.js';
 import { manageView } from './templateView.js';
 import { editForm } from './historyView.js';
-import { restPanel } from './restView.js';
+import { restRow } from './restView.js';
 import { workoutHistoryView } from './workoutHistoryView.js';
 import { warmupPanel, bjjPanel, caliPanel, targetText, trimButtons, cueBlock } from './workoutExtrasView.js';
 
@@ -77,7 +77,7 @@ export function workoutView(state) {
       <button class="btn secondary" data-action="tplOpenWin">TEMPLATES AND TAGS</button>
     </div>
     ${state.wHistory ? workoutHistoryView(state) : ''}
-    ${state.wManage || state.wHistory ? '' : restPanel(state)}
+    ${state.wManage || state.wHistory ? '' : restRow(state)}
     ${state.wHistory || state.wManage ? '' : bjjPanel(state, day) + caliPanel(state, day) + warmupPanel(state, session, day)}
     ${state.wHistory ? '' : state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
 }

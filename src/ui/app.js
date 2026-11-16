@@ -27,7 +27,7 @@ import { createNotesActions } from './notesActions.js';
 import { createPracticeActions } from './practiceActions.js';
 import { createStudyActions } from './studyActions.js';
 import { createTodayActions } from './todayActions.js';
-import { positionWheels } from './restView.js';
+import { positionWheels, restPage } from './restView.js';
 import { loadRest } from '../logic/rest.js';
 import { setTemplate } from '../logic/template.js';
 import { normalizeTemplate } from '../logic/templateEdit.js';
@@ -48,6 +48,7 @@ const navGroup = (t) => (t === 'wipe' ? 'export' : t);
 
 const state = {
   tab: 'today',
+  restOpen: false, // the full rest timer page is showing (Workout tab)
   entries: [],
   habits: [], // [{ id, name }]
   stats: null, // retained_stats record kept across wipes (best streaks, anchors, last sets, weigh-ins)
@@ -127,7 +128,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.syncModal = null; state.wipeTick = false; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
   dismissPR: () => { state.pr = null; },
@@ -400,10 +401,11 @@ function render() {
   const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
-  $app.innerHTML = `${header()}${segmented()}${prBanner(state)}${views[state.tab](state)}
+  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
+  $app.innerHTML = `${page}
     ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
-  if (state.tab === 'workout' && !state.wManage) positionWheels(state);
+  if (state.tab === 'workout' && state.restOpen) positionWheels(state);
   clearTimeout(toastTimer);
   if (state.msg && state.msg.length < 60) toastTimer = setTimeout(() => { state.msg = ''; $app.querySelector('.toast')?.remove(); }, 4500);
 }
