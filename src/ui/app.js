@@ -127,7 +127,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.syncModal = null; state.wipeTick = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
   dismissPR: () => { state.pr = null; },
