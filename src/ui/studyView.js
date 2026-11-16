@@ -5,6 +5,7 @@
 import { liveEntries } from '../logic/entries.js';
 import { STUDY_KINDS, dayStudyMinutes, studyLine } from '../logic/study.js';
 import { esc } from './format.js';
+import { subjectsOf } from './todayActions.js';
 
 export function studyPanel(state, day) {
   const draft = state.studyDraft || { topic: '', minutes: '', notes: '' }; // kept when a save is refused
@@ -12,6 +13,9 @@ export function studyPanel(state, day) {
   const rows = liveEntries(state.entries).filter((e) => e.type === 'study')
     .sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 5)
     .map((e) => `<div class="row"><span>${esc(e.date.slice(5))}</span><span>${esc(studyLine(e))}</span></div>`).join('');
+  const subjects = subjectsOf(state);
+  const chips = subjects.map((s) => `<button class="qa-chip" data-action="pickSubject" data-subject="${esc(s)}">${esc(s)}</button>`).join('');
+  const manage = subjects.map((s) => `<div class="row"><span>${esc(s)}</span><button class="btn secondary habit-del" data-action="removeSubject" data-subject="${esc(s)}" aria-label="Remove subject ${esc(s)}">X</button></div>`).join('');
   return `<div class="panel">
     <h2>KUMIO</h2>
     <p>Today <b>${dayStudyMinutes(state.entries, day)}</b> min</p>
@@ -19,11 +23,16 @@ export function studyPanel(state, day) {
     <label class="lbl" for="study-kind">Type</label>
     <select id="study-kind" class="field" aria-label="Prep or study">${options}</select>
     <label class="lbl" for="study-topic">Topic</label>
-    <input id="study-topic" class="field" maxlength="60" placeholder="Contracts, chapter 3" autocomplete="off" value="${esc(draft.topic)}">
+    <input id="study-topic" class="field" maxlength="60" placeholder="Contracts, chapter 3" autocomplete="off" list="study-subjects" value="${esc(draft.topic)}">
+    <datalist id="study-subjects">${subjects.map((x) => `<option value="${esc(x)}">`).join('')}</datalist>
+    ${chips ? `<div class="qa-chips">${chips}</div>` : ''}
     <label class="lbl" for="study-min">Minutes</label>
     <input id="study-min" class="field" type="number" inputmode="numeric" step="1" placeholder="45" value="${esc(draft.minutes)}">
     <label class="lbl" for="study-notes">Notes (optional)</label>
     <input id="study-notes" class="field" maxlength="500" autocomplete="off" value="${esc(draft.notes)}">
     <button class="btn" data-action="logStudy">SAVE STUDY</button>
+    <label class="lbl" for="subject-new">My subjects</label>
+    ${manage}
+    <div class="inline"><input id="subject-new" class="field" maxlength="60" placeholder="New subject" autocomplete="off"><button class="btn" data-action="addSubject">ADD</button></div>
   </div>`;
 }

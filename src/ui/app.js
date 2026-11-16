@@ -23,6 +23,7 @@ import { createMealActions } from './mealActions.js';
 import { createNotesActions } from './notesActions.js';
 import { createPracticeActions } from './practiceActions.js';
 import { createStudyActions } from './studyActions.js';
+import { createTodayActions } from './todayActions.js';
 import { positionWheels } from './restView.js';
 import { loadRest } from '../logic/rest.js';
 import { setTemplate } from '../logic/template.js';
@@ -110,6 +111,7 @@ const actions = {
   ...rest.actions,
   ...practice.actions,
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTodayActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createNotesActions({ state, saveEntries, saveFail, inputValue, today, download, onChange: () => render() }),
   ...createTemplateActions({
