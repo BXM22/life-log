@@ -309,3 +309,15 @@ details.menu > summary { min-height: 36px; padding: 4px 0; font-size: 12px; lett
 details.menu > summary::after { content: '\25BE'; }
 details.menu[open] > summary::after { content: '\25B4'; }
 details.menu .actions { flex-wrap: wrap; padding-top: 4px; }
+
+/* Sync: backup meter, collapsible backup, own-window dialogs */
+.meter { height: 8px; margin: 0 0 12px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.meter i { display: block; height: 100%; border-radius: 99px; background: var(--accent); }
+.meter i.ok { background: var(--soft); }
+.meter i.due, .meter i.never { background: var(--danger); }
+details.fold > summary h2 { margin: 0; }
+details.fold > summary::after { content: '\25BE'; color: var(--accent); }
+details.fold[open] > summary::after { content: '\25B4'; }
+.modal { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0, 0, 0, .75); overflow-y: auto; }
+.modal-card { width: 100%; max-width: 420px; padding: 20px; border-radius: 20px; background: var(--panel-2); }
+.modal-card .btn { margin-top: 12px; }
