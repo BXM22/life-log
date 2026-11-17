@@ -19,7 +19,8 @@ A phone-friendly web app (PWA) for fast daily logging: habits and food, workouts
 
 - Serve the folder with any static server, for example `npx serve .`, and open it on your phone or in a browser.
 - Run tests with `npm test` (Node's built-in test runner, no dependencies). There is no build step.
-- After changing any file the app loads, bump `CACHE` in `sw.js` and add new files to its shell list, or phones keep the old version and new modules fail offline.
+- Add new files the app loads to the shell list in `sw.js` so they work offline.
+- Updates are automatic: `sw.js` fetches files network-first (cached copy is the offline fallback), and the app checks for a new version on every open and reloads once when one arrives. No cache bump or re-adding the bookmark needed. Bump `CACHE` only to drop stale cached files.
 
 ## Docs
 

@@ -73,7 +73,7 @@ Logic files are plain functions, so you can call them from a test with the bad i
 
 ### Stage 6: Release
 
-Follow section 4. A fix that touches a file in `SHELL` needs a cache bump.
+Follow section 4. A fix that touches a file in `SHELL` needs no cache bump (updates are network-first).
 
 ### Stage 7: Verify live
 
@@ -95,7 +95,7 @@ Run this before every push to `main`.
 - [ ] `npm test` passes
 - [ ] The change works in a browser (and on the phone for UI or Dropbox changes)
 - [ ] New or renamed `.js` or `.css` files are listed in `SHELL` in `sw.js`
-- [ ] `CACHE` in `sw.js` is bumped (`life-log-shell-v26` becomes `v27`) if any shell file changed
+- [ ] `CACHE` in `sw.js` is bumped only if you need to drop stale cached files (updates are network-first)
 - [ ] `CHANGELOG.md` has a new line
 - [ ] No secrets staged (`.env`, keys, tokens)
 - [ ] Commit message is `type: short description` (`feat`, `fix`, `docs`, `style`, `test`, `refactor`)
@@ -104,11 +104,11 @@ Then push to `main`. Vercel deploys it by itself. There is no staging site, so t
 
 ## 5. The service worker rule
 
-The app is offline-first. `sw.js` caches the app shell, so the phone keeps serving old files until the cache name changes.
+The app is offline-first. `sw.js` fetches the app shell network-first and falls back to its cache when offline or slow.
 
-- Change a shell file without bumping `CACHE`: users keep the old version.
+- Change a shell file: the next online open fetches it (network-first), no bump needed.
 - Add a file but forget it in `SHELL`: the app works online and breaks offline.
-- Bump `CACHE`: the next visit drops old files. Users may need to close and reopen the app once.
+- Bump `CACHE`: drops old cached files on the next visit.
 
 Dropbox sign-in redirects back to the page URL. If the site's address changes, add the new URL as a redirect URI in the Dropbox app settings.
 

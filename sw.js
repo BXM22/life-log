@@ -1,6 +1,7 @@
 // Life Log service worker: cache-first app shell so the app opens offline.
-// Bump CACHE on every deploy that changes a shell file, so old files are dropped.
-const CACHE = 'life-log-shell-v36';
+// Shell files are fetched network-first (cache is the offline fallback), so deploys
+// show up on the next open without re-adding the bookmark. Bump CACHE only to drop stale entries.
+const CACHE = 'life-log-shell-v37';
 const FONT_CACHE = 'life-log-fonts-v1';
 
 const SHELL = [
@@ -127,11 +128,22 @@ self.addEventListener('fetch', (event) => {
   // OAuth redirect back from Dropbox carries ?code=; always go to the network for it.
   if (url.searchParams.has('code') || url.searchParams.has('error')) return;
 
-  // App shell: cache first. Navigations ignore the query string so "/?x" still opens offline.
-  event.respondWith(
-    caches.match(req, { ignoreSearch: req.mode === 'navigate' }).then((hit) => {
+  // App shell: network first (fresh when online), cache fallback (offline / slow network).
+  // Navigations ignore the query string so "/?x" still opens offline.
+  const ignoreSearch = req.mode === 'navigate';
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE);
+    try {
+      const res = await Promise.race([
+        fetch(req, { cache: 'no-cache' }),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 4000)),
+      ]);
+      if (res.ok) cache.put(req, res.clone());
+      return res;
+    } catch (e) {
+      const hit = await cache.match(req, { ignoreSearch });
       if (hit) return hit;
-      return fetch(req).catch(() => (req.mode === 'navigate' ? caches.match('./') : Response.error()));
-    }),
-  );
+      return req.mode === 'navigate' ? (await cache.match('./')) || Response.error() : Response.error();
+    }
+  })());
 });
