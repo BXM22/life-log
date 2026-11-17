@@ -39,6 +39,7 @@ const SHELL = [
   'src/ui/workoutActions.js',
   'src/ui/exportWipeView.js',
   'src/logic/settings.js',
+  'src/logic/updates.js',
   'src/logic/install.js',
   'src/ui/format.js',
   'src/ui/historyWindows.js',

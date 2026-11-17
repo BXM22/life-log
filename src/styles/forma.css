@@ -261,3 +261,5 @@ button.setrow.setbtn b::after { content: ''; display: inline-block; width: 20px;
 .exfold > summary h2 { margin: 0; }
 .exfold > summary::after { content: '+'; float: right; font-size: 22px; line-height: 1; margin-top: -24px; }
 .exfold[open] > summary::after { content: '\2212'; }
+.setgroup.updates .setrow span { padding: 10px 0; font-weight: 500; line-height: 1.35; }
+.setgroup.updates .setrow b { flex: none; color: var(--dim, #6B6B70); font-size: 13px; }

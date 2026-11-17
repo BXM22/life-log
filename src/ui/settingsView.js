@@ -9,6 +9,7 @@ import { installMessage } from '../logic/install.js';
 import { getConfig, isConnected } from '../dropbox/dropbox.js';
 import { esc } from './format.js';
 import { dropboxModal } from './exportWipeView.js';
+import { UPDATES, RECENT_UPDATES_SHOWN } from '../logic/updates.js';
 
 const options = (list, current, fmt = String) =>
   list.map((v) => `<option value="${v}" ${v === current ? 'selected' : ''}>${esc(fmt(v))}</option>`).join('');
@@ -38,5 +39,9 @@ export function settingsView(state) {
     <p class="setnote">${esc(state.storageLine)}${msg ? ` ${esc(msg)}` : ''}</p>
     ${isConnected() ? `<p class="setnote">Exports go to ${esc(getConfig().folder)}/</p><button class="btn secondary" data-action="disconnect">DISCONNECT DROPBOX</button>` : '<p class="setnote">Connect from the EXPORT tab.</p>'}
     ${state.installKind === 'prompt' ? '<button class="btn" data-action="install">ADD TO HOME SCREEN</button>' : ''}
+    <h2 class="setlabel">WHAT'S NEW</h2>
+    <div class="setgroup updates">
+      ${UPDATES.slice(0, RECENT_UPDATES_SHOWN).map((u) => `<div class="setrow"><span>${esc(u.text)}</span><b>${esc(u.date.slice(5))}</b></div>`).join('')}
+    </div>
     ${state.syncModal === 'dropbox' && !isConnected() ? dropboxModal() : ''}`;
 }
