@@ -3,6 +3,8 @@
 
 import { newEntry } from '../logic/entries.js';
 import { sessionById } from '../logic/template.js';
+import { calisthenicsFor } from '../logic/workoutExtras.js';
+import { exerciseList } from '../logic/workoutPlan.js';
 import { prCheck } from '../logic/progress.js';
 import { activeSessionId, parseSet, setText } from '../logic/workout.js';
 import { loadExtras, saveExtras, extrasFor, addExtra, removeExtra } from '../logic/extras.js';
@@ -43,8 +45,10 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
     logSet: async (el) => {
       const day = today();
       const id = activeSessionId(state.wSession, day, state.planDays);
-      const ex = [...(sessionById(id)?.exercises ?? []), ...extrasToday()][Number(el.dataset.i)];
-      if (!ex) return;
+      const item = exerciseList(sessionById(id) ?? { id, exercises: [] }, extrasToday(), calisthenicsFor(day))[Number(el.dataset.i)];
+      if (!item) return;
+      // Calisthenics block exercises take the Added/Assisted weight like equipment 'calisthenics'.
+      const ex = item.kind === 'cali' ? { ...item.ex, equipment: 'calisthenics' } : item.ex;
       const kind = el.dataset.kind === 'warmup' ? 'warmup' : 'working';
       const r = parseSet(ex, {
         weight: inputValue(`w-${el.dataset.i}`),
@@ -54,7 +58,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
         load: inputValue(`ld-${el.dataset.i}`),
       });
       if (r.error) { state.msg = r.error; return; }
-      const e = newEntry('lift_set', day, { session: id, exercise: ex.name, kind, ...r.data }, Date.now());
+      const e = newEntry('lift_set', day, { session: item.sessionKey, exercise: ex.name, kind, ...r.data }, Date.now());
       try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
       state.entries.push(e);
       state.pr = prCheck(state.entries, e, state.stats);
