@@ -1,6 +1,6 @@
-// WORKOUT tab, edit mode: list the session's exercises with EDIT and DEL, plus an add/edit form.
-//   html:    manageView(state, session)
-//   actions: tAdd | tEditStart (data-i) | tDelete (data-i) | tSave | tCancel | tReset, see templateActions.js
+// WORKOUT tab: the add/edit exercise form shown on the Edit template page.
+//   html:    exerciseForm(state, session), EQUIP_TEXT
+//   actions: tSave | tCancel (see templateActions.js)
 
 import { MODES, EQUIPMENT } from '../logic/templateEdit.js';
 import { esc } from './format.js';
@@ -32,36 +32,4 @@ export function exerciseForm(state, session) {
       <button class="btn" data-action="tSave">SAVE</button>
     </div>
   </div>`;
-}
-
-export function manageView(state, session) {
-  const rows = session.exercises.map((ex, i) => `<div class="entry">
-      <div class="row"><span>${esc(ex.name)}</span><span class="tag done">${esc(ex.mode.toUpperCase())}</span></div>
-      <small>${esc(ex.target)}${ex.perSide ? ' · L/R' : ''}</small>
-      <div class="actions">
-        <button class="btn small secondary" data-action="tEditStart" data-i="${i}" aria-label="Edit ${esc(ex.name)}">EDIT</button>
-        <button class="btn small secondary" data-action="tDelete" data-i="${i}" aria-label="Delete ${esc(ex.name)}">DEL</button>
-      </div>
-    </div>`).join('');
-  return `${state.tEdit ? exerciseForm(state, session) : ''}
-    <div class="panel">
-      <h2>SESSIONS</h2>
-      <p>Editing <b>${esc(session.name)}</b>. Pick another session above to edit it.</p>
-      <label class="lbl" for="ts-name">SESSION NAME</label>
-      <input id="ts-name" class="field" maxlength="40" placeholder="Push day" autocomplete="off">
-      <div class="pair">
-        <button class="btn secondary" data-action="sAdd">NEW EMPTY</button>
-        <button class="btn secondary" data-action="sCopy">COPY THIS ONE</button>
-      </div>
-      <div class="pair">
-        <button class="btn secondary" data-action="sRename">RENAME THIS ONE</button>
-        <button class="btn secondary" data-action="sDelete">DELETE THIS ONE</button>
-      </div>
-    </div>
-    <div class="panel">
-      <h2>${esc(session.name.toUpperCase())} EXERCISES</h2>
-      ${rows || '<p>No exercises. Add one below.</p>'}
-      <button class="btn" data-action="tAdd">ADD EXERCISE</button>
-      <button class="btn secondary" data-action="tReset">RESET ALL TO THE BUILT-IN PLAN</button>
-    </div>`;
 }

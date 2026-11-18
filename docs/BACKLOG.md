@@ -64,6 +64,7 @@ From the Life Log design board (Forma layout). Mock-ups exist for screens marked
 - [x] F50 Start a workout template blank (Should). The Templates window has a NEW TEMPLATE box: name it, then START BLANK (no exercises, add them over time on the edit screen) or COPY ACTIVE. Workout shows an empty-state line for a template with no exercises.
 - [x] F51 Spontaneous exercises (Should). ADD EXERCISE FOR TODAY on Workout adds an extra exercise for that day only (name, what you log, left/right); sets log and export as normal and the template stays unchanged. Its OPTIONS menu has KEEP IN TEMPLATE (adds it to the active template for good) and REMOVE FROM TODAY.
 - [x] F52 Exercise equipment (Should). Each exercise can be Barbell, Dumbbell, Calisthenics or Machine (template edit form and ADD EXERCISE FOR TODAY). Calisthenics sets take optional weight logged as Added weight or Assisted weight, plus reps; shown as "+25 lb x 5" or "30 lb assist x 8"; weighted calisthenics sets compare by reps, not estimated 1RM.
+- [ ] F53 Workout tab v2 redesign (Should). Short Today list with set dots, Exercise page, sheets (Switch template, Warm-up/BJJ/Calisthenics, Add for today), dropdown menus, fixed rest bar, restyled Templates, Edit template and History pages; spec in docs/screens/workout.md. Built on branch workout-v2; tick after the browser test and merge.
 - [x] F48 Restyle the real app to the Forma layout and tokens (Should). Design board: https://claude.ai/artifact/PAsD96x1mvrnTiuGb4TtfB
 
 ## Updates

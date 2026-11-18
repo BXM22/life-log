@@ -17,6 +17,8 @@ import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
 import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
+import { createWorkoutNavActions, captureDraft } from './workoutNavActions.js';
+import { createWorkoutSheetActions } from './workoutSheetActions.js';
 import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
 import { createTemplateActions } from './templateActions.js';
 import { createTemplateTagsActions } from './templateTagsActions.js';
@@ -116,6 +118,8 @@ const rest = createRestActions({ state, onChange: () => render() });
 const practice = createPracticeActions({ state, saveEntries, saveFail, inputValue, today });
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
+  ...createWorkoutNavActions({ state, today }),
+  ...createWorkoutSheetActions({ state, today }),
   ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createTemplateTagsActions({ state, saveFail, saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); } }),
   ...createPlatesActions({ state, inputValue }),
@@ -133,7 +137,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
   dismissPR: () => { state.pr = null; },
@@ -425,6 +429,7 @@ async function dispatch(el) {
   const fn = actions[el.dataset.action];
   if (!fn) return;
   await fn(el);
+  captureDraft(state); // keep typed weight/reps on the open Exercise page across the re-render
   render();
 }
 
@@ -432,6 +437,11 @@ $app.addEventListener('click', (ev) => {
   const el = ev.target.closest('[data-action]');
   if (!el || el.disabled || el.tagName === 'SELECT' || el.tagName === 'INPUT') return;
   dispatch(el);
+});
+// Escape closes the open dropdown first, then the open sheet (Workout v2).
+document.addEventListener('keydown', (ev) => {
+  if (ev.key !== 'Escape') return;
+  if (state.wMenu) { actions.wMenuClose(); render(); } else if (state.wSheet) { actions.wSheetClose(); render(); }
 });
 $app.addEventListener('scroll', rest.onScroll, true); // the rest-time wheels scroll without a re-render
 document.addEventListener('visibilitychange', () => { if (!document.hidden) rest.resume(); });

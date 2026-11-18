@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: Workout tab v2 redesign (F53, not yet released): Today list with set dots and a template progress bar, Exercise page with steppers, sheets and dropdown menus, fixed rest bar, restyled Templates, Edit template and History pages; old edit-templates mode removed; new files added to the offline cache; 196 tests (2026-11-17)
 - fix: status tags (WAITING, EXPORTED) had text the same color as their background; forma.css now sets ink text on `.tag.waiting` and `.tag.done` (2026-11-17)
 - feat: exercise equipment (F52): Barbell, Dumbbell, Calisthenics or Machine on each exercise; calisthenics sets log optional Added or Assisted weight with reps; favicon link added; tests added (2026-11-17)
 - feat: spontaneous exercises (F51): ADD EXERCISE FOR TODAY on Workout adds a today-only exercise, with KEEP IN TEMPLATE to make it permanent or REMOVE FROM TODAY; new src/logic/extras.js added to the offline cache; test added (2026-11-17)

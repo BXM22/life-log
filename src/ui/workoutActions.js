@@ -22,7 +22,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
 
   return {
     addExtraOpen: () => { state.wAdd = true; state.msg = ''; },
-    addExtraCancel: () => { state.wAdd = false; state.msg = ''; },
+    addExtraCancel: () => { state.wAdd = false; state.wSheet = null; state.msg = ''; },
     addExtraSave: () => {
       const id = activeSessionId(state.wSession, today(), state.planDays);
       const r = addExtra(extrasToday(), sessionById(id)?.exercises ?? [], {
@@ -33,6 +33,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
       });
       if (r.error) { state.msg = r.error; return; }
       state.wAdd = false;
+      state.wSheet = null; // the Add for today sheet closes on a successful save
       state.exOpen[r.list[r.list.length - 1].name] = true;
       commitExtras(r.list, 'Added for today. Log your sets below.');
     },

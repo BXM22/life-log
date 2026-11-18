@@ -86,7 +86,7 @@ Back arrow; title `Edit template`. Panels: **EDIT TEMPLATE** (name, tag chips, "
 
 ## v2 update (redesign)
 
-Status: design only, nothing built yet. Mockups live on the Claude Design canvas "Workout tab redesign" (13 phone artboards, 390 wide). v1 above stays the description of what ships today until v2 is built.
+Status: built on branch `workout-v2` (2026-11-17), pending browser test and merge. Mockups live on the Claude Design canvas "Workout tab redesign" (13 phone artboards, 390 wide). The v1 text above describes what is live until v2 merges; then v1 should be removed.
 
 **Why:** the v1 main screen stacks about 11 sections in one scroll (header, PR banner, session panel with 3 buttons, rest row, warm-up, BJJ, calisthenics, every exercise as an open panel, add button). Logging a set meant scrolling past everything else. v2 keeps the main screen as a short, calm overview and moves each job into its own page, sheet, or dropdown.
 
