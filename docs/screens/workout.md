@@ -83,3 +83,143 @@ Back arrow; title `Edit template`. Panels: **EDIT TEMPLATE** (name, tag chips, "
 | Progress and PR check | `src/logic/progress.js`, `src/ui/progressView.js` |
 | Data | `lift_set` entries `{ session, exercise, kind, weight, reps, seconds, side, load? }`; template in `retained_stats` (`template`); today's extras in localStorage `lifelog.wExtras` |
 | Backlog items | F8, F20 to F25, F29 to F32, F34, F35, F38, F42, F43, F49 to F52 in `docs/BACKLOG.md` |
+
+## v2 update (redesign)
+
+Status: design only, nothing built yet. Mockups live on the Claude Design canvas "Workout tab redesign" (13 phone artboards, 390 wide). v1 above stays the description of what ships today until v2 is built.
+
+**Why:** the v1 main screen stacks about 11 sections in one scroll (header, PR banner, session panel with 3 buttons, rest row, warm-up, BJJ, calisthenics, every exercise as an open panel, add button). Logging a set meant scrolling past everything else. v2 keeps the main screen as a short, calm overview and moves each job into its own page, sheet, or dropdown.
+
+### The three rules
+
+1. **Today is a list, not a form.** Each exercise is one compact row. Logging happens on a dedicated Exercise page.
+2. **Rare things hide, frequent things stay.** Template switching, editing, history, plates, trims and cues sit behind a menu, sheet, or accordion. The rest timer and the working-set button are always one tap away.
+3. **One container type per job.** Pages for work you stay in, sheets for quick choices, dropdowns for actions on the thing you are looking at, accordions for detail inside a page.
+
+### Global layout rules
+
+- **Frame:** 390 px wide, 16 px side padding, cards stacked with 8 to 12 px gaps.
+- **Tab bar space (required):** the app's bottom tab bar is 72 px tall. Every screen reserves it. The mockups draw a dashed "APP TAB BAR · 72 PX RESERVED" strip at the bottom of each page screen. Build rule: the scroll container gets `padding-bottom: calc(72px + 16px + env(safe-area-inset-bottom))`, and anything pinned to the bottom (rest bar, Stop rest button, Edit template footer) sits at `bottom: calc(72px + 16px + env(safe-area-inset-bottom))`. Nothing may sit under the tab bar.
+- **Modal sheets cover the tab bar** (scrim over everything, sheet anchored to the bottom edge). They are temporary, so this is fine. Closing returns to the page underneath.
+- **Hit targets:** 44 px minimum (buttons 44 to 60 px, steppers 48 px, icon buttons 44 px circles).
+- **Tokens (unchanged from v1):** ink `#2A2522`, cream panel `#FBF3EA` with `#EFE3D6` border, peach `#F4A28C` for the main action and selected state, soft peach `#FDE8E0` for tips and the PR banner, muted text `#6B5F58`, danger `#B3261E`. Cards are 20 px radius (template cards 24 px), buttons 14 px, pills fully round. Type: Inter in the mockups; keep whatever the app already uses. Section labels are 11 px uppercase with wide tracking.
+- **Rows, not panels:** a list row is a cream card, 68 px high, name (13 px, 800 weight, uppercase), one muted detail line, equipment tag, set dots, chevron.
+- **Set dots:** one 10 px dot per target set; filled peach = logged. Gives progress without opening the exercise.
+- **Disabled and inactive:** do not dim with opacity (fails contrast). Inactive cards go white with the same border; inactive tabs use muted text.
+
+### Navigation model and wiring
+
+Four container types. How each one opens and closes:
+
+| Type | Opens from | Closes with | Screens |
+|---|---|---|---|
+| Page (push) | Tapping a row or menu item | Back arrow in the top-left, returns to the previous page | Exercise, Rest timer, Templates, Edit template, History |
+| Sheet (modal) | A button on the page below | Done / Cancel, tapping the scrim, or choosing an item | Switch template, Warm-up and BJJ, Add for today |
+| Dropdown | The three-dot button in the top-right | Tapping outside, or choosing an item (the button turns peach while open) | Today menu, Exercise options |
+| Accordion | Tapping its header row | Tapping the header again (chevron flips) | Plate calculator, Name and tags, More actions, history days, New template |
+
+**Link map (what taps go where):**
+
+| From | Element | Goes to |
+|---|---|---|
+| Today | three-dot button | Today menu (dropdown) |
+| Today | Switch (template card) | Switch template (sheet) |
+| Today | Upper warm-up row, BJJ row | Warm-up and BJJ (sheet) |
+| Today | any exercise row | Exercise (page) |
+| Today | + Add exercise for today | Add for today (sheet) |
+| Today | rest bar (Open) | Rest timer (page) |
+| Today menu | Templates and tags | Templates (page) |
+| Today menu | Edit this template | Edit template (page, active template) |
+| Today menu | Workout history | History (page) |
+| Switch template | a template row | sets it active, closes sheet, back to Today |
+| Switch template | Manage all, + New template | Templates (page) |
+| Exercise | three-dot button | Exercise options (dropdown) |
+| Exercise | Plate calculator row | expands the plates accordion in place |
+| Exercise | Warm-up set, Working set | logs a set, adds a row to Logged today, fills the next dot, auto-starts the rest timer if the switch is on |
+| Exercise | rest bar | Rest timer (page) |
+| Exercise options | Edit exercise | Edit exercise form (same form as in Edit template) |
+| Exercise options | Trim a set / Put back | toggles the one-set trim for today |
+| Exercise options | Back cues | shows the cue tip box (back exercises only) |
+| Exercise options | Delete from template | confirm, then removes it (spontaneous exercises show Keep in template and Remove from today instead) |
+| Rest timer | Start rest / Stop rest | starts or stops the countdown |
+| Templates | Edit | Edit template (page) |
+| Templates | Set active | sets active, back to Today |
+| Edit template | Edit (exercise row) | exercise form |
+| Edit template | + Add exercise | exercise form (blank) |
+| Edit template | Back / Save | Templates (page) |
+
+All "back" arrows return to the page that opened them, not always Today. Today is the root of the Workout tab.
+
+### Screens
+
+**1. Today (main).** Top to bottom: header (`LIFE LOG · date`, title `Workout`, three-dot button at right) → PR banner (slim, only after a record, tap to dismiss) → template card (name, Switch button, set-progress bar `5 of 14 sets`, focus line) → "Before you lift" card (Upper or Lower warm-up row with `0 / 4`, BJJ row) → `EXERCISES · n` label → exercise rows → dashed `+ Add exercise for today` → floating rest bar (peach, `REST TIMER`, time, dark `Open` pill) above the tab bar. The row being worked on gets a 2 px peach border. Spontaneous exercises are dashed white rows with a `Today only` tag, placed after the template rows.
+
+**2. Today menu.** Dropdown under the three-dot button, 290 px wide, scrim behind. Three items, each with a one-line hint: Templates and tags, Edit this template, Workout history. This replaces the three v1 buttons (`EDIT TEMPLATES`, `HISTORY`, `TEMPLATES AND TAGS`). The old edit mode is gone, Edit this template opens the normal Edit template page.
+
+**3. Switch template (sheet).** Grab handle, title, `Manage all` link, tag filter chips, one radio row per template (name, exercise count, tag), `+ New template`. Tapping a row switches and closes in one tap. Replaces the Switch link plus the separate Templates window for the common case.
+
+**4. Warm-up and BJJ (sheet).** Segmented control: `Warm-up 0/4`, `BJJ`, `Calisthenics`. A tab is shown only on days it applies (BJJ on BJJ days, Calisthenics Mon and Wed, otherwise greyed). Body is a checklist with 26 px checkboxes. `Done` closes. Progress still persists for the day.
+
+**5. Exercise (page).** Back arrow, `Exercise 1 of 5`, three-dot button. Title with equipment tag. Info strip with three cells: Target, Last (with date), Warm-up weight. Peach `TRY TODAY` tip on the first exercise only. Logging card: weight stepper, reps stepper (seconds for timed, weight optional for calisthenics with an Added/Assisted select, Left/Right select for per-side), then `WARM-UP SET` (secondary) and `WORKING SET` (peach). Weight pre-fills from the last working set. Below: Plate calculator row (weight exercises only), `LOGGED TODAY · n` list with Edit and Del per row. Rest bar pinned above the tab bar.
+
+**6. Exercise options and plates.** The dropdown (Edit exercise, Trim a set, Back cues, Delete from template in red) and the plates accordion open: working weight field and `CALC`, result `45 lb bar, each side:` with plate tags (or `BAR ONLY`), total or `N lb short`, plates-you-own toggles, bar weight.
+
+**7. Add for today (sheet).** Name (max 60), equipment chips (Not set, Barbell, Dumbbell, Calisthenics, Machine), what you log (3 radio rows), left/right switch, `CANCEL` and `ADD`. Same fields as v1, just in a sheet.
+
+**8. Rest timer (page).** Same content as v1: 220 px ring (14 px stroke, peach arc), time and `of 1:30`, preset chips 1:00 to 3:00, custom time wheels, auto-start switch, large Start rest / Stop rest. Ring track is light cream `#F3E8DC` so it shows on white. Button sits above the tab bar.
+
+**9. Templates (page).** Header shows `Active: <name>`. `+ New template` is a collapsed accordion (name, Start blank, Copy active). Tag chips scroll horizontally. Cards: name, `Edit` link, exercise count, tag pills, and either a peach `Active template` badge or a `Set active` button. Active card has a 2 px peach border.
+
+**10. Edit template (page).** Three accordions: Name and tags (collapsed, shows the current name and tags), Exercises (open: drag handle, name, target and equipment, Edit, red trash, `+ Add exercise`), More actions (open in the mockup: Set as active, which is greyed with "Already the active template" when it is active; Reset all to the built-in plan, with a confirm, which replaces every template with the default plan; Delete template in red, with a confirm). Footer `Back` and `Save` above the tab bar.
+
+**11. History (page).** Grouped by `This week`, `Last week`, `Earlier`. Each day is a fold `Tue 11-17 · Upper A` with `12 sets`. Opening shows per-exercise set chips (warm-ups muted). Footer fold notes the 60-day limit and Dropbox exports.
+
+**12. Today, BJJ day.** The "Before you lift" card gains a highlighted BJJ block at the top: checked `BJJ class done today` with time, and a `Post-BJJ warm-up 1 / 3` row that opens the sheet. Lower warm-up row below it.
+
+**13. Today, calisthenics day (Mon push, Wed pull).** The list splits into `LIFTS` and `CALISTHENICS · push`. Each calisthenics row shows its load type as a tag (Added weight, Assisted, or Calisthenics for seconds). Tapping opens the normal Exercise page with the Added/Assisted select.
+
+### Where every v1 element went
+
+| v1 element | v2 location |
+|---|---|
+| Header | Today header, plus three-dot menu |
+| PR banner | Slim banner under the header on Today |
+| Session panel (active template, Switch, focus text) | Template card on Today (Switch opens sheet 3) |
+| `EDIT TEMPLATES` / `DONE EDITING` | Removed. Menu item Edit this template opens page 10 |
+| `HISTORY` / `BACK TO WORKOUT` | Menu item Workout history opens page 11, back arrow returns |
+| `TEMPLATES AND TAGS` | Menu item, and Manage all in the Switch sheet |
+| Rest timer row | Floating rest bar on Today and Exercise |
+| Warm-up checklist | "Before you lift" card plus sheet 4 |
+| BJJ panel | BJJ row (Today) and BJJ tab (sheet 4); inline block on BJJ days |
+| Calisthenics block | Grouped rows on Today plus the Exercise page |
+| Exercise panel (collapsible) | Exercise row on Today plus the Exercise page |
+| `OPTIONS` menu (Edit, Delete, Trim a set / Put back) | Three-dot dropdown on the Exercise page |
+| `BACK CUES` toggle | Item in that dropdown |
+| `TRY TODAY` tip | On the Exercise page, first exercise only |
+| `Last: ...` line | Info strip on the Exercise page |
+| `WARM-UP SET`, `WORKING SET`, `PLATES` | Exercise page (plates is an accordion) |
+| Logged set rows with `EDIT` / `DEL` | `LOGGED TODAY` list on the Exercise page |
+| Empty template message | Empty state under `EXERCISES`, text unchanged, with a button to Edit this template |
+| Spontaneous exercises | Dashed `Today only` rows; Keep in template and Remove from today in the dropdown |
+| `ADD EXERCISE FOR TODAY` | Dashed button on Today, opens sheet 7 |
+| Rest timer page | Page 8 |
+| Plate calculator panel | Accordion on the Exercise page |
+| Templates window | Page 9 (plus sheet 3 for quick switching) |
+| Edit template screen | Page 10 with accordions |
+| Workout history mode | Page 11 |
+| Old edit mode `SESSIONS` panel | Removed. New and Copy live in Templates; Rename and Delete live in Edit template |
+| `RESET ALL TO THE BUILT-IN PLAN` | More actions on Edit template (page 10), with a confirm |
+
+### Build notes (proposed, not done)
+
+- The logic layer does not change. Data stays: `lift_set` entries, template in `retained_stats`, today's extras in `lifelog.wExtras`, rest state as today. Only the views and routing change.
+- Suggested view split: keep `workoutView.js` as the Today list; add an exercise page view, sheet views for switch, prep and add-for-today, and a small shared dropdown helper. Reuse `restView.js`, `platesView.js`, `templateTagsView.js`, `workoutHistoryView.js` content inside the new containers.
+- Navigation needs a small stack for Workout tab pages so back arrows return to the previous page, and one `openSheet` / `closeSheet` state for modals.
+- Retire the old edit-mode code in `templateView.js` and `templateActions.js` once Edit this template covers its actions.
+
+### Open questions and assumptions
+
+- The mockups use placeholder exercises, weights and warm-up items. Real data comes from the app.
+- Whether pages (Exercise, Rest timer, Templates, Edit, History) keep the tab bar visible is assumed yes; the mockups reserve the space on every page.
+- Exact tab bar height is assumed 72 px. Change the number everywhere if the real bar differs.
+- Trim a set is shown as a one-line dropdown item with a hint of the resulting target; the label flips to Put back once trimmed.
