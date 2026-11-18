@@ -3,18 +3,23 @@ import { setsFor } from './workout.js';
 import { setCount, trimmedFor } from './workoutExtras.js';
 import { weekDates } from './weekView.js';
 
-const workingDone = (entries, day, name) =>
-  setsFor(entries, day, name).filter((e) => e.data.kind === 'working').length;
+/** Working sets done today. A per-side exercise (per arm, per leg) counts a set once both sides are logged: the smaller of left and right. */
+function workingDone(entries, day, ex) {
+  const sets = setsFor(entries, day, ex.name).filter((e) => e.data.kind === 'working');
+  if (!ex.perSide) return sets.length;
+  const side = (s) => sets.filter((e) => e.data.side === s).length;
+  return Math.min(side('L'), side('R'));
+}
 
 /**
  * Dots for one exercise: { total, done }. `total` is the target's set count minus trimmed sets
  * (trims is the wTrims map), or null when the target has no set count (AMRAP, timed...).
- * `done` is the RAW count of live working sets on `day`; it can exceed `total`, so the UI must clamp.
+ * `done` is the RAW count of live working sets on `day` (a per-side exercise counts a set once both left and right are logged); it can exceed `total`, so the UI must clamp.
  */
 export function setDots(ex, entries, day, trims) {
   const count = setCount(ex.target);
   const total = count == null ? null : count - trimmedFor(trims, day, ex.name, ex.target);
-  return { total, done: workingDone(entries, day, ex.name) };
+  return { total, done: workingDone(entries, day, ex) };
 }
 
 /** True when today's working sets have reached the (trimmed) target. Never true for targets with no set count. */

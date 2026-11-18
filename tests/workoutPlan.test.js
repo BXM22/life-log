@@ -125,3 +125,16 @@ test('setsComplete ignores warm-ups and is never true without a set count', () =
   assert.equal(setsComplete(bench, [set('Bench'), set('Bench'), set('Bench', { kind: 'warmup' })], DAY, {}), false);
   assert.equal(setsComplete(amrap, [set('Dips'), set('Dips')], DAY, {}), false);
 });
+
+test('per-side exercises count a set once both sides are logged', () => {
+  const pull = { name: 'Pulldown', target: '2 x 5-8 per arm', perSide: true };
+  const side = (sd, o = {}) => { const e = set('Pulldown', o); return { ...e, data: { ...e.data, side: sd } }; };
+  assert.deepEqual(setDots(pull, [side('L')], DAY, {}), { total: 2, done: 0 });
+  assert.deepEqual(setDots(pull, [side('L'), side('R')], DAY, {}), { total: 2, done: 1 });
+  assert.equal(setsComplete(pull, [side('L'), side('R')], DAY, {}), false); // one of two sets
+  assert.equal(setsComplete(pull, [side('L'), side('R'), side('L')], DAY, {}), false); // second set half done
+  assert.equal(setsComplete(pull, [side('L'), side('R'), side('L'), side('R')], DAY, {}), true);
+  // warm-ups and the other exercise's sides do not count; an uneven count uses the weaker side
+  assert.equal(setDots(pull, [side('L'), side('L'), side('R', { kind: 'warmup' })], DAY, {}).done, 0);
+  assert.equal(setDots(pull, [side('L'), side('L'), side('R')], DAY, {}).done, 1);
+});
