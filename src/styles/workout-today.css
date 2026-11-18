@@ -1,0 +1,71 @@
+/* Workout v2: Today list and Exercise page. All selectors prefixed .w2-. Tokens come from forma.css. */
+.w2-page { padding-bottom: calc(var(--tabbar-h, 76px) + 16px + env(safe-area-inset-bottom)); }
+.w2-head { display: flex; align-items: flex-start; justify-content: space-between; margin: 0 0 16px; }
+.w2-head h1, .w2-title { margin: 0; }
+.w2-over { display: block; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim); }
+.w2-icon { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; margin-right: -10px; padding: 0; border: 0; border-radius: 22px; background: transparent; color: var(--ink); cursor: pointer; }
+.w2-icon:focus-visible, .w2-switch:focus-visible, .w2-row:focus-visible, .w2-line:focus-visible, .w2-add:focus-visible, .w2-accbtn:focus-visible, .w2-stepbtn:focus-visible, .w2-pg:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+.w2-card { margin: 0 0 16px; padding: 20px; background: var(--panel); border-radius: 24px; }
+.w2-card p { margin: 0; }
+.w2-label { margin: 16px 0 8px; }
+.w2-card .w2-label { margin-top: 0; }
+.w2-sub { display: block; margin: 8px 0 0; font-size: 13px; line-height: 18px; font-weight: 600; color: var(--dim); }
+.w2-tplhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.w2-tplhead .w2-sub { margin: 0; }
+.w2-tplname { display: block; font-size: 20px; line-height: 26px; font-weight: 800; color: var(--ink); }
+.w2-switch { min-height: 44px; padding: 0 18px; border: 1px solid var(--line); border-radius: 22px; background: #FFFFFF; color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; }
+.w2-bar { height: 10px; margin-top: 14px; border-radius: 99px; background: #FFFFFF; border: 1px solid var(--line); overflow: hidden; }
+.w2-bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
+
+.w2-line { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 0; border: 0; background: transparent; color: var(--ink); font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
+.w2-line + .w2-line, .w2-bjj + .w2-line { border-top: 1px solid var(--line); }
+.w2-linetitle { flex: 1; }
+.w2-count { font-size: 14px; font-weight: 700; color: var(--dim); }
+.w2-card.bjj { background: var(--peach-soft); }
+.w2-bjj { padding: 4px 0 8px; }
+.w2-chev { flex: none; color: var(--dim); }
+
+.w2-list { display: flex; flex-direction: column; gap: 8px; }
+.w2-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 68px; padding: 8px 14px 8px 16px; border: 2px solid transparent; border-radius: 20px; background: var(--panel); color: var(--ink); text-align: left; cursor: pointer; }
+.w2-row.current { border-color: var(--accent); }
+.w2-row.extra { background: #FFFFFF; border: 1.5px dashed var(--line); }
+.w2-row.extra.current { border: 2px solid var(--accent); }
+.w2-rowmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.w2-name { font-size: 13px; line-height: 18px; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; overflow-wrap: anywhere; }
+.w2-detail { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--dim); }
+.w2-tag { flex: none; }
+.w2-dots { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; max-width: 76px; }
+.w2-dots i { width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; border: 1.5px solid var(--line); box-sizing: border-box; }
+.w2-dots i.on { background: var(--accent); border-color: var(--accent); }
+.w2-add { width: 100%; min-height: 56px; margin: 8px 0 16px; border: 1.5px dashed var(--dim); border-radius: 20px; background: #FFFFFF; color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; }
+
+/* Exercise page */
+.w2-exhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -8px 0 8px; }
+.w2-pager { display: flex; align-items: center; gap: 4px; }
+.w2-pgtxt { font-size: 13px; font-weight: 700; color: var(--dim); white-space: nowrap; }
+.w2-pg { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 22px; background: transparent; color: var(--ink); cursor: pointer; }
+.w2-pg:disabled { color: var(--line); cursor: default; }
+.w2-titlerow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
+.w2-title { font-size: 24px; line-height: 30px; font-weight: 800; overflow-wrap: anywhere; }
+.w2-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 16px; }
+.w2-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 12px; border-radius: 16px; background: var(--panel); }
+.w2-cell b { font-size: 15px; line-height: 20px; font-weight: 800; color: var(--ink); overflow-wrap: anywhere; }
+.w2-cell small { color: var(--dim); }
+.w2-cl { font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; color: var(--dim); }
+.w2-try, .w2-cue { margin: 0 0 16px; padding: 14px 16px; border-radius: 16px; background: var(--peach-soft); border: 1px solid var(--peach-mid); font-size: 14px; line-height: 20px; color: var(--ink); }
+.w2-cue { background: #FFFFFF; }
+
+.w2-step { margin: 0 0 16px; }
+.w2-steplbl { display: block; margin: 0 0 8px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; color: var(--dim); }
+.w2-stepbox { display: flex; align-items: center; gap: 8px; }
+.w2-stepbtn { flex: none; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; padding: 0; border: 1px solid var(--line); border-radius: 24px; background: #FFFFFF; color: var(--ink); cursor: pointer; }
+.w2-stepbtn:active { background: var(--peach-soft); }
+.w2-stepin { flex: 1; min-width: 0; min-height: 56px; padding: 0 8px; border: 1px solid var(--line); border-radius: 16px; background: #FFFFFF; color: var(--ink); font-size: 24px; font-weight: 800; text-align: center; }
+.w2-stepin:focus { border-color: var(--ink); outline: none; }
+.w2-log .field { width: 100%; margin-bottom: 4px; }
+.w2-log .lbl { display: block; margin: 4px 0 8px; }
+
+.w2-acc { margin: 0 0 16px; border-radius: 20px; background: var(--panel); overflow: hidden; }
+.w2-accbtn { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 56px; padding: 0 20px; border: 0; background: transparent; color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; }
+.w2-acc .plates { padding: 0 20px 20px; }
