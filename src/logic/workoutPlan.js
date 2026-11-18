@@ -17,6 +17,12 @@ export function setDots(ex, entries, day, trims) {
   return { total, done: workingDone(entries, day, ex.name) };
 }
 
+/** True when today's working sets have reached the (trimmed) target. Never true for targets with no set count. */
+export function setsComplete(ex, entries, day, trims) {
+  const d = setDots(ex, entries, day, trims);
+  return d.total != null && d.done >= d.total;
+}
+
 /**
  * Overall progress over an exercise array: { done, total }.
  * `total` sums the known per-exercise totals. Exercises with a null total contribute nothing to either

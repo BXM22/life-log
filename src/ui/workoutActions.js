@@ -4,7 +4,7 @@
 import { newEntry } from '../logic/entries.js';
 import { sessionById } from '../logic/template.js';
 import { caliBlockFor } from '../logic/activities.js';
-import { exerciseList } from '../logic/workoutPlan.js';
+import { exerciseList, setsComplete } from '../logic/workoutPlan.js';
 import { prCheck } from '../logic/progress.js';
 import { activeSessionId, parseSet, setText } from '../logic/workout.js';
 import { loadExtras, saveExtras, extrasFor, addExtra, removeExtra } from '../logic/extras.js';
@@ -46,8 +46,10 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
     logSet: async (el) => {
       const day = today();
       const id = activeSessionId(state.wSession, day, state.planDays);
-      const item = exerciseList(sessionById(id) ?? { id, exercises: [] }, extrasToday(), caliBlockFor(state.activities, day))[Number(el.dataset.i)];
+      const list = exerciseList(sessionById(id) ?? { id, exercises: [] }, extrasToday(), caliBlockFor(state.activities, day));
+      const item = list[Number(el.dataset.i)];
       if (!item) return;
+      const wasComplete = setsComplete(item.ex, state.entries, day, state.wTrims);
       // Calisthenics block exercises take the Added/Assisted weight like equipment 'calisthenics'.
       const ex = item.kind === 'cali' ? { ...item.ex, equipment: 'calisthenics' } : item.ex;
       const kind = el.dataset.kind === 'warmup' ? 'warmup' : 'working';
@@ -65,6 +67,12 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
       state.pr = prCheck(state.entries, e, state.stats);
       state.msg = `${kind === 'warmup' ? 'Warm-up' : 'Set'} saved: ${setText(r.data)}.`;
       if (kind === 'working' && onWorkingSet) onWorkingSet();
+      // Hit the target set count: move on to the next exercise (or back to the list after the last one).
+      if (kind === 'working' && !wasComplete && setsComplete(item.ex, state.entries, day, state.wTrims)) {
+        state.msg = `${item.ex.name} done. ${state.msg}`;
+        state.plates = null;
+        state.wEx = item.i + 1 < list.length ? item.i + 1 : null;
+      }
     },
   };
 }

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setDots, sessionProgress, groupHistoryDays, exerciseList } from '../src/logic/workoutPlan.js';
+import { setDots, setsComplete, sessionProgress, groupHistoryDays, exerciseList } from '../src/logic/workoutPlan.js';
 import { trimKey } from '../src/logic/workoutExtras.js';
 
 const DAY = '2026-01-07';
@@ -112,4 +112,16 @@ test('exerciseList: an extra with the same name as a template exercise is hidden
   const session = { id: 's', name: 'S', exercises: [{ name: 'Face pulls', target: '3 sets' }] };
   const list = exerciseList(session, [{ name: 'face PULLS' }, { name: 'Dips' }], null);
   assert.deepEqual(list.map((x) => [x.ex.name, x.kind, x.i]), [['Face pulls', 'template', 0], ['Dips', 'extra', 1]]);
+});
+
+test('setsComplete is true once working sets reach the (trimmed) target', () => {
+  const two = [set('Bench'), set('Bench')];
+  assert.equal(setsComplete(bench, two, DAY, {}), false);
+  assert.equal(setsComplete(bench, [...two, set('Bench')], DAY, {}), true);
+  assert.equal(setsComplete(bench, two, DAY, { [trimKey(DAY, 'Bench')]: 1 }), true);
+});
+
+test('setsComplete ignores warm-ups and is never true without a set count', () => {
+  assert.equal(setsComplete(bench, [set('Bench'), set('Bench'), set('Bench', { kind: 'warmup' })], DAY, {}), false);
+  assert.equal(setsComplete(amrap, [set('Dips'), set('Dips')], DAY, {}), false);
 });

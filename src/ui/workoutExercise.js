@@ -6,6 +6,7 @@
 import { logicalDate } from '../logic/dates.js';
 import { lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { backCue, trimmedFor, trimmedTarget } from '../logic/workoutExtras.js';
+import { setDots, setsComplete } from '../logic/workoutPlan.js';
 import { esc } from './format.js';
 import { editForm } from './historyView.js';
 import { platesPanel } from './platesView.js';
@@ -57,6 +58,7 @@ export function exercisePage(state) {
     ? stepper('s', 'seconds', i, 'Seconds', d.s ?? last?.seconds ?? '', 'inputmode="numeric" step="1"')
     : stepper('r', 'reps', i, 'Reps', d.r ?? last?.reps ?? '', 'inputmode="numeric" step="1"');
 
+  const complete = !state.wMore?.[i] && setsComplete(ex, state.entries, day, state.wTrims);
   const tryTip = kind === 'template' && i === 0 && progressionPrompt(last, ex) ? `<p class="w2-try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : '';
   const cue = state.wCues?.[i] && backCue(ex.name) ? `<p class="w2-cue"><b>BACK CUE</b> ${esc(backCue(ex.name))}</p>` : '';
 
@@ -86,10 +88,16 @@ export function exercisePage(state) {
       ${stepper('w', 'weight', i, weightLabel, d.w ?? last?.weight ?? '', 'inputmode="decimal" step="0.5"')}
       ${second}
       ${loadSel}${sideSel}
+      ${complete
+        ? `<p class="w2-sub"><b>All ${setDots(ex, state.entries, day, state.wTrims).total} sets done.</b></p>
       <div class="pair">
+        <button class="btn secondary" data-action="wMoreSets" data-i="${i}">ADD EXTRA SET</button>
+        <button class="btn" data-action="${i < list.length - 1 ? 'wExNext' : 'wCloseEx'}" data-delta="1">${i < list.length - 1 ? 'NEXT EXERCISE' : 'BACK TO LIST'}</button>
+      </div>`
+        : `<div class="pair">
         <button class="btn secondary" data-action="logSet" data-kind="warmup" data-i="${i}">WARM-UP SET</button>
         <button class="btn" data-action="logSet" data-kind="working" data-i="${i}">WORKING SET</button>
-      </div>
+      </div>`}
     </section>
     ${plates}
     <section class="w2-card"><h2 class="w2-label">LOGGED TODAY · ${sets.length}</h2>${rows || '<p class="w2-sub">No sets yet.</p>'}</section>

@@ -63,6 +63,7 @@ export function createWorkoutNavActions({ state, today }) {
   return {
     wOpenEx: (el) => { state.wEx = Number(el.dataset.i); state.msg = ''; },
     wCloseEx: () => { closeState(state.wEx); state.wEx = null; state.msg = ''; },
+    wMoreSets: (el) => { state.wMore = { ...state.wMore, [el.dataset.i]: true }; },
     wExNext: () => move(1),
     wExPrev: () => move(-1),
     wStep: (el) => {
