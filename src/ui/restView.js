@@ -27,6 +27,14 @@ export function restRow(state) {
   </button>`;
 }
 
+/** Fixed peach rest bar for Today and Exercise (workout v2). The time keeps id rest-row-time so the timer painter updates it. */
+export function restBar(state) {
+  return `<button class="w2-restbar" data-action="restOpen" aria-label="Open the rest timer">
+    <span class="w2-restbar-text"><span class="w2-restbar-label">REST TIMER</span><span class="w2-restbar-time" id="rest-row-time">${fmt(timeLeft(state.rest))}</span></span>
+    <span class="w2-restbar-open">Open</span>
+  </button>`;
+}
+
 export function restPage(state) {
   const r = state.rest;
   const running = r.endAt != null;
