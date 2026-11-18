@@ -24,7 +24,7 @@ Log lifting for the active template, run the rest timer, and manage templates. S
    - Buttons: `WARM-UP SET` (secondary) and `WORKING SET` (peach). Weight exercises also get `PLATES`.
    - Logged sets for today as rows (`Set 100 x 8`, `Warm-up 50 x 8`, calisthenics as `+25 lb x 5` or `30 lb assist x 8`) with `EDIT` and `DEL`.
 9. **Empty template:** panel "No exercises yet. Open Switch, then Edit on this template to add some."
-10. **Spontaneous exercises** (today only), after the template's exercises: same panel as above, with `OPTIONS` holding `KEEP IN TEMPLATE` and `REMOVE FROM TODAY`. No plates, trim or cues.
+10. **Spontaneous exercises** (today only), after the template's exercises: same panel as above, with `OPTIONS` holding `MARK DONE`, `EDIT EXERCISE`, `KEEP IN TEMPLATE`, `SAVE TO LIBRARY` and `REMOVE FROM TODAY`. An optional target (such as 3 x 8) gives set dots. No plates, trim or cues.
 11. **ADD EXERCISE FOR TODAY** secondary button. Opens an inline `ADD FOR TODAY` panel: name (max 60), equipment (Not set, Barbell, Dumbbell, Calisthenics, Machine), what you log (weight and reps / reps, weight optional / seconds, weight optional), "Log left and right separately", `CANCEL` and `ADD`.
 
 ## Rest timer page (full screen, back arrow returns to Workout)
@@ -33,7 +33,7 @@ Title `Rest timer`. 220 px progress ring (white track, peach arc that fills as t
 
 ## Plate calculator (opens under a weight exercise)
 
-`PLATES` panel: working weight and `CALC`; result as `45 lb bar, each side:` with tags like `2 x 45`, `1 x 10`, or `BAR ONLY`; total or "N lb short" note; bar weight field, plate toggles (tap to toggle the plates you own); `CLOSE`.
+Plate calculator accordion: working weight (pre-filled from the exercise) and `CALC`; result draws one side of the barbell from the collar out (plate heights scale with weight) with tags like `2 x 45` or `BAR ONLY`, and the total. If the weight cannot be loaded with the plates you own, it says so and offers `USE 135 LB` and `USE 140 LB` (closest below and above); tapping one fills the exercise's weight box. A `My plates` fold holds the bar weight and a plus/minus stepper per plate size counting pairs (one plate on each side), kept on this device.
 
 ## Templates window (Switch, or TEMPLATES AND TAGS)
 
@@ -160,7 +160,7 @@ All "back" arrows return to the page that opened them, not always Today. Today i
 
 **4. Warm-up and BJJ (sheet).** Segmented control: `Warm-up 0/4`, `BJJ`, `Calisthenics`. A tab is shown only on days it applies (BJJ on BJJ days, Calisthenics Mon and Wed, otherwise greyed). Body is a checklist with 26 px checkboxes. `Done` closes. Progress still persists for the day.
 
-**5. Exercise (page).** Back arrow, `Exercise 1 of 5`, three-dot button. Title with equipment tag. Info strip with three cells: Target, Last (with date), Warm-up weight. Peach `TRY TODAY` tip on the first exercise only. Logging card: weight stepper, reps stepper (seconds for timed, weight optional for calisthenics with an Added/Assisted select, Left/Right select for per-side), then `WARM-UP SET` (secondary) and `WORKING SET` (peach). Weight pre-fills from the last working set. Below: Plate calculator row (weight exercises only), `LOGGED TODAY · n` list with Edit and Del per row. Rest bar pinned above the tab bar.
+**5. Exercise (page).** Back arrow, `Exercise 1 of 5`, three-dot button. Title with equipment tag. Info strip with four cells (two by two): Target, Last (with date), Warm-up weight, PR (heaviest set with its estimated 1RM). When the target set count is reached the set buttons give way to `NEXT EXERCISE` and `ADD EXTRA SET`. Peach `TRY TODAY` tip on the first exercise only. Logging card: weight stepper, reps stepper (seconds for timed, weight optional for calisthenics with an Added/Assisted select, Left/Right select for per-side), then `WARM-UP SET` (secondary) and `WORKING SET` (peach). Weight pre-fills from the last working set. Below: Plate calculator row (weight exercises only), `LOGGED TODAY · n` list with Edit and Del per row. Rest bar pinned above the tab bar.
 
 **6. Exercise options and plates.** The dropdown (Edit exercise, Trim a set, Back cues, Delete from template in red) and the plates accordion open: working weight field and `CALC`, result `45 lb bar, each side:` with plate tags (or `BAR ONLY`), total or `N lb short`, plates-you-own toggles, bar weight.
 
