@@ -20,6 +20,7 @@ import { createWorkoutActions } from './workoutActions.js';
 import { createWorkoutNavActions, captureDraft } from './workoutNavActions.js';
 import { createWorkoutSheetActions } from './workoutSheetActions.js';
 import { createActivityActions } from './activityActions.js';
+import { createLibraryActions, autofillForm } from './libraryActions.js';
 import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
 import { createTemplateActions } from './templateActions.js';
 import { createTemplateTagsActions } from './templateTagsActions.js';
@@ -122,6 +123,7 @@ const actions = {
   ...createWorkoutNavActions({ state, today }),
   ...createWorkoutSheetActions({ state, today }),
   ...createActivityActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createLibraryActions({ state, today }),
   ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createTemplateTagsActions({ state, saveFail, saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); } }),
   ...createPlatesActions({ state, inputValue }),
@@ -447,6 +449,8 @@ document.addEventListener('keydown', (ev) => {
 });
 $app.addEventListener('scroll', rest.onScroll, true); // the rest-time wheels scroll without a re-render
 document.addEventListener('visibilitychange', () => { if (!document.hidden) rest.resume(); });
+// Picking a saved exercise name fills the rest of the form in place (no re-render, so nothing typed is lost).
+$app.addEventListener('change', (ev) => { if (ev.target.matches?.('input[data-libfill]')) autofillForm(state, ev.target); });
 $app.addEventListener('change', (ev) => {
   const el = ev.target.closest('[data-action]');
   if (el && (el.tagName === 'SELECT' || el.type === 'checkbox')) dispatch(el);

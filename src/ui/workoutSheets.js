@@ -1,6 +1,6 @@
 // Workout v2 sheets and dropdown menus (docs/screens/workout.md screens 2, 3, 4, 6, 7).
 //   html:    sheetLayer(state) -> open sheet + scrim or ''; menuLayer(state) -> open dropdown + transparent scrim or ''
-//   state:   wSheet (null | 'switch' | 'warm' | 'add' | 'activity' | 'actmgr'), wMenu (null | 'today' | 'exercise'), wEx (exercise index or null)
+//   state:   wSheet (null | 'switch' | 'warm' | 'add' | 'activity' | 'actmgr' | 'lib'), wMenu (null | 'today' | 'exercise'), wEx (exercise index or null)
 //   actions: wSheetOpen, wSheetClose, wSheetTab, wMenuToggle, wMenuClose, wEditTemplate, wEditExercise, wOpenTemplates, wOpenHistory
 //            (see workoutSheetActions.js); sheets reuse tplPick, tplFilter, toggleCheck, toggleBjj, addExtraSave, addExtraCancel,
 //            trimSet, untrimSet, toggleCue, tDelete, keepExtra, removeExtra.
@@ -12,6 +12,7 @@ import { filterByTag, tagsOf, usedTags } from '../logic/templateTags.js';
 import { CHECKLISTS, backCue, checkKey, checkedCount, checklistKey, setCount, trimmedFor } from '../logic/workoutExtras.js';
 import { caliBlockFor } from '../logic/activities.js';
 import { activitySheet, manageSheet } from './workoutActivities.js';
+import { libraryDatalist, librarySheet } from './libraryActions.js';
 import { exerciseList } from '../logic/workoutPlan.js';
 import { extrasFor } from '../logic/extras.js';
 import { EQUIPMENT } from '../logic/templateEdit.js';
@@ -70,10 +71,10 @@ function warmSheet(state) {
 
 // ---- Add for today (screen 7) ----
 // The inputs keep the v1 ids (xe-name, xe-equip, xe-mode, xe-side) because addExtraSave reads them by id.
-function addSheet() {
+function addSheet(state) {
   return frame('Add for today', `<div class="w2-sheet-head"><h2>Add for today</h2>${closeBtn}</div>
     <label class="lbl" for="xe-name">NAME</label>
-    <input id="xe-name" class="field" maxlength="60" placeholder="Face pulls" autocomplete="off">
+    <input id="xe-name" class="field" maxlength="60" placeholder="Face pulls" autocomplete="off" list="lib-names" data-libfill>${libraryDatalist(state)}
     <label class="lbl" for="xe-equip">EQUIPMENT</label>
     <select id="xe-equip" class="field"><option value="">Not set</option>${EQUIPMENT.map((q) => `<option value="${q}">${esc(EQUIP_TEXT[q])}</option>`).join('')}</select>
     <label class="lbl" for="xe-mode">WHAT YOU LOG</label>
@@ -85,7 +86,8 @@ function addSheet() {
 export function sheetLayer(state) {
   if (state.wSheet === 'switch') return switchSheet(state);
   if (state.wSheet === 'warm') return warmSheet(state);
-  if (state.wSheet === 'add') return addSheet();
+  if (state.wSheet === 'add') return addSheet(state);
+  if (state.wSheet === 'lib') return librarySheet(state, { frame, closeBtn });
   if (state.wSheet === 'activity') return activitySheet(state, dayOf(state), { frame, closeBtn, checkRows });
   if (state.wSheet === 'actmgr') return manageSheet(state, { frame, closeBtn, checkRows });
   return '';
@@ -111,6 +113,7 @@ function exerciseMenu(state) {
   if (kind === 'extra') {
     const name = esc(ex.name);
     return dropdown('Exercise options', item('keepExtra', 'Keep in template', 'Add it to this template', `data-name="${name}"`)
+      + item('libSave', 'Save to library', 'Reuse it and autofill later', `data-i="${i}"`)
       + item('removeExtra', 'Remove from today', 'Logged sets stay in your log', `data-name="${name}"`));
   }
   if (String(kind).startsWith('cal')) return '';
@@ -122,6 +125,7 @@ function exerciseMenu(state) {
     + (total == null ? '' : item('trimSet', 'Trim a set', 'One fewer set today', `data-i="${i}"`, '', total - trimmed <= 1))
     + (trimmed ? item('untrimSet', 'Put back', 'Restore the trimmed set', `data-i="${i}"`) : '')
     + (cue ? item('toggleCue', state.wCues?.[i] ? 'Hide back cues' : 'Back cues', 'Form tips for this lift', `data-i="${i}"`) : '')
+    + item('libSave', 'Save to library', 'Reuse it and autofill later', `data-i="${i}"`)
     + item('tDelete', 'Delete from template', 'Asks to confirm first', `data-i="${i}"`, 'danger'));
 }
 
@@ -130,7 +134,8 @@ export function menuLayer(state) {
     return dropdown('Workout menu',
       item('wOpenTemplates', 'Templates and tags', 'Switch, add and tag templates')
       + item('wEditTemplate', 'Edit this template', 'Change the active template')
-      + item('wOpenHistory', 'Workout history', 'Past sets, by day'), true);
+      + item('wOpenHistory', 'Workout history', 'Past sets, by day')
+      + item('wSheetOpen', 'Exercise library', 'Saved exercises for autofill', 'data-sheet="lib"'), true);
   }
   if (state.wMenu === 'exercise') return exerciseMenu(state);
   return '';

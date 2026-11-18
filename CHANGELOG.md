@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: Exercise library (F55): Save to library in the exercise options menu, Exercise library sheet in the Today menu (list and remove), name autofill (equipment, type, warm-up, target, left and right) when adding for today or editing a template exercise; stored on this device; 4 new tests (2026-11-17)
 - feat: Workout Activities card (F54): BJJ and Calisthenics moved out of Before you lift into their own card; add, edit and remove your own activities with days of the week, a done check, distance (mi or km) and sets and reps; stored on this device; 7 new tests (2026-11-17)
 - feat: Workout tab v2 redesign (F53, not yet released): Today list with set dots and a template progress bar, Exercise page with steppers, sheets and dropdown menus, fixed rest bar, restyled Templates, Edit template and History pages; old edit-templates mode removed; new files added to the offline cache; 196 tests (2026-11-17)
 - fix: status tags (WAITING, EXPORTED) had text the same color as their background; forma.css now sets ink text on `.tag.waiting` and `.tag.done` (2026-11-17)
