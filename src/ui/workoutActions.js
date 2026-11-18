@@ -27,6 +27,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
         name: document.getElementById('xe-name')?.value,
         mode: document.getElementById('xe-mode')?.value,
         perSide: Boolean(document.getElementById('xe-side')?.checked),
+        equipment: document.getElementById('xe-equip')?.value,
       });
       if (r.error) { state.msg = r.error; return; }
       state.wAdd = false;
@@ -50,6 +51,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
         reps: inputValue(`r-${el.dataset.i}`),
         seconds: inputValue(`s-${el.dataset.i}`),
         side: inputValue(`sd-${el.dataset.i}`),
+        load: inputValue(`ld-${el.dataset.i}`),
       });
       if (r.error) { state.msg = r.error; return; }
       const e = newEntry('lift_set', day, { session: id, exercise: ex.name, kind, ...r.data }, Date.now());

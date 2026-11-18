@@ -11,7 +11,7 @@ const liveSets = (entries) => entries.filter((e) => e.type === 'lift_set' && !e.
 export function setScore(d) {
   if (d.seconds != null) return { value: d.seconds, unit: 'sec' };
   if (d.reps == null) return null;
-  if (d.weight == null) return { value: d.reps, unit: 'reps' };
+  if (d.weight == null || d.load) return { value: d.reps, unit: 'reps' };
   return { value: est1RM(d.weight, d.reps), unit: '1RM' };
 }
 

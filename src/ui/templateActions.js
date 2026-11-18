@@ -12,6 +12,7 @@ export function createTemplateActions({ state, saveTemplate, clearTemplate, save
     name: document.getElementById('te-name')?.value,
     mode: document.getElementById('te-mode')?.value,
     perSide: Boolean(document.getElementById('te-side')?.checked),
+    equipment: document.getElementById('te-equip')?.value,
     warmup: document.getElementById('te-warm')?.value,
     target: document.getElementById('te-target')?.value,
   });
@@ -50,8 +51,8 @@ export function createTemplateActions({ state, saveTemplate, clearTemplate, save
     keepExtra: async (el) => {
       const ex = extrasFor(state.wExtras, today()).find((e) => e.name === el.dataset.name);
       if (!ex) return;
-      const { name, mode, perSide } = ex;
-      const r = addExercise(getSessions(), sessionId(), { name, mode, perSide, warmup: '', target: '' });
+      const { name, mode, perSide, equipment } = ex;
+      const r = addExercise(getSessions(), sessionId(), { name, mode, perSide, equipment, warmup: '', target: '' });
       if (r.error) { state.msg = r.error; return; }
       if (!(await commit(r.sessions, `${name} is now in the template.`))) return;
       state.wExtras = { day: today(), list: removeExtra(state.wExtras.list, name) };

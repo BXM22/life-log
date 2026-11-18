@@ -10,7 +10,8 @@ import { platesButton, platesPanel } from './platesView.js';
 import { activeSessionId, lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
 import { esc } from './format.js';
-import { manageView } from './templateView.js';
+import { manageView, EQUIP_TEXT } from './templateView.js';
+import { EQUIPMENT } from '../logic/templateEdit.js';
 import { editForm } from './historyView.js';
 import { restRow } from './restView.js';
 import { workoutHistoryView } from './workoutHistoryView.js';
@@ -20,13 +21,15 @@ function exercisePanel(state, ex, i, day, extra = false) {
   const last = lastWorking(state.entries, state.stats, ex.name);
   const warm = suggestWarmup(last);
   const sets = setsFor(state.entries, day, ex.name);
-  const optional = ex.mode === 'weight' ? '' : ' (optional)';
+  const cali = ex.equipment === 'calisthenics';
+  const optional = ex.mode === 'weight' && !cali ? '' : ' (optional)';
 
   const inputs = [
     `<input id="w-${i}" class="field" type="number" inputmode="decimal" step="0.5" value="${esc(last?.weight ?? '')}" placeholder="Weight (lb)${optional}" aria-label="Weight in lb">`,
     ex.mode === 'timed'
       ? `<input id="s-${i}" class="field" type="number" inputmode="numeric" step="1" value="${esc(last?.seconds ?? '')}" placeholder="Seconds" aria-label="Seconds">`
       : `<input id="r-${i}" class="field" type="number" inputmode="numeric" step="1" placeholder="Reps" aria-label="Reps">`,
+    cali ? `<select id="ld-${i}" class="field" aria-label="Weight type"><option value="resistance" ${last?.load === 'assisted' ? '' : 'selected'}>Added weight</option><option value="assisted" ${last?.load === 'assisted' ? 'selected' : ''}>Assisted weight</option></select>` : '',
     ex.perSide
       ? `<select id="sd-${i}" class="field" aria-label="Side"><option value="L">Left</option><option value="R">Right</option></select>`
       : '',
@@ -40,7 +43,7 @@ function exercisePanel(state, ex, i, day, extra = false) {
   const open = state.exOpen?.[ex.name] === true;
   return `<details class="panel fold exfold" ${open ? 'open' : ''}>
     <summary data-action="toggleEx" data-name="${esc(ex.name)}"><h2>${esc(ex.name)}</h2></summary>
-    <p>${targetText(state, ex, day)}. Warm-up: ${esc(ex.warmup)}.</p>
+    <p>${ex.equipment ? `${esc(EQUIP_TEXT[ex.equipment])}. ` : ''}${targetText(state, ex, day)}. Warm-up: ${esc(ex.warmup)}.</p>
     ${extra ? `<details class="menu"><summary>OPTIONS</summary><div class="actions">
         <button class="btn secondary small" data-action="keepExtra" data-name="${esc(ex.name)}" aria-label="Keep ${esc(ex.name)} in the template">KEEP IN TEMPLATE</button>
         <button class="btn secondary small" data-action="removeExtra" data-name="${esc(ex.name)}" aria-label="Remove ${esc(ex.name)} from today">REMOVE FROM TODAY</button></div></details>`
@@ -100,6 +103,8 @@ function extraPanels(state, session, day) {
     ? `<div class="panel"><h2>ADD FOR TODAY</h2>
         <label class="lbl" for="xe-name">NAME</label>
         <input id="xe-name" class="field" maxlength="60" placeholder="Face pulls" autocomplete="off">
+        <label class="lbl" for="xe-equip">EQUIPMENT</label>
+        <select id="xe-equip" class="field"><option value="">Not set</option>${EQUIPMENT.map((q) => `<option value="${q}">${esc(EQUIP_TEXT[q])}</option>`).join('')}</select>
         <label class="lbl" for="xe-mode">WHAT YOU LOG</label>
         <select id="xe-mode" class="field">${Object.entries(MODE_TEXT).map(([m, t]) => `<option value="${m}">${esc(t)}</option>`).join('')}</select>
         <label class="check"><input type="checkbox" id="xe-side"><span>Log left and right separately</span></label>

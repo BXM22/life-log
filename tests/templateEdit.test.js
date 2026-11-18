@@ -1,6 +1,8 @@
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { SESSIONS, getSessions, setTemplate, sessionById, findExercise } from '../src/logic/template.js';
+import { parseSet, setText, progressionPrompt, suggestWarmup } from '../src/logic/workout.js';
+import { editEntry, parseEdit, newEntry } from '../src/logic/entries.js';
 import { loadExtras, saveExtras, extrasFor, addExtra, removeExtra } from '../src/logic/extras.js';
 import { parseExerciseFields, addExercise, updateExercise, removeExercise, normalizeTemplate, addSession } from '../src/logic/templateEdit.js';
 
@@ -102,4 +104,33 @@ test('extras: add, reject duplicates, remove, and drop at the next day', () => {
   assert.deepEqual(loadExtras(store, '2026-11-18').list, []);
   assert.deepEqual(extrasFor(loadExtras(store, '2026-11-17'), '2026-11-18'), []);
   assert.deepEqual(loadExtras({ getItem: () => 'not json' }, '2026-11-17').list, []);
+});
+
+test('equipment: optional, validated, kept by normalizeTemplate and extras', () => {
+  assert.equal(parseExerciseFields(fields({ equipment: 'barbell' })).exercise.equipment, 'barbell');
+  assert.equal('equipment' in parseExerciseFields(fields()).exercise, false);
+  assert.match(parseExerciseFields(fields({ equipment: 'kettlebell' })).error, /barbell/);
+  const kept = normalizeTemplate([{ id: 'c-x', name: 'X', exercises: [parseExerciseFields(fields({ equipment: 'machine' })).exercise] }]);
+  assert.equal(kept[0].exercises[0].equipment, 'machine');
+  assert.equal(addExtra([], [], { name: 'Dips', mode: 'bodyweight', equipment: 'calisthenics' }).list[0].equipment, 'calisthenics');
+});
+
+test('calisthenics sets: weight optional, assisted or resistance, shown clearly, edits keep the type', () => {
+  const pullup = { name: 'Pull-up', mode: 'bodyweight', equipment: 'calisthenics' };
+  assert.deepEqual(parseSet(pullup, { reps: '8' }).data, { weight: null, reps: 8, seconds: null, side: null, load: null });
+  const asst = parseSet(pullup, { weight: '30', reps: '8', load: 'assisted' }).data;
+  assert.equal(asst.load, 'assisted');
+  assert.equal(setText(asst), '30 lb assist x 8');
+  const add = parseSet(pullup, { weight: '25', reps: '5', load: 'resistance' }).data;
+  assert.equal(setText(add), '+25 lb x 5');
+  assert.equal(parseSet({ ...pullup, mode: 'weight' }, { reps: '8' }).data.weight, null); // weight not required for calisthenics
+  assert.equal(parseSet({ name: 'Bench', mode: 'weight' }, { weight: '100', reps: '5' }).data.load, undefined);
+  assert.equal(setText({ weight: 100, reps: 5 }), '100 x 5');
+  assert.equal(suggestWarmup({ weight: 30, load: 'assisted' }), null);
+  assert.match(progressionPrompt({ weight: 30, reps: 8, load: 'assisted' }, { target: '3 x 8-12' }), /9 reps/);
+  const e = newEntry('lift_set', '2026-11-17', { session: 's', exercise: 'Nope', kind: 'working', ...asst }, 1);
+  const r = parseEdit(e, { weight: '20', reps: '8' });
+  assert.equal(r.data.load, 'assisted');
+  assert.equal(setText(editEntry(e, r.data, 2).data), '20 lb assist x 8');
+  assert.equal(parseEdit(e, { weight: '', reps: '8' }).data.load, null);
 });

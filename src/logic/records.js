@@ -28,7 +28,7 @@ function top(list, extra, better) {
 function liftRecord(d, date) {
   if (d.seconds != null) return { value: d.seconds, unit: 'sec', text: setText(d), date };
   if (d.reps == null) return null;
-  if (d.weight == null) return { value: d.reps, unit: 'reps', text: setText(d), date };
+  if (d.weight == null || d.load) return { value: d.reps, unit: 'reps', text: setText(d), date };
   return { value: est1RM(d.weight, d.reps), unit: '1RM', text: setText(d), date };
 }
 

@@ -103,7 +103,8 @@ export function parseEdit(entry, fields) {
   if (entry.type === 'habit_check') return { data: { done: Boolean(fields.done) } };
   if (entry.type === 'lift_set') {
     const ex = findExercise(entry.data.exercise) ?? { mode: entry.data.seconds != null ? 'timed' : 'weight', perSide: Boolean(entry.data.side) };
-    const r = parseSet(ex, { weight: fields.weight, reps: fields.reps, seconds: fields.seconds, side: entry.data.side });
+    const load = entry.data.load ?? null;
+    const r = parseSet(load ? { ...ex, equipment: 'calisthenics' } : ex, { weight: fields.weight, reps: fields.reps, seconds: fields.seconds, side: entry.data.side, load });
     return r.error ? r : { data: r.data };
   }
   return { error: 'This entry cannot be edited.' };

@@ -5,21 +5,25 @@
 import { normalizeTags } from './templateTags.js';
 
 export const MODES = ['weight', 'bodyweight', 'timed'];
+/** What an exercise is done with. Optional; older exercises have none. Calisthenics sets log assisted or added weight. */
+export const EQUIPMENT = ['barbell', 'dumbbell', 'calisthenics', 'machine'];
 export const MAX_NAME = 60;
 const MAX_NOTE = 80;
 const DEFAULT_WARMUP = 'none';
 const DEFAULT_TARGET = '3 sets';
 
 /** Validate the exercise form. Returns { exercise } or { error }. */
-export function parseExerciseFields({ name, mode, perSide, warmup, target }) {
+export function parseExerciseFields({ name, mode, perSide, warmup, target, equipment }) {
   const n = String(name ?? '').trim();
   if (!n) return { error: 'Enter a name for the exercise.' };
   if (n.length > MAX_NAME) return { error: `Name must be ${MAX_NAME} characters or fewer.` };
   if (!MODES.includes(mode)) return { error: 'Pick weight, bodyweight or timed.' };
+  const eq = equipment == null || equipment === '' ? null : String(equipment);
+  if (eq && !EQUIPMENT.includes(eq)) return { error: 'Pick barbell, dumbbell, calisthenics or machine.' };
   const w = String(warmup ?? '').trim() || DEFAULT_WARMUP;
   const t = String(target ?? '').trim() || DEFAULT_TARGET;
   if (w.length > MAX_NOTE || t.length > MAX_NOTE) return { error: `Warm-up and target must be ${MAX_NOTE} characters or fewer.` };
-  return { exercise: { name: n, mode, warmup: w, target: t, ...(perSide ? { perSide: true } : {}) } };
+  return { exercise: { name: n, mode, warmup: w, target: t, ...(perSide ? { perSide: true } : {}), ...(eq ? { equipment: eq } : {}) } };
 }
 
 const find = (sessions, id) => sessions.find((s) => s.id === id);

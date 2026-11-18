@@ -85,8 +85,8 @@ export function computeStats(entries, prev = emptyStats(), now = 0) {
     if (!alive(e) || e.type !== 'lift_set' || e.data.kind !== 'working') continue;
     const cur = lastLifts[e.data.exercise];
     if (!cur || e.date > cur.date || (e.date === cur.date && e.updatedAt >= cur.at)) {
-      const { weight, reps, seconds, side } = e.data;
-      lastLifts[e.data.exercise] = { date: e.date, at: e.updatedAt, weight, reps, seconds, side };
+      const { weight, reps, seconds, side, load } = e.data;
+      lastLifts[e.data.exercise] = { date: e.date, at: e.updatedAt, weight, reps, seconds, side, load: load ?? null };
     }
   }
 

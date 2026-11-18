@@ -29,7 +29,7 @@ export const extrasFor = (extras, day) => (extras?.day === day ? extras.list : [
 
 /** Add one. The name must differ (ignoring case) from every template exercise and every extra already added. */
 export function addExtra(list, templateExercises, fields) {
-  const r = parseExerciseFields({ ...fields, warmup: '', target: '' });
+  const r = parseExerciseFields({ ...fields, warmup: '', target: '' }); // keeps equipment
   if (r.error) return r;
   const taken = [...templateExercises, ...list].some((e) => e.name.toLowerCase() === r.exercise.name.toLowerCase());
   if (taken) return { error: `${r.exercise.name} is already on today's workout.` };

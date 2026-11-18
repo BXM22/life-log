@@ -30,14 +30,18 @@ export function activeSessionId(picked, date, days = 4) {
 const blank = (v) => String(v ?? '').trim() === '';
 
 /** Validate the set form for an exercise. Returns { data: { weight, reps, seconds, side } } or { error }. */
-export function parseSet(exercise, { weight, reps, seconds, side }) {
+/** Calisthenics sets may carry weight: 'assisted' (band or machine takes load off) or 'resistance' (weight added). */
+export const LOADS = ['assisted', 'resistance'];
+
+export function parseSet(exercise, { weight, reps, seconds, side, load }) {
   const mode = exercise.mode;
+  const cali = exercise.equipment === 'calisthenics';
   let w = null;
   if (!blank(weight)) {
     w = Number(weight);
     if (!(w >= 0 && w <= 1000)) return { error: 'Weight must be 0 to 1000 lb.' };
     w = Math.round(w * 10) / 10;
-  } else if (mode === 'weight') {
+  } else if (mode === 'weight' && !cali) {
     return { error: 'Enter the weight.' };
   }
 
@@ -56,14 +60,16 @@ export function parseSet(exercise, { weight, reps, seconds, side }) {
     if (side !== 'L' && side !== 'R') return { error: 'Pick left or right.' };
     sd = side;
   }
-  return { data: { weight: w, reps: r, seconds: s, side: sd } };
+  const ld = cali && w != null ? (load === 'assisted' ? 'assisted' : 'resistance') : null;
+  return { data: { weight: w, reps: r, seconds: s, side: sd, ...(cali ? { load: ld } : {}) } };
 }
 
-/** Compact text for one set: "100 x 8", "8 reps", "45 lb for 30 sec", "30 sec", with an L or R prefix. */
+/** Compact text for one set: "100 x 8", "8 reps", "45 lb for 30 sec", "+25 lb x 8", "30 lb assist x 8", with an L or R prefix. */
 export function setText(d) {
   let t;
-  if (d.seconds != null) t = d.weight != null ? `${d.weight} lb for ${d.seconds} sec` : `${d.seconds} sec`;
-  else t = d.weight != null ? `${d.weight} x ${d.reps}` : `${d.reps} reps`;
+  const load = d.weight == null ? null : d.load === 'assisted' ? `${d.weight} lb assist` : d.load === 'resistance' ? `+${d.weight} lb` : null;
+  if (d.seconds != null) t = d.weight != null ? `${load ?? `${d.weight} lb`} for ${d.seconds} sec` : `${d.seconds} sec`;
+  else t = d.weight != null ? `${load ?? d.weight} x ${d.reps}` : `${d.reps} reps`;
   return d.side ? `${d.side} ${t}` : t;
 }
 
@@ -82,7 +88,7 @@ export function lastWorking(entries, stats, exercise) {
   for (const e of liveSets(entries)) {
     if (e.data.exercise !== exercise || e.data.kind !== 'working') continue;
     if (!best || e.date > best.date || (e.date === best.date && e.updatedAt >= best.at)) {
-      best = { date: e.date, at: e.updatedAt, weight: e.data.weight, reps: e.data.reps, seconds: e.data.seconds, side: e.data.side };
+      best = { date: e.date, at: e.updatedAt, weight: e.data.weight, reps: e.data.reps, seconds: e.data.seconds, side: e.data.side, load: e.data.load ?? null };
     }
   }
   const kept = stats?.lastLifts?.[exercise];
@@ -92,7 +98,7 @@ export function lastWorking(entries, stats, exercise) {
 
 /** Warm-up weight suggestion: about 50% of the last working weight, rounded to 2.5. Null when unknown. */
 export function suggestWarmup(last) {
-  if (!last || last.weight == null || last.weight <= 0) return null;
+  if (!last || last.weight == null || last.weight <= 0 || last.load) return null;
   return Math.max(Math.round((last.weight * 0.5) / 2.5) * 2.5, 2.5);
 }
 
@@ -111,7 +117,7 @@ export function progressionPrompt(last, exercise) {
   if (last.seconds != null) return `Try ${last.seconds + 5} sec, 5 more than last time.`;
   if (last.reps == null) return null;
   const ceiling = repCeiling(exercise.target);
-  if (last.weight == null) return `Try ${last.reps + 1} reps, one more than last time.`;
+  if (last.weight == null || last.load) return `Try ${last.reps + 1} reps, one more than last time.`;
   if (ceiling == null || last.reps >= ceiling) {
     const step = last.weight >= 45 ? 5 : 2.5;
     const reps = ceiling == null ? last.reps : Math.min(last.reps, ceiling);
