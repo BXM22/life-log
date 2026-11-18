@@ -69,7 +69,7 @@ Title `Study and notes`. Two panels:
 - **Buttons:** primary peach 56 px pill with ink text; secondary white with a hairline; no danger red on this tab.
 - **Quick add FAB:** 56 px round peach button with ink `+` and a soft peach shadow `0 6px 18px rgba(244,162,140,.55)`, fixed bottom right above the tab bar.
 - **Sheet:** white bottom sheet over a dim scrim; kind chips are pills (selected peach); fields are 56 px white with a hairline.
-- **Status tags:** `WAITING` in soft peach, `EXPORTED` in a quieter done style.
+- **Status tags:** 12 px weight 700 pills, ink text on both: `WAITING` on peach `#F4A28C`, `EXPORTED` on soft peach `#FDE8E0`. (They were unreadable until the 2026-11-17 fix: `main.css` set the text to the same pale color as the background.)
 - **Motion:** press feedback only; respects reduced motion.
 
 ## Reference

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- fix: status tags (WAITING, EXPORTED) had text the same color as their background; forma.css now sets ink text on `.tag.waiting` and `.tag.done` (2026-11-17)
 - feat: exercise equipment (F52): Barbell, Dumbbell, Calisthenics or Machine on each exercise; calisthenics sets log optional Added or Assisted weight with reps; favicon link added; tests added (2026-11-17)
 - feat: spontaneous exercises (F51): ADD EXERCISE FOR TODAY on Workout adds a today-only exercise, with KEEP IN TEMPLATE to make it permanent or REMOVE FROM TODAY; new src/logic/extras.js added to the offline cache; test added (2026-11-17)
 - feat: start a workout template blank (F50): NEW TEMPLATE box in the Templates window with START BLANK or COPY ACTIVE, opens the edit screen to add exercises over time; empty-state line on Workout; tests added (2026-11-17)

@@ -42,5 +42,5 @@ Type scale: screen title 28/34 weight 800; section overline (H2) 12/16 weight 70
 | Row button (`rowbtn`) | full-width cream row, title left, chevron right; opens a window or tab |
 | Chip | pill toggle with `aria-pressed`; selected is peach, unselected is white |
 | Fold (`details`) | panel that collapses; arrow at the right of its title |
-| Status tag | `WAITING` (not exported yet) or `EXPORTED` / `IN VAULT` (done) |
+| Status tag | small pill, ink text: `WAITING` (peach, not exported yet) or `EXPORTED` / `IN VAULT` (soft peach, done) |
 | Segmented control | two-button switch (Sync: Export / Wipe) |

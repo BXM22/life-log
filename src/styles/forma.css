@@ -90,8 +90,8 @@ textarea.field { padding: 14px 16px; }
 .row, .habit, .entry { border-bottom: 1px solid var(--shade); }
 .habit { min-height: 56px; }
 .tag, .streak { padding: 3px 10px; font-size: 12px; font-weight: 700; letter-spacing: 0; color: var(--ink); background: var(--peach-soft); border: 0; border-radius: 12px; }
-.tag.waiting { background: var(--accent); }
-.tag.done { background: var(--peach-soft); }
+.tag.waiting { background: var(--accent); color: var(--ink); } /* main.css .tag.waiting/.done set a pale color that matches the background; keep ink text */
+.tag.done { background: var(--peach-soft); color: var(--ink); }
 label.check input { width: 28px; height: 28px; border: 2px solid #C9B8AB; border-radius: 14px; background: #FFFFFF; }
 label.check input:checked { background: var(--ink); border-color: var(--ink); }
 label.check input:checked::after { border-color: #FFFFFF; border-width: 0 2px 2px 0; }
