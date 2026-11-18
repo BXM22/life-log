@@ -13,6 +13,7 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
   state.tFilter = ''; // tag filter in the window
   state.tScreen = null; // id of the template on the edit screen
   state.tplDraft = null; // { name, tags } typed on the edit screen but not saved yet
+  state.tAcc = { new: false, name: false, ex: true, more: true }; // accordion open state (state, not <details>, so render() keeps it)
 
   const current = () => getSessions().find((s) => s.id === state.tScreen);
   const id = (el) => el.dataset.id;
@@ -34,6 +35,15 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
     return state.tplDraft;
   }
 
+  // Make a template the stored active one (shared by tplActive, tplPick, tplSetActiveHome). Returns true on success.
+  async function activate(sid) {
+    const r = setActive(getSessions(), sid);
+    if (r.error) { state.msg = r.error; return false; }
+    return commit(r.sessions, `${getSessions().find((s) => s.id === sid)?.name ?? 'Template'} is now the active template.`);
+  }
+
+  const closeWin = () => { state.tWin = false; state.wSession = null; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; };
+
   // Create a template from the NEW TEMPLATE box: empty (copyOf null) or a copy of the active one, then open it to edit.
   async function createTemplate(copyOf, msg) {
     const r = addSession(getSessions(), document.getElementById('tn-name')?.value, copyOf);
@@ -43,15 +53,20 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
 
   return {
     tplOpenWin: () => { state.tWin = true; state.wManage = false; state.wHistory = false; state.tEdit = null; state.msg = ''; window.scrollTo(0, 0); },
-    tplCloseWin: () => { state.tWin = false; state.wSession = null; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
+    tplCloseWin: closeWin,
     tplNewBlank: () => createTemplate(null, 'Blank template created. Add exercises below.'),
     tplNewCopy: () => createTemplate(activeSessionId(null, logicalDate(Date.now(), state.dayStartHour), state.planDays), 'Template copied.'),
     tplFilter: (el) => { state.tFilter = el.dataset.tag || ''; },
 
-    tplActive: async (el) => {
-      const r = setActive(getSessions(), id(el));
-      if (r.error) { state.msg = r.error; return; }
-      await commit(r.sessions, `${getSessions().find((s) => s.id === id(el))?.name ?? 'Template'} is now the active template.`);
+    tplActive: async (el) => { await activate(id(el)); },
+    // Switch sheet row: set active, drop the in-memory session override and close the sheet.
+    tplPick: async (el) => { if (await activate(id(el))) { state.wSession = null; state.wSheet = null; } },
+    // Templates page "Set active": set active and go back to Today.
+    tplSetActiveHome: async (el) => { if (await activate(id(el))) closeWin(); },
+    tplAcc: (el) => {
+      if (state.tScreen) syncDraft(); // keep a typed name when the accordion re-renders
+      const k = el.dataset.k;
+      if (k in state.tAcc) state.tAcc[k] = !state.tAcc[k];
     },
 
     tplOpen: (el) => {
