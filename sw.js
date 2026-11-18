@@ -99,7 +99,6 @@ const SHELL = [
   'src/ui/studyView.js',
   'src/ui/weekPanel.js',
   'src/ui/workoutExtrasActions.js',
-  'src/ui/workoutExtrasView.js',
   'icons/icon-192.png',
 ];
 

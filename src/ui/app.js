@@ -66,7 +66,6 @@ const state = {
   exOpen: {}, // exercise panels expanded on the Workout tab, by exercise name
   wSession: null, // workout session picked on the Workout tab (null = today's)
   rest: (() => { try { return loadRest(localStorage, Date.now()); } catch { return loadRest({ getItem: () => null }, Date.now()); } })(), // rest timer, see logic/rest.js
-  wManage: false, // Workout tab in edit-templates mode
   wHistory: false, // Workout tab showing past workouts
   tEdit: null, // exercise form open: { mode: 'add' } or { mode: 'edit', i }
   tDraft: null, // form values kept when a save is refused
@@ -124,7 +123,7 @@ const actions = {
   ...createWorkoutSheetActions({ state, today }),
   ...createActivityActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createLibraryActions({ state, today }),
-  ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createWorkoutExtrasActions({ state, today }),
   ...createTemplateTagsActions({ state, saveFail, saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); } }),
   ...createPlatesActions({ state, inputValue }),
   ...rest.actions,

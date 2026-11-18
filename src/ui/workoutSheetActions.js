@@ -41,10 +41,10 @@ export function createWorkoutSheetActions({ state, today }) {
       top();
     },
     wOpenTemplates: () => {
-      state.tWin = true; state.wManage = false; state.wHistory = false; state.tEdit = null;
+      state.tWin = true; state.wHistory = false; state.tEdit = null;
       state.wMenu = null; state.wSheet = null; state.msg = '';
       top();
     },
-    wOpenHistory: () => { state.wHistory = true; state.wManage = false; state.wMenu = null; state.msg = ''; top(); },
+    wOpenHistory: () => { state.wHistory = true; state.wMenu = null; state.msg = ''; top(); },
   };
 }

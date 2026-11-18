@@ -41,7 +41,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
 
     pickSession: (el) => { state.wSession = el.value; state.msg = ''; },
 
-    toggleHistory: () => { state.wHistory = !state.wHistory; state.wManage = false; state.tEdit = null; state.msg = ''; },
+    toggleHistory: () => { state.wHistory = !state.wHistory; state.tEdit = null; state.msg = ''; },
 
     logSet: async (el) => {
       const day = today();

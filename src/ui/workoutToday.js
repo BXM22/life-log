@@ -4,18 +4,23 @@
 
 import { logicalDate } from '../logic/dates.js';
 import { setsFor, lastWorking } from '../logic/workout.js';
-import { CHECKLISTS, checklistKey, checkedCount } from '../logic/workoutExtras.js';
+import { CHECKLISTS, checklistKey, checkedCount, trimmedFor, trimmedTarget } from '../logic/workoutExtras.js';
 import { activitiesCard } from './workoutActivities.js';
 import { setDots, sessionProgress } from '../logic/workoutPlan.js';
 import { esc } from './format.js';
 import { EQUIP_TEXT } from './templateView.js';
-import { targetText } from './workoutExtrasView.js';
 import { workoutContext } from './workoutNavActions.js';
 
 const CHEV = '<svg class="w2-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 const DOTS_ICON = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
 
 const dateLabel = (day) => new Date(`${day}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+/** Target text after trims, such as "Target 2 x 6-8 (trimmed 1 from 3 x 6-8)". */
+const targetText = (state, ex, day) => {
+  const trimmed = trimmedFor(state.wTrims, day, ex.name, ex.target);
+  return `Target ${esc(trimmedTarget(ex.target, trimmed))}${trimmed ? ` (trimmed ${trimmed} from ${esc(ex.target)})` : ''}`;
+};
 
 /** Equipment or load tag text for a list item, or ''. */
 function tagText(state, item) {

@@ -52,7 +52,7 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
   }
 
   return {
-    tplOpenWin: () => { state.tWin = true; state.wManage = false; state.wHistory = false; state.tEdit = null; state.msg = ''; window.scrollTo(0, 0); },
+    tplOpenWin: () => { state.tWin = true; state.wHistory = false; state.tEdit = null; state.msg = ''; window.scrollTo(0, 0); },
     tplCloseWin: closeWin,
     tplNewBlank: () => createTemplate(null, 'Blank template created. Add exercises below.'),
     tplNewCopy: () => createTemplate(activeSessionId(null, logicalDate(Date.now(), state.dayStartHour), state.planDays), 'Template copied.'),

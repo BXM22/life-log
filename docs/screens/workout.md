@@ -72,8 +72,8 @@ Back arrow; title `Edit template`. Panels: **EDIT TEMPLATE** (name, tag chips, "
 |---|---|
 | Main view and exercise panels | `src/ui/workoutView.js` |
 | Templates window and edit screen | `src/ui/templateTagsView.js`, `src/ui/templateTagsActions.js` |
-| Exercise form, old edit mode | `src/ui/templateView.js`, `src/ui/templateActions.js` |
-| Warm-ups, BJJ, calisthenics block, cues, trims | `src/ui/workoutExtrasView.js`, `workoutExtrasActions.js`, `src/logic/workoutExtras.js` |
+| Exercise form | `src/ui/templateView.js`, `src/ui/templateActions.js` |
+| Warm-up ticks, cues, trims | `src/ui/workoutExtrasActions.js`, `src/logic/workoutExtras.js` |
 | Rest timer | `src/ui/restView.js`, `restActions.js`, `src/logic/rest.js` |
 | Plate calculator | `src/ui/platesView.js`, `platesActions.js`, `src/logic/plates.js` |
 | Spontaneous exercises | `src/logic/extras.js`, `workoutActions.js` (`addExtraOpen`, `addExtraSave`, `removeExtra`), `templateActions.js` (`keepExtra`) |
