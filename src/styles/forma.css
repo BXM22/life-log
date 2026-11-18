@@ -21,6 +21,7 @@
   --pill: #FDE0D6;
   --mono: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --dot: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tabbar-h: 76px; /* bottom tab bar (about 75 px) + 1; Workout v2 pages reserve this plus safe area */
   --code: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
