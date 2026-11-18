@@ -1,7 +1,7 @@
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { SESSIONS, getSessions, setTemplate, sessionById, findExercise } from '../src/logic/template.js';
-import { parseExerciseFields, addExercise, updateExercise, removeExercise, normalizeTemplate } from '../src/logic/templateEdit.js';
+import { parseExerciseFields, addExercise, updateExercise, removeExercise, normalizeTemplate, addSession } from '../src/logic/templateEdit.js';
 
 after(() => setTemplate(null));
 
@@ -64,4 +64,23 @@ test('active template: setTemplate changes what sessionById and findExercise see
   setTemplate(null);
   assert.equal(findExercise('Glute bridge'), null);
   assert.equal(getSessions(), SESSIONS);
+});
+
+test('addSession: blank has no exercises, copy duplicates them, names are validated', () => {
+  const base = getSessions();
+  const blank = addSession(base, 'Push day');
+  assert.equal(blank.sessions.length, base.length + 1);
+  const made = blank.sessions.find((s) => s.id === blank.id);
+  assert.deepEqual(made.exercises, []);
+  assert.equal(made.name, 'Push day');
+  const copy = addSession(base, 'Copy of A', base[0].id);
+  assert.equal(copy.sessions.find((s) => s.id === copy.id).exercises.length, base[0].exercises.length);
+  assert.match(addSession(base, '  ').error, /name/i);
+  assert.match(addSession(blank.sessions, 'push DAY').error, /already exists/);
+});
+
+test('normalizeTemplate: keeps a session that has no exercises yet', () => {
+  const r = normalizeTemplate([{ id: 'c-push', name: 'Push', focus: '', tags: [], exercises: [] }]);
+  assert.equal(r.length, 1);
+  assert.deepEqual(r[0].exercises, []);
 });

@@ -3,7 +3,9 @@
 // templateActions.js (tAdd, tEditStart, tSave, tDelete) work on it unchanged.
 
 import { getSessions, setTemplate } from '../logic/template.js';
-import { removeSession, renameSession } from '../logic/templateEdit.js';
+import { addSession, removeSession, renameSession } from '../logic/templateEdit.js';
+import { activeSessionId } from '../logic/workout.js';
+import { logicalDate } from '../logic/dates.js';
 import { normalizeTags, setActive, setTags, tagsOf } from '../logic/templateTags.js';
 
 export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
@@ -32,9 +34,18 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
     return state.tplDraft;
   }
 
+  // Create a template from the NEW TEMPLATE box: empty (copyOf null) or a copy of the active one, then open it to edit.
+  async function createTemplate(copyOf, msg) {
+    const r = addSession(getSessions(), document.getElementById('tn-name')?.value, copyOf);
+    if (r.error) { state.msg = r.error; return; }
+    if (await commit(r.sessions, msg)) { state.tScreen = r.id; state.wSession = r.id; state.tplDraft = null; state.tEdit = null; window.scrollTo(0, 0); }
+  }
+
   return {
     tplOpenWin: () => { state.tWin = true; state.wManage = false; state.wHistory = false; state.tEdit = null; state.msg = ''; window.scrollTo(0, 0); },
     tplCloseWin: () => { state.tWin = false; state.wSession = null; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
+    tplNewBlank: () => createTemplate(null, 'Blank template created. Add exercises below.'),
+    tplNewCopy: () => createTemplate(activeSessionId(null, logicalDate(Date.now(), state.dayStartHour), state.planDays), 'Template copied.'),
     tplFilter: (el) => { state.tFilter = el.dataset.tag || ''; },
 
     tplActive: async (el) => {

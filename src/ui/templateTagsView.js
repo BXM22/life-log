@@ -1,7 +1,7 @@
 // WORKOUT tab, F42: templates window (list, tag filter, one active template) and the template edit screen.
 //   html:    templatesWindow(state), editScreen(state)
 //   actions: tplOpenWin | tplCloseWin | tplFilter | tplActive | tplOpen | tplBack | tplToggleTag | tplAddTag |
-//            tplSave | tplSetActive | tplDelete, see templateTagsActions.js
+//            tplNewBlank | tplNewCopy | tplSave | tplSetActive | tplDelete, see templateTagsActions.js
 
 import { getSessions } from '../logic/template.js';
 import { allTags, filterByTag, tagsOf, usedTags } from '../logic/templateTags.js';
@@ -33,6 +33,14 @@ export function templatesWindow(state) {
     </div>`).join('');
   return `<div class="backrow">${backButton('tplCloseWin', 'Back to workout')}<small>Active: ${esc(all.find((s) => s.id === cur)?.name ?? '')}</small></div>
     <h2 class="subtitle">Workout templates</h2>
+    <div class="panel"><h2>NEW TEMPLATE</h2>
+      <label class="lbl" for="tn-name">NAME</label>
+      <input id="tn-name" class="field" maxlength="40" placeholder="Push day" autocomplete="off">
+      <div class="pair">
+        <button class="btn" data-action="tplNewBlank">START BLANK</button>
+        <button class="btn secondary" data-action="tplNewCopy">COPY ACTIVE</button>
+      </div>
+    </div>
     <div class="chiprow tplfilter" role="group" aria-label="Filter by tag">${filters}</div>
     <div class="tpllist">${rows || '<p>No templates with that tag.</p>'}</div>`;
 }

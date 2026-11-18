@@ -81,5 +81,6 @@ export function workoutView(state) {
     ${state.wHistory ? workoutHistoryView(state) : ''}
     ${state.wManage || state.wHistory ? '' : restRow(state)}
     ${state.wHistory || state.wManage ? '' : bjjPanel(state, day) + caliPanel(state, day) + warmupPanel(state, session, day)}
+    ${!state.wHistory && !state.wManage && !session.exercises.length ? '<div class="panel"><p>No exercises yet. Open Switch, then Edit on this template to add some.</p></div>' : ''}
     ${state.wHistory ? '' : state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
 }
