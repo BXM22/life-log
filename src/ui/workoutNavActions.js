@@ -57,11 +57,12 @@ export function createWorkoutNavActions({ state, today }) {
     const next = state.wEx + delta;
     if (next < 0 || next >= n) return;
     state.plates = null;
+    state.wMore = null; // "Add extra set" only lasts for one visit to an exercise
     state.wEx = next;
   };
 
   return {
-    wOpenEx: (el) => { state.wEx = Number(el.dataset.i); state.msg = ''; },
+    wOpenEx: (el) => { state.wEx = Number(el.dataset.i); state.wMore = null; state.msg = ''; },
     wCloseEx: () => { closeState(state.wEx); state.wEx = null; state.msg = ''; },
     wMoreSets: (el) => { state.wMore = { ...state.wMore, [el.dataset.i]: true }; },
     wExNext: () => move(1),

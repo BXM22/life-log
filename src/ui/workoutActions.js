@@ -96,6 +96,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
       if (kind === 'working' && !wasComplete && setsComplete(item.ex, state.entries, day, state.wTrims)) {
         state.msg = `${item.ex.name} done. ${state.msg}`;
         state.plates = null;
+        state.wMore = null;
         state.wEx = item.i + 1 < list.length ? item.i + 1 : null;
       }
     },
