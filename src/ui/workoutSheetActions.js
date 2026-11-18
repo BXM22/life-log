@@ -22,8 +22,9 @@ export function createWorkoutSheetActions({ state, today }) {
       state.wSheet = el.dataset.sheet;
       if (el.dataset.tab) state.wSheetTab = el.dataset.tab;
       state.wAdd = state.wSheet === 'add';
+      state.wXEdit = null; // opening Add for today is always a fresh add, never an edit
     },
-    wSheetClose: () => { state.wSheet = null; state.wAdd = false; state.wAct = null; state.wActForm = null; },
+    wSheetClose: () => { state.wSheet = null; state.wAdd = false; state.wAct = null; state.wActForm = null; state.wXEdit = null; },
     wSheetTab: (el) => { state.wSheetTab = el.dataset.tab; },
     wMenuToggle: (el) => { state.wMenu = state.wMenu === el.dataset.menu ? null : el.dataset.menu; },
     wMenuClose: () => { state.wMenu = null; },

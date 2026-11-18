@@ -103,6 +103,7 @@ export function exercisePage(state) {
       </div>`}
     </section>
     ${plates}
+    ${extra ? `<button class="btn ${ex.done ? 'secondary' : ''}" data-action="toggleExtraDone" data-name="${esc(ex.name)}">${ex.done ? 'MARK NOT DONE' : 'MARK DONE'}</button>` : ''}
     <section class="w2-card"><h2 class="w2-label">LOGGED TODAY · ${sets.length}</h2>${rows || '<p class="w2-sub">No sets yet.</p>'}</section>
   </div>`;
 }

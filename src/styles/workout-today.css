@@ -30,6 +30,7 @@
 .w2-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 68px; padding: 8px 14px 8px 16px; border: 2px solid transparent; border-radius: 20px; background: var(--panel); color: var(--ink); text-align: left; cursor: pointer; }
 .w2-row.current { border-color: var(--accent); }
 .w2-row.extra { background: #FFFFFF; border: 1.5px dashed var(--line); }
+.w2-row.done .w2-name { text-decoration: line-through; }
 .w2-row.extra.current { border: 2px solid var(--accent); }
 .w2-rowmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .w2-name { font-size: 13px; line-height: 18px; font-weight: 800; letter-spacing: 0.02em; text-transform: uppercase; overflow-wrap: anywhere; }

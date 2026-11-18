@@ -60,14 +60,15 @@ function dotsHtml(state, item, day) {
 function row(state, item, day, current) {
   const extra = item.kind === 'extra';
   const tag = extra ? 'Today only' : tagText(state, item);
-  const cls = ['w2-row', extra ? 'extra' : '', item.i === current ? 'current' : ''].filter(Boolean).join(' ');
+  const done = extra && item.ex.done;
+  const cls = ['w2-row', extra ? 'extra' : '', done ? 'done' : '', item.i === current && !done ? 'current' : ''].filter(Boolean).join(' ');
   return `<button class="${cls}" data-action="wOpenEx" data-i="${item.i}" aria-label="Open ${esc(item.ex.name)}">
     <span class="w2-rowmain">
       <span class="w2-name">${esc(item.ex.name)}</span>
       <span class="w2-detail">${targetText(state, item.ex, day)}</span>
     </span>
-    ${tag ? `<span class="tag w2-tag">${esc(tag)}</span>` : ''}
-    ${extra ? '' : dotsHtml(state, item, day)}
+    ${done ? '<span class="tag done w2-tag">Done</span>' : tag ? `<span class="tag w2-tag">${esc(tag)}</span>` : ''}
+    ${dotsHtml(state, item, day)}
     ${CHEV}
   </button>`;
 }

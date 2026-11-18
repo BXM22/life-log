@@ -7,13 +7,21 @@ import { caliBlockFor } from '../logic/activities.js';
 import { exerciseList, setsComplete } from '../logic/workoutPlan.js';
 import { prCheck } from '../logic/progress.js';
 import { activeSessionId, parseSet, setText } from '../logic/workout.js';
-import { loadExtras, saveExtras, extrasFor, addExtra, removeExtra } from '../logic/extras.js';
+import { loadExtras, saveExtras, extrasFor, addExtra, updateExtra, toggleExtraDone, removeExtra } from '../logic/extras.js';
 
 export function createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet }) {
   // Spontaneous exercises for today only (logic/extras.js); the template is never touched.
   state.wExtras = loadExtras(localStorage, today());
   state.wAdd = false;
+  state.wXEdit = null; // name of the extra open in the edit sheet, or null when adding
   const extrasToday = () => extrasFor(state.wExtras, today());
+  const readExtraForm = () => ({
+    name: document.getElementById('xe-name')?.value,
+    mode: document.getElementById('xe-mode')?.value,
+    perSide: Boolean(document.getElementById('xe-side')?.checked),
+    equipment: document.getElementById('xe-equip')?.value,
+    target: document.getElementById('xe-target')?.value,
+  });
   const commitExtras = (list, msg) => {
     state.wExtras = { day: today(), list };
     saveExtras(localStorage, state.wExtras);
@@ -21,21 +29,38 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
   };
 
   return {
-    addExtraOpen: () => { state.wAdd = true; state.msg = ''; },
-    addExtraCancel: () => { state.wAdd = false; state.wSheet = null; state.msg = ''; },
+    addExtraOpen: () => { state.wAdd = true; state.wXEdit = null; state.msg = ''; },
+    addExtraCancel: () => { state.wAdd = false; state.wSheet = null; state.wXEdit = null; state.msg = ''; },
     addExtraSave: () => {
       const id = activeSessionId(state.wSession, today(), state.planDays);
-      const r = addExtra(extrasToday(), sessionById(id)?.exercises ?? [], {
-        name: document.getElementById('xe-name')?.value,
-        mode: document.getElementById('xe-mode')?.value,
-        perSide: Boolean(document.getElementById('xe-side')?.checked),
-        equipment: document.getElementById('xe-equip')?.value,
-      });
+      const r = addExtra(extrasToday(), sessionById(id)?.exercises ?? [], readExtraForm());
       if (r.error) { state.msg = r.error; return; }
       state.wAdd = false;
       state.wSheet = null; // the Add for today sheet closes on a successful save
       state.exOpen[r.list[r.list.length - 1].name] = true;
       commitExtras(r.list, 'Added for today. Log your sets below.');
+    },
+    // Edit a spontaneous exercise: the Add sheet reopens filled in (state.wXEdit = its current name).
+    editExtraOpen: (el) => { state.wXEdit = el.dataset.name; state.wMenu = null; state.wSheet = 'add'; state.wAdd = true; state.msg = ''; },
+    editExtraSave: () => {
+      const id = activeSessionId(state.wSession, today(), state.planDays);
+      const r = updateExtra(extrasToday(), sessionById(id)?.exercises ?? [], state.wXEdit, readExtraForm());
+      if (r.error) { state.msg = r.error; return; }
+      state.wAdd = false; state.wSheet = null; state.wXEdit = null;
+      commitExtras(r.list, 'Exercise updated.');
+    },
+    // Mark a spontaneous exercise done (or not done). Marking it done moves on to the next exercise.
+    toggleExtraDone: (el) => {
+      const list = extrasToday();
+      const ex = list.find((e) => e.name === el.dataset.name);
+      if (!ex) return;
+      commitExtras(toggleExtraDone(list, ex.name), ex.done ? `${ex.name} marked not done.` : `${ex.name} done.`);
+      state.wMenu = null;
+      if (!ex.done && state.wEx != null) {
+        const n = exerciseList(sessionById(activeSessionId(state.wSession, today(), state.planDays)) ?? { exercises: [] }, extrasToday(), caliBlockFor(state.activities, today())).length;
+        state.plates = null;
+        state.wEx = state.wEx + 1 < n ? state.wEx + 1 : null;
+      }
     },
     removeExtra: (el) => commitExtras(removeExtra(extrasToday(), el.dataset.name), 'Removed from today. Sets you logged stay in your log.'),
 

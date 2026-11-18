@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { SESSIONS, getSessions, setTemplate, sessionById, findExercise } from '../src/logic/template.js';
 import { parseSet, setText, progressionPrompt, suggestWarmup } from '../src/logic/workout.js';
 import { editEntry, parseEdit, newEntry } from '../src/logic/entries.js';
-import { loadExtras, saveExtras, extrasFor, addExtra, removeExtra } from '../src/logic/extras.js';
+import { loadExtras, saveExtras, extrasFor, addExtra, updateExtra, toggleExtraDone, removeExtra } from '../src/logic/extras.js';
 import { parseExerciseFields, addExercise, updateExercise, removeExercise, normalizeTemplate, addSession } from '../src/logic/templateEdit.js';
 
 after(() => setTemplate(null));
@@ -133,4 +133,34 @@ test('calisthenics sets: weight optional, assisted or resistance, shown clearly,
   assert.equal(r.data.load, 'assisted');
   assert.equal(setText(editEntry(e, r.data, 2).data), '20 lb assist x 8');
   assert.equal(parseEdit(e, { weight: '', reps: '8' }).data.load, null);
+});
+
+test('extras: optional target, edit keeps done, rejects clashes', () => {
+  const tpl = [{ name: 'Bench', mode: 'weight', warmup: 'none', target: '3 sets' }];
+  const open = addExtra([], tpl, { name: 'Face pulls', mode: 'weight' });
+  assert.equal(open.list[0].target, 'as you like');
+  const withTarget = addExtra(open.list, tpl, { name: 'Curls', mode: 'weight', target: '3 x 8' });
+  assert.equal(withTarget.list[1].target, '3 x 8');
+  const done = toggleExtraDone(withTarget.list, 'Curls');
+  assert.equal(done[1].done, true);
+  assert.equal(done[0].done, undefined);
+  const edited = updateExtra(done, tpl, 'Curls', { name: 'Hammer curls', mode: 'weight', equipment: 'dumbbell', target: '' });
+  assert.equal(edited.list[1].name, 'Hammer curls');
+  assert.equal(edited.list[1].equipment, 'dumbbell');
+  assert.equal(edited.list[1].target, 'as you like');
+  assert.equal(edited.list[1].done, true);
+  assert.match(updateExtra(done, tpl, 'Curls', { name: 'face pulls', mode: 'weight' }).error, /already on today/);
+  assert.match(updateExtra(done, tpl, 'Curls', { name: 'bench', mode: 'weight' }).error, /already on today/);
+  assert.equal(updateExtra(done, tpl, 'Curls', { name: 'Curls', mode: 'weight' }).error, undefined);
+  assert.match(updateExtra(done, tpl, 'Gone', { name: 'X', mode: 'weight' }).error, /no longer/);
+  assert.equal(toggleExtraDone(done, 'Curls')[1].done, undefined);
+});
+
+test('extras: done mark survives save and load', () => {
+  const store = memory();
+  const list = toggleExtraDone(addExtra([], [], { name: 'Dips', mode: 'bodyweight', target: '3 x 10' }).list, 'Dips');
+  saveExtras(store, { day: '2026-11-17', list });
+  const back = loadExtras(store, '2026-11-17').list[0];
+  assert.equal(back.done, true);
+  assert.equal(back.target, '3 x 10');
 });

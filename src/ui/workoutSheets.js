@@ -71,16 +71,24 @@ function warmSheet(state) {
 
 // ---- Add for today (screen 7) ----
 // The inputs keep the v1 ids (xe-name, xe-equip, xe-mode, xe-side) because addExtraSave reads them by id.
+// With state.wXEdit set it edits that extra instead: fields are filled in and the button is SAVE (editExtraSave).
 function addSheet(state) {
-  return frame('Add for today', `<div class="w2-sheet-head"><h2>Add for today</h2>${closeBtn}</div>
+  const cur = state.wXEdit ? extrasFor(state.wExtras, dayOf(state)).find((e) => e.name === state.wXEdit) : null;
+  const editing = Boolean(cur);
+  const target = cur && cur.target !== 'as you like' ? cur.target : '';
+  const title = editing ? 'Edit exercise' : 'Add for today';
+  return frame(title, `<div class="w2-sheet-head"><h2>${title}</h2>${closeBtn}</div>
     <label class="lbl" for="xe-name">NAME</label>
-    <input id="xe-name" class="field" maxlength="60" placeholder="Face pulls" autocomplete="off" list="lib-names" data-libfill>${libraryDatalist(state)}
+    <input id="xe-name" class="field" maxlength="60" placeholder="Face pulls" autocomplete="off" list="lib-names" data-libfill value="${esc(cur?.name ?? '')}">${libraryDatalist(state)}
+    ${editing ? '<p class="w2-sub">Sets you already logged stay under the old name.</p>' : ''}
     <label class="lbl" for="xe-equip">EQUIPMENT</label>
-    <select id="xe-equip" class="field"><option value="">Not set</option>${EQUIPMENT.map((q) => `<option value="${q}">${esc(EQUIP_TEXT[q])}</option>`).join('')}</select>
+    <select id="xe-equip" class="field"><option value="">Not set</option>${EQUIPMENT.map((q) => `<option value="${q}" ${cur?.equipment === q ? 'selected' : ''}>${esc(EQUIP_TEXT[q])}</option>`).join('')}</select>
     <label class="lbl" for="xe-mode">WHAT YOU LOG</label>
-    <select id="xe-mode" class="field">${Object.entries(MODE_TEXT).map(([m, t]) => `<option value="${m}">${esc(t)}</option>`).join('')}</select>
-    <label class="check w2-check"><input type="checkbox" id="xe-side"><span>Log left and right separately</span></label>
-    <div class="pair"><button class="btn secondary" data-action="addExtraCancel">CANCEL</button><button class="btn" data-action="addExtraSave">ADD</button></div>`);
+    <select id="xe-mode" class="field">${Object.entries(MODE_TEXT).map(([m, t]) => `<option value="${m}" ${cur?.mode === m ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>
+    <label class="lbl" for="xe-target">TARGET (OPTIONAL)</label>
+    <input id="xe-target" class="field" maxlength="40" placeholder="3 x 8" autocomplete="off" value="${esc(target)}">
+    <label class="check w2-check"><input type="checkbox" id="xe-side" ${cur?.perSide ? 'checked' : ''}><span>Log left and right separately</span></label>
+    <div class="pair"><button class="btn secondary" data-action="addExtraCancel">CANCEL</button><button class="btn" data-action="${editing ? 'editExtraSave' : 'addExtraSave'}">${editing ? 'SAVE' : 'ADD'}</button></div>`);
 }
 
 export function sheetLayer(state) {
@@ -112,7 +120,9 @@ function exerciseMenu(state) {
   const { ex, i, kind } = found;
   if (kind === 'extra') {
     const name = esc(ex.name);
-    return dropdown('Exercise options', item('keepExtra', 'Keep in template', 'Add it to this template', `data-name="${name}"`)
+    return dropdown('Exercise options', item('toggleExtraDone', ex.done ? 'Mark not done' : 'Mark done', ex.done ? 'Put it back on today\'s list' : 'Tick it off and move on', `data-name="${name}"`)
+      + item('editExtraOpen', 'Edit exercise', 'Name, equipment, target', `data-name="${name}"`)
+      + item('keepExtra', 'Keep in template', 'Add it to this template', `data-name="${name}"`)
       + item('libSave', 'Save to library', 'Reuse it and autofill later', `data-i="${i}"`)
       + item('removeExtra', 'Remove from today', 'Logged sets stay in your log', `data-name="${name}"`));
   }
