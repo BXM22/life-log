@@ -40,6 +40,7 @@ const SHELL = [
   'src/ui/exportWipeView.js',
   'src/logic/settings.js',
   'src/logic/updates.js',
+  'src/logic/extras.js',
   'src/logic/install.js',
   'src/ui/format.js',
   'src/ui/historyWindows.js',

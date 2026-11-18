@@ -3,6 +3,7 @@
 
 import { SESSIONS, getSessions, setTemplate } from '../logic/template.js';
 import { activeSessionId } from '../logic/workout.js';
+import { extrasFor, removeExtra, saveExtras } from '../logic/extras.js';
 import { addExercise, updateExercise, removeExercise, addSession, renameSession, removeSession } from '../logic/templateEdit.js';
 
 export function createTemplateActions({ state, saveTemplate, clearTemplate, saveFail, today }) {
@@ -43,6 +44,18 @@ export function createTemplateActions({ state, saveTemplate, clearTemplate, save
       if (!s) return;
       if (!window.confirm(`Delete ${s.name}? Sets you already logged stay in your log.`)) return;
       await sessionOp(removeSession(getSessions(), s.id), `Deleted ${s.name}.`, null);
+    },
+
+    // Keep a spontaneous exercise (logic/extras.js) in the active template for good; it then stops being a today-only extra.
+    keepExtra: async (el) => {
+      const ex = extrasFor(state.wExtras, today()).find((e) => e.name === el.dataset.name);
+      if (!ex) return;
+      const { name, mode, perSide } = ex;
+      const r = addExercise(getSessions(), sessionId(), { name, mode, perSide, warmup: '', target: '' });
+      if (r.error) { state.msg = r.error; return; }
+      if (!(await commit(r.sessions, `${name} is now in the template.`))) return;
+      state.wExtras = { day: today(), list: removeExtra(state.wExtras.list, name) };
+      saveExtras(localStorage, state.wExtras);
     },
 
     tAdd: () => { state.tEdit = { mode: 'add' }; state.tDraft = null; state.msg = ''; },

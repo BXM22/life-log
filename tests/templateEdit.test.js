@@ -1,6 +1,7 @@
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { SESSIONS, getSessions, setTemplate, sessionById, findExercise } from '../src/logic/template.js';
+import { loadExtras, saveExtras, extrasFor, addExtra, removeExtra } from '../src/logic/extras.js';
 import { parseExerciseFields, addExercise, updateExercise, removeExercise, normalizeTemplate, addSession } from '../src/logic/templateEdit.js';
 
 after(() => setTemplate(null));
@@ -83,4 +84,22 @@ test('normalizeTemplate: keeps a session that has no exercises yet', () => {
   const r = normalizeTemplate([{ id: 'c-push', name: 'Push', focus: '', tags: [], exercises: [] }]);
   assert.equal(r.length, 1);
   assert.deepEqual(r[0].exercises, []);
+});
+
+const memory = () => { const m = {}; return { getItem: (k) => m[k] ?? null, setItem: (k, v) => { m[k] = v; } }; };
+
+test('extras: add, reject duplicates, remove, and drop at the next day', () => {
+  const tpl = [{ name: 'Bench', mode: 'weight', warmup: 'none', target: '3 sets' }];
+  const a = addExtra([], tpl, { name: ' Face pulls ', mode: 'weight', perSide: false });
+  assert.equal(a.list[0].name, 'Face pulls');
+  assert.match(addExtra(a.list, tpl, { name: 'face PULLS', mode: 'weight' }).error, /already on today/);
+  assert.match(addExtra([], tpl, { name: 'bench', mode: 'weight' }).error, /already on today/);
+  assert.match(addExtra([], tpl, { name: '', mode: 'weight' }).error, /name/i);
+  assert.deepEqual(removeExtra(a.list, 'Face pulls'), []);
+  const store = memory();
+  saveExtras(store, { day: '2026-11-17', list: a.list });
+  assert.equal(loadExtras(store, '2026-11-17').list.length, 1);
+  assert.deepEqual(loadExtras(store, '2026-11-18').list, []);
+  assert.deepEqual(extrasFor(loadExtras(store, '2026-11-17'), '2026-11-18'), []);
+  assert.deepEqual(loadExtras({ getItem: () => 'not json' }, '2026-11-17').list, []);
 });

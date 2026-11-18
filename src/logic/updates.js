@@ -1,5 +1,6 @@
 // Recent updates shown in Settings > WHAT'S NEW. Newest first. Add a line here when you ship something you'd notice.
 export const UPDATES = [
+  { date: '2026-11-17', text: 'Workout: add a spontaneous exercise for today, and tap Keep in template if you want it permanently.' },
   { date: '2026-11-17', text: 'Workout templates: start a blank one (or copy the active one) from the Templates window and add exercises over time.' },
   { date: '2026-11-17', text: 'The app now updates itself. Reopen it and the newest version loads, no need to re-add the bookmark.' },
   { date: '2026-11-15', text: 'One active workout template: set or switch it, and Workout shows which is active.' },

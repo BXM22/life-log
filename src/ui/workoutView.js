@@ -4,6 +4,7 @@
 // Warm-up and working sets are logged separately. The weight box is pre-filled from the last working set.
 
 import { sessionById } from '../logic/template.js';
+import { extrasFor } from '../logic/extras.js';
 import { templatesWindow, editScreen } from './templateTagsView.js';
 import { platesButton, platesPanel } from './platesView.js';
 import { activeSessionId, lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
@@ -15,7 +16,7 @@ import { restRow } from './restView.js';
 import { workoutHistoryView } from './workoutHistoryView.js';
 import { warmupPanel, bjjPanel, caliPanel, targetText, trimButtons, cueBlock } from './workoutExtrasView.js';
 
-function exercisePanel(state, ex, i, day) {
+function exercisePanel(state, ex, i, day, extra = false) {
   const last = lastWorking(state.entries, state.stats, ex.name);
   const warm = suggestWarmup(last);
   const sets = setsFor(state.entries, day, ex.name);
@@ -40,23 +41,26 @@ function exercisePanel(state, ex, i, day) {
   return `<details class="panel fold exfold" ${open ? 'open' : ''}>
     <summary data-action="toggleEx" data-name="${esc(ex.name)}"><h2>${esc(ex.name)}</h2></summary>
     <p>${targetText(state, ex, day)}. Warm-up: ${esc(ex.warmup)}.</p>
-    <details class="menu"><summary>OPTIONS</summary>
+    ${extra ? `<details class="menu"><summary>OPTIONS</summary><div class="actions">
+        <button class="btn secondary small" data-action="keepExtra" data-name="${esc(ex.name)}" aria-label="Keep ${esc(ex.name)} in the template">KEEP IN TEMPLATE</button>
+        <button class="btn secondary small" data-action="removeExtra" data-name="${esc(ex.name)}" aria-label="Remove ${esc(ex.name)} from today">REMOVE FROM TODAY</button></div></details>`
+    : `<details class="menu"><summary>OPTIONS</summary>
       <div class="actions">
         <button class="btn secondary small" data-action="tEditHere" data-i="${i}" aria-label="Edit ${esc(ex.name)}">EDIT</button>
         <button class="btn secondary small" data-action="tDelete" data-i="${i}" aria-label="Delete ${esc(ex.name)}">DELETE</button>
         ${trimButtons(state, ex, i, day)}
       </div>
     </details>
-    ${cueBlock(state, ex, i)}
-    ${i === 0 && progressionPrompt(last, ex) ? `<p class="try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : ''}
+    ${cueBlock(state, ex, i)}`}
+    ${!extra && i === 0 && progressionPrompt(last, ex) ? `<p class="try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : ''}
     <p>${last ? `Last: ${esc(setText(last))} on ${esc(last.date.slice(5))}.` : 'No history yet.'}${warm ? ` Warm-up about ${warm} lb.` : ''}</p>
     ${inputs}
     <div class="pair">
       <button class="btn secondary" data-action="logSet" data-kind="warmup" data-i="${i}">WARM-UP SET</button>
       <button class="btn" data-action="logSet" data-kind="working" data-i="${i}">WORKING SET</button>
     </div>
-    ${ex.mode === 'weight' ? platesButton(i) : ''}
-    ${platesPanel(state, i)}
+    ${ex.mode === 'weight' && !extra ? platesButton(i) : ''}
+    ${extra ? '' : platesPanel(state, i)}
     ${rows}
   </details>`;
 }
@@ -82,5 +86,25 @@ export function workoutView(state) {
     ${state.wManage || state.wHistory ? '' : restRow(state)}
     ${state.wHistory || state.wManage ? '' : bjjPanel(state, day) + caliPanel(state, day) + warmupPanel(state, session, day)}
     ${!state.wHistory && !state.wManage && !session.exercises.length ? '<div class="panel"><p>No exercises yet. Open Switch, then Edit on this template to add some.</p></div>' : ''}
-    ${state.wHistory ? '' : state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}`;
+    ${state.wHistory ? '' : state.wManage ? manageView(state, session) : session.exercises.map((ex, i) => exercisePanel(state, ex, i, day)).join('')}
+    ${state.wHistory || state.wManage ? '' : extraPanels(state, session, day)}`;
+}
+
+const MODE_TEXT = { weight: 'weight and reps', bodyweight: 'reps, weight optional', timed: 'seconds, weight optional' };
+
+/** Today-only exercises (logic/extras.js) after the template ones, then the add form or button. Extras use indexes after the template's. */
+function extraPanels(state, session, day) {
+  const extras = extrasFor(state.wExtras, day);
+  const panels = extras.map((ex, k) => exercisePanel(state, ex, session.exercises.length + k, day, true)).join('');
+  const form = state.wAdd
+    ? `<div class="panel"><h2>ADD FOR TODAY</h2>
+        <label class="lbl" for="xe-name">NAME</label>
+        <input id="xe-name" class="field" maxlength="60" placeholder="Face pulls" autocomplete="off">
+        <label class="lbl" for="xe-mode">WHAT YOU LOG</label>
+        <select id="xe-mode" class="field">${Object.entries(MODE_TEXT).map(([m, t]) => `<option value="${m}">${esc(t)}</option>`).join('')}</select>
+        <label class="check"><input type="checkbox" id="xe-side"><span>Log left and right separately</span></label>
+        <div class="pair"><button class="btn secondary" data-action="addExtraCancel">CANCEL</button><button class="btn" data-action="addExtraSave">ADD</button></div>
+      </div>`
+    : '<button class="btn secondary" data-action="addExtraOpen">ADD EXERCISE FOR TODAY</button>';
+  return panels + form;
 }
