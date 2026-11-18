@@ -55,7 +55,9 @@ export function exerciseList(session, extras, caliBlock) {
   const out = [];
   const add = (ex, kind, sessionKey) => out.push({ ex, i: out.length, kind, sessionKey });
   for (const ex of session?.exercises ?? []) add(ex, 'template', session.id);
-  for (const ex of extras ?? []) add(ex, 'extra', session?.id);
+  // An extra whose name the template already has (for example after switching templates) is hidden, so one name is never listed twice.
+  const have = new Set((session?.exercises ?? []).map((e) => e.name.toLowerCase()));
+  for (const ex of extras ?? []) if (!have.has(ex.name.toLowerCase())) add(ex, 'extra', session?.id);
   for (const ex of caliBlock?.exercises ?? []) add(ex, 'cali', caliBlock.name);
   return out;
 }

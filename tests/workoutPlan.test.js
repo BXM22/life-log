@@ -107,3 +107,9 @@ test('exerciseList handles missing extras and caliBlock', () => {
   const r = exerciseList(session, null, cali);
   assert.deepEqual(r.map((x) => [x.i, x.kind]), [[0, 'template'], [1, 'cali']]);
 });
+
+test('exerciseList: an extra with the same name as a template exercise is hidden', () => {
+  const session = { id: 's', name: 'S', exercises: [{ name: 'Face pulls', target: '3 sets' }] };
+  const list = exerciseList(session, [{ name: 'face PULLS' }, { name: 'Dips' }], null);
+  assert.deepEqual(list.map((x) => [x.ex.name, x.kind, x.i]), [['Face pulls', 'template', 0], ['Dips', 'extra', 1]]);
+});

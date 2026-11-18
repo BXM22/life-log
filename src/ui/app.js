@@ -415,7 +415,7 @@ function render() {
   const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
-  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${state.tab === 'history' && state.histWin ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
+  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${(state.tab === 'history' && state.histWin) || (state.tab === 'workout' && !state.tScreen && !state.tWin && !state.wHistory) ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
   $app.innerHTML = `${page}
     ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
