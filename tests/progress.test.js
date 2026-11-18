@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { newEntry } from '../src/logic/entries.js';
-import { prCheck, liftSummary, pickLift, oneRmSeries, recentLifts, habitHeatmap, goalProjection } from '../src/logic/progress.js';
+import { prCheck, prsOn, liftSummary, pickLift, oneRmSeries, recentLifts, habitHeatmap, goalProjection } from '../src/logic/progress.js';
 import { toggleCheck } from '../src/logic/habits.js';
 
 const lift = (exercise, weight, reps, date, extra = {}) => newEntry('lift_set', date, { session: 'upper_a', exercise, kind: 'working', weight, reps, seconds: null, side: null, ...extra }, 1);
@@ -99,4 +99,12 @@ test('liftSummary and pickLift drive the Lift progress window', () => {
   assert.equal(pickLift(['Bench', 'Row'], 'Row'), 'Row');
   assert.equal(pickLift(['Bench', 'Row'], 'Gone'), 'Bench');
   assert.equal(pickLift([], 'Bench'), null);
+});
+
+test('prsOn finds lifts whose best today beats everything before today', () => {
+  const entries = [lift('Bench', 100, 5, '2026-11-01'), lift('Bench', 110, 5, TODAY), lift('Bench', 90, 5, TODAY), lift('Squat', 200, 5, TODAY), lift('Row', 100, 5, '2026-11-01'), lift('Row', 90, 5, TODAY)];
+  const prs = prsOn(entries, null, TODAY);
+  assert.deepEqual(prs.map((p) => [p.exercise, p.value, p.previous]), [['Bench', 128, 117]]); // Squat has no earlier result, Row is lower
+  const stats = { records: { lifts: { Bench: [{ value: 200, unit: '1RM', text: '', date: '2026-01-01' }] } } };
+  assert.deepEqual(prsOn(entries, stats, TODAY), []);
 });

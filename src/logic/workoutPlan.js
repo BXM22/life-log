@@ -22,6 +22,23 @@ export function setDots(ex, entries, day, trims) {
   return { total, done: workingDone(entries, day, ex) };
 }
 
+/**
+ * What was done on `day` across `exercises` (an array of exercise objects): { sets, exercises, volume }.
+ * `sets` counts every working set logged (left and right separately), `volume` is weight x reps over weighted sets in lb.
+ */
+export function daySummary(exercises, entries, day) {
+  const list = exercises ?? [];
+  const names = new Set(list.map((e) => e.name));
+  const logged = entries.filter((e) => e.type === 'lift_set' && !e.deletedAt && e.date === day && e.data?.kind === 'working' && names.has(e.data.exercise));
+  const volume = logged.reduce((sum, e) => {
+    const d = e.data;
+    return d.weight != null && d.reps != null && d.seconds == null && !d.load ? sum + d.weight * d.reps : sum;
+  }, 0);
+  // Same counting as the set dots: a per-side exercise counts a set once both sides are logged.
+  const sets = list.reduce((n, ex) => n + workingDone(entries, day, ex), 0);
+  return { sets, exercises: new Set(logged.map((e) => e.data.exercise)).size, volume: Math.round(volume) };
+}
+
 /** True when today's working sets have reached the (trimmed) target. Never true for targets with no set count. */
 export function setsComplete(ex, entries, day, trims) {
   const d = setDots(ex, entries, day, trims);

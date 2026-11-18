@@ -6,7 +6,9 @@ import { logicalDate } from '../logic/dates.js';
 import { setsFor, lastWorking } from '../logic/workout.js';
 import { CHECKLISTS, checklistKey, checkedCount, trimmedFor, trimmedTarget } from '../logic/workoutExtras.js';
 import { activitiesCard } from './workoutActivities.js';
-import { setDots, sessionProgress } from '../logic/workoutPlan.js';
+import { setDots, sessionProgress, daySummary } from '../logic/workoutPlan.js';
+import { prsOn } from '../logic/progress.js';
+import { isChecked } from '../logic/habits.js';
 import { esc } from './format.js';
 import { EQUIP_TEXT } from './templateView.js';
 import { workoutContext } from './workoutNavActions.js';
@@ -87,6 +89,23 @@ function beforeYouLift(state, session, day) {
   return `<section class="w2-card"><h2 class="w2-label">BEFORE YOU LIFT</h2>${sheetRow(CHECKLISTS[key].title, `${checkedCount(state.wChecks, day, key)} / ${CHECKLISTS[key].items.length}`, 'warm')}</section>`;
 }
 
+const PR_UNIT = { '1RM': 'est. 1RM', sec: 'sec', reps: 'reps' };
+
+/** Shown once every exercise is finished: what you did, any records, and a button to tick the Workout habit. */
+function finishCard(state, list, day) {
+  const sum = daySummary(list.map((x) => x.ex), state.entries, day);
+  if (!sum.sets) return '<p class="w2-sub w2-alldone"><b>All exercises done.</b> Nice work.</p>';
+  const prs = prsOn(state.entries, state.stats, day);
+  const habit = (state.habits ?? []).find((h) => h.id === 'workout');
+  const ticked = habit && isChecked(state.entries, habit, day);
+  const stat = (n, label) => `<div><b>${esc(n)}</b><small>${label}</small></div>`;
+  return `<section class="w2-card w2-summary" aria-label="Workout summary"><h2 class="w2-label">WORKOUT DONE</h2>
+    <div class="w2-sumrow">${stat(sum.sets, 'sets')}${stat(sum.exercises, sum.exercises === 1 ? 'exercise' : 'exercises')}${sum.volume ? stat(sum.volume.toLocaleString('en-US'), 'lb lifted') : ''}</div>
+    ${prs.length ? `<p class="w2-prs"><b>NEW PR</b> ${prs.map((p) => `${esc(p.exercise)} ${esc(p.value)} ${esc(PR_UNIT[p.unit] || p.unit)} (was ${esc(p.previous)})`).join(' · ')}</p>` : ''}
+    ${habit ? (ticked ? '<p class="w2-sub">Workout habit ticked for today.</p>' : '<button class="btn" data-action="toggleHabit" data-habit="workout">TICK WORKOUT HABIT</button>') : ''}
+  </section>`;
+}
+
 /** Today page markup. */
 export function todayPage(state) {
   const day = logicalDate(Date.now(), state.dayStartHour);
@@ -99,7 +118,7 @@ export function todayPage(state) {
   const up = current >= 0 ? list.find((x) => x.i === current) : null;
   const cont = up
     ? `<button class="btn w2-continue" data-action="wOpenEx" data-i="${up.i}">${prog.done > 0 ? 'Continue' : 'Start'}: ${esc(up.ex.name)}</button>`
-    : list.length ? '<p class="w2-sub w2-alldone"><b>All exercises done.</b> Nice work.</p>' : '';
+    : list.length ? finishCard(state, list, day) : '';
 
   const lifts = list.filter((x) => x.kind !== 'cali');
   const calis = list.filter((x) => x.kind === 'cali');

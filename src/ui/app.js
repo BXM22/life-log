@@ -143,6 +143,20 @@ const actions = {
   tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
+
+  // Undo the set that was just logged (tap the toast). Removes it like DEL and returns to that exercise.
+  undoSet: async () => {
+    const u = state.undo;
+    state.undo = null;
+    const e = u && state.entries.find((x) => x.id === u.id);
+    if (!e || e.deletedAt) { state.msg = ''; return; }
+    const gone = deleteEntry(e, Date.now());
+    try { await saveEntries([gone]); } catch (err) { state.msg = saveFail(err); return; }
+    state.entries = state.entries.map((x) => (x.id === e.id ? gone : x));
+    state.pr = null;
+    if (state.tab === 'workout' && u.i != null) { state.wEx = u.i; state.wMore = null; }
+    state.msg = 'Set removed.';
+  },
   dismissPR: () => { state.pr = null; },
 
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
@@ -418,13 +432,14 @@ function render() {
   const views = { today: todayView, workout: workoutView, history: historyView, export: exportView, wipe: wipeView, settings: settingsView };
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
+  const undo = state.undo && state.undo.msg === state.msg ? state.undo : null; // only while the message that offered it is showing
   const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${(state.tab === 'history' && state.histWin) || (state.tab === 'workout' && !state.tScreen && !state.tWin && !state.wHistory) ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
   $app.innerHTML = `${page}
-    ${state.msg ? `<button class="toast" data-action="dismissMsg" role="status">${esc(state.msg)}</button>` : ''}
+    ${state.msg ? `<button class="toast" data-action="${undo ? 'undoSet' : 'dismissMsg'}" role="status">${esc(state.msg)}${undo ? ' <b class="toast-undo">UNDO</b>' : ''}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
   if (state.tab === 'workout' && state.restOpen) positionWheels(state);
   clearTimeout(toastTimer);
-  if (state.msg && state.msg.length < 60) toastTimer = setTimeout(() => { state.msg = ''; $app.querySelector('.toast')?.remove(); }, 4500);
+  if (state.msg && (state.msg.length < 60 || undo)) toastTimer = setTimeout(() => { state.msg = ''; state.undo = null; $app.querySelector('.toast')?.remove(); }, 6000);
 }
 let toastTimer = 0;
 

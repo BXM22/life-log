@@ -106,6 +106,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
         state.wMore = null;
         state.wEx = item.i + 1 < list.length ? item.i + 1 : null;
       }
+      state.undo = { id: e.id, msg: state.msg, i: item.i }; // the toast offers UNDO while this message is showing
     },
   };
 }

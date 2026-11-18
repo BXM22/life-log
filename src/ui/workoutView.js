@@ -16,5 +16,6 @@ export function workoutView(state) {
   if (state.tWin) return templatesWindow(state);
   if (state.wHistory) return workoutHistoryView(state);
   const page = state.wEx != null ? exercisePage(state) : todayPage(state);
-  return `${page}${restBar(state)}${menuLayer(state)}${sheetLayer(state)}`;
+  // The Exercise page carries its own rest chip in the logging card; the floating pill is for the Today list.
+  return `${page}${state.wEx != null ? '' : restBar(state)}${menuLayer(state)}${sheetLayer(state)}`;
 }

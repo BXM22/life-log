@@ -64,6 +64,23 @@ export function bestSet(entries, stats, exercise) {
   return s ? { kind: 'sec', text: s.text, est1rm: null, date: s.date } : null;
 }
 
+/**
+ * The best working set of each of the last `n` days before `before` that you did this lift, newest first:
+ * [{ date, text, est1rm (weighted lifts only, else null) }]. Weighted: heaviest weight, then reps. Else most reps, else longest hold.
+ */
+export function recentBest(entries, exercise, before, n = 3) {
+  const days = new Map();
+  for (const e of entries) {
+    const d = e.data || {};
+    if (e.type !== 'lift_set' || e.deletedAt || d.kind !== 'working' || d.exercise !== exercise || e.date >= before) continue;
+    const weighted = d.seconds == null && d.reps != null && d.weight != null && !d.load;
+    const rank = weighted ? d.weight * 1000 + d.reps : d.seconds != null ? d.seconds : d.reps ?? -1;
+    const cur = days.get(e.date);
+    if (!cur || rank > cur.rank) days.set(e.date, { rank, date: e.date, text: setText(d), est1rm: weighted ? est1RM(d.weight, d.reps) : null });
+  }
+  return [...days.values()].sort((a, b) => b.date.localeCompare(a.date)).slice(0, n).map(({ date, text, est1rm }) => ({ date, text, est1rm }));
+}
+
 /** Prior records plus anything better in the current entries. Never loses a kept record. */
 export function mergeRecords(prev, entries) {
   const base = { ...emptyRecords(), ...(prev || {}) };

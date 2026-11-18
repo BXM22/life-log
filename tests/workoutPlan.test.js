@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { setDots, setsComplete, sessionProgress, groupHistoryDays, exerciseList } from '../src/logic/workoutPlan.js';
+import { setDots, setsComplete, daySummary, sessionProgress, groupHistoryDays, exerciseList } from '../src/logic/workoutPlan.js';
 import { trimKey } from '../src/logic/workoutExtras.js';
 
 const DAY = '2026-01-07';
@@ -137,4 +137,19 @@ test('per-side exercises count a set once both sides are logged', () => {
   // warm-ups and the other exercise's sides do not count; an uneven count uses the weaker side
   assert.equal(setDots(pull, [side('L'), side('L'), side('R', { kind: 'warmup' })], DAY, {}).done, 0);
   assert.equal(setDots(pull, [side('L'), side('L'), side('R')], DAY, {}).done, 1);
+});
+
+test('daySummary counts working sets, exercises and weight x reps volume for the day', () => {
+  const entries = [set('Bench'), set('Bench'), set('Squat'), set('Bench', { kind: 'warmup' }), set('Bench', { date: '2026-01-06' }), set('Bench', { deletedAt: 5 }), set('Rows')];
+  const s = daySummary([bench, { name: 'Squat' }], entries, DAY);
+  assert.deepEqual(s, { sets: 3, exercises: 2, volume: 3 * 50 * 8 }); // Rows is not in the list
+  assert.deepEqual(daySummary([bench], [], DAY), { sets: 0, exercises: 0, volume: 0 });
+});
+
+test('daySummary counts a per-side set once both sides are logged', () => {
+  const pull = { name: 'Pulldown', target: '2 x 8 per arm', perSide: true };
+  const side = (sd) => { const e = set('Pulldown'); return { ...e, data: { ...e.data, side: sd } }; };
+  const s = daySummary([pull], [side('L'), side('R'), side('L')], DAY);
+  assert.equal(s.sets, 1); // the third entry is half of set 2
+  assert.equal(s.exercises, 1);
 });

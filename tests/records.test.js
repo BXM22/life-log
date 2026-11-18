@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { newEntry } from '../src/logic/entries.js';
-import { est1RM, bestSet, mergeRecords, recordsMarkdown, emptyRecords, TOP_N } from '../src/logic/records.js';
+import { est1RM, bestSet, recentBest, mergeRecords, recordsMarkdown, emptyRecords, TOP_N } from '../src/logic/records.js';
 import { computeStats, emptyStats } from '../src/logic/retainedStats.js';
 import { buildExport } from '../src/logic/exportBuilder.js';
 
@@ -87,4 +87,25 @@ test('bestSet falls back to reps, then seconds', () => {
   assert.equal(bestSet([reps], null, 'Dips').kind, 'reps');
   const hold = newEntry('lift_set', '2026-11-01', { session: 'x', exercise: 'Plank', kind: 'working', weight: null, reps: null, seconds: 70, side: null }, 1);
   assert.deepEqual([bestSet([hold], null, 'Plank').kind, bestSet([hold], null, 'Plank').text], ['sec', '70 sec']);
+});
+
+test('recentBest: best set of each of the last sessions before today, newest first', () => {
+  const entries = [
+    lift('Bench', 175, 6, '2026-10-27'), lift('Bench', 135, 12, '2026-10-27'),
+    lift('Bench', 180, 5, '2026-11-03'), lift('Bench', 185, 5, '2026-11-10'), lift('Bench', 190, 5, '2026-11-17'),
+    lift('Bench', 165, 5, '2026-10-20'), lift('Squat', 300, 5, '2026-11-10'),
+  ];
+  const r = recentBest(entries, 'Bench', '2026-11-17', 3);
+  assert.deepEqual(r.map((x) => x.date), ['2026-11-10', '2026-11-03', '2026-10-27']); // today and older than 3 sessions left out
+  assert.equal(r[0].text, '185 x 5');
+  assert.equal(r[2].text, '175 x 6'); // heaviest that day, not the highest reps
+  assert.equal(r[0].est1rm, est1RM(185, 5));
+});
+
+test('recentBest: ignores warm-ups and deleted sets, handles reps-only and holds', () => {
+  const warm = { ...lift('Bench', 300, 5, '2026-11-01'), data: { ...lift('Bench', 300, 5, '2026-11-01').data, kind: 'warmup' } };
+  const gone = { ...lift('Bench', 300, 5, '2026-11-02'), deletedAt: 9 };
+  assert.deepEqual(recentBest([warm, gone], 'Bench', '2026-11-17'), []);
+  const dips = newEntry('lift_set', '2026-11-01', { session: 'x', exercise: 'Dips', kind: 'working', weight: null, reps: 12, seconds: null, side: null }, 1);
+  assert.equal(recentBest([dips], 'Dips', '2026-11-17')[0].est1rm, null);
 });

@@ -34,6 +34,13 @@ export function restBar(state) {
     <span class="w2-restbar-text"><span class="w2-restbar-label">REST</span><span class="w2-restbar-time" id="rest-row-time">${fmt(timeLeft(state.rest))}</span></span>  </button>`;
 }
 
+/** The same timer as a chip inside the Exercise page's logging card (the floating pill would sit on the set buttons there). */
+export function restChip(state) {
+  const running = state.rest.endAt != null;
+  return `<button class="w2-restchip${running ? ' run' : ''}" data-action="restOpen" aria-label="Open the rest timer">
+    <span class="w2-restbar-label">REST</span><span class="w2-restbar-time" id="rest-row-time">${fmt(timeLeft(state.rest))}</span></button>`;
+}
+
 export function restPage(state) {
   const r = state.rest;
   const running = r.endAt != null;

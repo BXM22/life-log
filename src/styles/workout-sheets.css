@@ -57,7 +57,11 @@
 .w2-restbar-time { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 20px; }
 
 /* Confirmations ("Set saved") sit at the top on Workout so they never cover the logging buttons. The bar is a sibling rendered before the toast. */
-.w2-restbar ~ .toast { top: calc(12px + env(safe-area-inset-top)); bottom: auto; }
+.w2-page ~ .toast { top: calc(12px + env(safe-area-inset-top)); bottom: auto; }
+.w2-restchip { display: inline-flex; align-items: baseline; gap: 8px; min-height: 44px; padding: 0 16px; align-items: center; border: 0; border-radius: 22px; background: var(--accent); color: var(--ink); cursor: pointer; }
+.w2-restchip.run { background: var(--ink); color: #FFFFFF; }
+.w2-logtop { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.w2-logtop .w2-setnum { margin: 0; }
 
 /* Activities (card on Today, log sheet, manage sheet) */
 .w2-acthead { display: flex; align-items: center; justify-content: space-between; }

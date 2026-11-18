@@ -7,7 +7,8 @@ import { logicalDate } from '../logic/dates.js';
 import { lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { backCue, trimmedFor, trimmedTarget } from '../logic/workoutExtras.js';
 import { setDots, setsComplete } from '../logic/workoutPlan.js';
-import { bestSet } from '../logic/records.js';
+import { bestSet, recentBest } from '../logic/records.js';
+import { restChip } from './restView.js';
 import { esc } from './format.js';
 import { editForm } from './historyView.js';
 import { platesPanel } from './platesView.js';
@@ -63,7 +64,16 @@ export function exercisePage(state) {
   const complete = !state.wMore?.[i] && setsComplete(ex, state.entries, day, state.wTrims);
   const dots = setDots(ex, state.entries, day, state.wTrims);
   const setNum = dots.total == null ? '' : `<p class="w2-setnum" aria-live="polite">${dots.done >= dots.total ? `EXTRA SET ${dots.done + 1}` : `SET ${dots.done + 1} OF ${dots.total}`}</p>`;
-  const tryTip = kind === 'template' && i === 0 && progressionPrompt(last, ex) ? `<p class="w2-try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : '';
+  const recent = recentBest(state.entries, ex.name, day, 3); // the last few sessions, not counting today
+  let trend = '';
+  if (recent.length >= 2 && recent[0].est1rm != null && recent.at(-1).est1rm != null) {
+    const delta = recent[0].est1rm - recent.at(-1).est1rm;
+    trend = `<small class="w2-trend">${delta > 0 ? `up ${delta}` : delta < 0 ? `down ${-delta}` : 'flat'} est. 1RM</small>`;
+  }
+  const recentRow = recent.length >= 2
+    ? `<p class="w2-recent"><span class="w2-cl">RECENT</span>${recent.map((r) => `<span>${esc(r.date.slice(5))} <b>${esc(r.text)}</b></span>`).join('')}${trend}</p>`
+    : '';
+  const tryTip = kind !== 'extra' && progressionPrompt(last, ex) ? `<p class="w2-try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : '';
   const cue = state.wCues?.[i] && backCue(ex.name) ? `<p class="w2-cue"><b>BACK CUE</b> ${esc(backCue(ex.name))}</p>` : '';
 
   const platesOpen = state.plates?.i === i;
@@ -88,9 +98,9 @@ export function exercisePage(state) {
       ${cell('WARM-UP', warm ? `${warm} lb` : '-')}
       ${cell('PR', pr ? esc(pr.text) : '-', pr ? (pr.est1rm ? `est. 1RM ${pr.est1rm}` : esc(pr.date.slice(5))) : 'No history')}
     </div>
-    ${tryTip}${cue}
+    ${recentRow}${tryTip}${cue}
     <section class="w2-card w2-log">
-      ${complete ? '' : setNum}
+      <div class="w2-logtop">${complete ? '<span></span>' : setNum}${restChip(state)}</div>
       ${stepper('w', 'weight', i, weightLabel, d.w ?? last?.weight ?? '', 'inputmode="decimal" step="0.5"')}
       ${second}
       ${loadSel}${sideSel}

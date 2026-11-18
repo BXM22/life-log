@@ -34,6 +34,27 @@ export function prCheck(entries, entry, stats) {
   return cur.value > previous ? { exercise: name, value: cur.value, unit: cur.unit, previous, text: setText(entry.data) } : null;
 }
 
+/**
+ * Records set on `day`: for each lift, today's best (same unit) against everything before today and the records kept through wipes.
+ * A lift with no earlier result is not a PR. Returns [{ exercise, value, unit, previous }].
+ */
+export function prsOn(entries, stats, day) {
+  const sets = liveSets(entries);
+  const out = [];
+  for (const name of new Set(sets.filter((e) => e.date === day).map((e) => e.data.exercise))) {
+    const mine = sets.filter((e) => e.data.exercise === name);
+    const score = (e) => setScore(e.data);
+    const today = mine.filter((e) => e.date === day).map(score).filter(Boolean);
+    for (const unit of new Set(today.map((s) => s.unit))) {
+      const cur = Math.max(...today.filter((s) => s.unit === unit).map((s) => s.value));
+      const prior = mine.filter((e) => e.date < day).map(score).filter((s) => s && s.unit === unit).map((s) => s.value);
+      for (const r of stats?.records?.lifts?.[name] || []) if (r.unit === unit) prior.push(r.value);
+      if (prior.length && cur > Math.max(...prior)) out.push({ exercise: name, value: cur, unit, previous: Math.max(...prior) });
+    }
+  }
+  return out;
+}
+
 /** Lift names with a weighted working set in the last `weeks` weeks, sorted. */
 export function recentLifts(entries, today, weeks = 8) {
   const from = weekDates(today, -(weeks - 1))[0];
