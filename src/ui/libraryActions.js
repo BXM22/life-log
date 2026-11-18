@@ -3,7 +3,7 @@
 //   exports: createLibraryActions({ state, today }), autofillForm(state, input), libraryDatalist(state), librarySheet(state, ui)
 // State: library (list). Name inputs carry list="lib-names" and data-libfill; app.js calls autofillForm on their change event.
 
-import { loadLibrary, saveLibrary, saveToLibrary, removeFromLibrary, autofillFor } from '../logic/library.js';
+import { loadLibrary, seedLibrary, saveLibrary, saveToLibrary, removeFromLibrary, autofillFor } from '../logic/library.js';
 import { workoutContext } from './workoutNavActions.js';
 import { EQUIP_TEXT } from './templateView.js';
 import { esc } from './format.js';
@@ -11,7 +11,7 @@ import { esc } from './format.js';
 const MODE_TEXT = { weight: 'weight and reps', bodyweight: 'reps, weight optional', timed: 'seconds, weight optional' };
 
 export function createLibraryActions({ state, today }) {
-  state.library = loadLibrary(localStorage);
+  state.library = seedLibrary(localStorage, loadLibrary(localStorage));
   return {
     libSave: (el) => {
       state.wMenu = null;

@@ -35,3 +35,15 @@ test('load and save round trip; bad data gives an empty library', () => {
   assert.deepEqual(loadLibrary(mem([['lifelog.library', '{bad']])), []);
   assert.deepEqual(loadLibrary(mem([['lifelog.library', JSON.stringify([{ name: '' }, curl])]])), [curl]);
 });
+
+test('seed adds the built-in exercises once and keeps your own entries', async () => {
+  const { seedLibrary, SEED_EXERCISES } = await import('../src/logic/library.js');
+  const store = mem();
+  const mine = { name: 'push-up', mode: 'weight', warmup: 'none', target: '5 x 5' };
+  const first = seedLibrary(store, [mine]);
+  assert.equal(first.length, SEED_EXERCISES.length);
+  assert.equal(first.find((e) => e.name.toLowerCase() === 'push-up').target, '5 x 5');
+  assert.equal(SEED_EXERCISES.find((e) => e.name === 'Plank').mode, 'timed');
+  assert.equal(seedLibrary(store, []).length, 0); // already seeded: a removed entry stays removed
+  assert.ok(SEED_EXERCISES.every((e) => saveToLibrary([], e).list));
+});
