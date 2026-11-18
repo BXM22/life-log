@@ -13,7 +13,7 @@ const UNIT = { '1RM': 'est. 1RM', sec: 'sec', reps: 'reps' };
 export function prBanner(state) {
   const p = state.pr;
   if (!p || state.tab !== 'workout') return '';
-  return `<button class="prbanner" data-action="dismissPR" role="status">NEW PR &middot; ${esc(p.exercise)} ${esc(p.value)} ${esc(UNIT[p.unit] || p.unit)} <small>was ${esc(p.previous)}</small></button>`;
+  return `<button class="prbanner" data-action="dismissPR" role="status">NEW PR &middot; ${esc(p.exercise)} ${p.unit === '1RM' && p.text ? `${esc(p.text)} <small>est. 1RM ${esc(p.value)}, was ${esc(p.previous)}</small>` : `${esc(p.value)} ${esc(UNIT[p.unit] || p.unit)} <small>was ${esc(p.previous)}</small>`}</button>`;
 }
 
 function projectionText(p) {

@@ -7,6 +7,7 @@ import { logicalDate } from '../logic/dates.js';
 import { lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { backCue, trimmedFor, trimmedTarget } from '../logic/workoutExtras.js';
 import { setDots, setsComplete } from '../logic/workoutPlan.js';
+import { bestSet } from '../logic/records.js';
 import { esc } from './format.js';
 import { editForm } from './historyView.js';
 import { platesPanel } from './platesView.js';
@@ -42,6 +43,7 @@ export function exercisePage(state) {
   const d = state.wDraft?.[i] ?? {};
   const last = lastWorking(state.entries, state.stats, ex.name);
   const warm = suggestWarmup(last);
+  const pr = bestSet(state.entries, state.stats, ex.name);
   const trimmed = trimmedFor(state.wTrims, day, ex.name, ex.target);
   const target = ex.target ? `${esc(trimmedTarget(ex.target, trimmed))}${trimmed ? ` (was ${esc(ex.target)})` : ''}` : '-';
   const sets = setsFor(state.entries, day, ex.name).filter((e) => kind !== 'cali' || e.data.session === item.sessionKey);
@@ -82,6 +84,7 @@ export function exercisePage(state) {
       ${cell('TARGET', target)}
       ${cell('LAST', last ? esc(setText(last)) : '-', last ? esc(last.date.slice(5)) : 'No history')}
       ${cell('WARM-UP', warm ? `${warm} lb` : '-')}
+      ${cell('PR', pr ? esc(pr.text) : '-', pr ? (pr.est1rm ? `est. 1RM ${pr.est1rm}` : esc(pr.date.slice(5))) : 'No history')}
     </div>
     ${tryTip}${cue}
     <section class="w2-card w2-log">

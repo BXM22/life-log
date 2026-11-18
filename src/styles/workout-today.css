@@ -48,7 +48,7 @@
 .w2-pg:disabled { color: var(--line); cursor: default; }
 .w2-titlerow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
 .w2-title { font-size: 24px; line-height: 30px; font-weight: 800; overflow-wrap: anywhere; }
-.w2-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0 0 16px; }
+.w2-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0 0 16px; }
 .w2-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 12px; border-radius: 16px; background: var(--panel); }
 .w2-cell b { font-size: 15px; line-height: 20px; font-weight: 800; color: var(--ink); overflow-wrap: anywhere; }
 .w2-cell small { color: var(--dim); }

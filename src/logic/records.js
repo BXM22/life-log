@@ -32,6 +32,38 @@ function liftRecord(d, date) {
   return { value: est1RM(d.weight, d.reps), unit: '1RM', text: setText(d), date };
 }
 
+/**
+ * The actual personal best for one lift, from live sets and records kept through wipes.
+ * Weighted lifts: heaviest weight (more reps breaks a tie), plus its estimated 1RM. Otherwise most reps, else longest hold.
+ * Returns { kind: 'weight' | 'reps' | 'sec', text, est1rm (weight only, else null), date } or null.
+ */
+export function bestSet(entries, stats, exercise) {
+  const weight = [];
+  const reps = [];
+  const sec = [];
+  for (const e of entries) {
+    const d = e.data || {};
+    if (e.type !== 'lift_set' || e.deletedAt || d.kind !== 'working' || d.exercise !== exercise) continue;
+    if (d.seconds != null) sec.push({ n: d.seconds, text: setText(d), date: e.date });
+    else if (d.reps == null) continue;
+    else if (d.weight == null || d.load) reps.push({ n: d.reps, text: setText(d), date: e.date });
+    else weight.push({ n: d.weight, reps: d.reps, text: setText(d), date: e.date });
+  }
+  for (const r of stats?.records?.lifts?.[exercise] || []) { // kept records are text like "185 x 5"
+    const m = r.unit === '1RM' && /^(\d+(?:\.\d+)?) x (\d+)$/.exec(r.text);
+    if (m) weight.push({ n: Number(m[1]), reps: Number(m[2]), text: r.text, date: r.date });
+    else if (r.unit === 'reps') reps.push({ n: r.value, text: r.text, date: r.date });
+    else if (r.unit === 'sec') sec.push({ n: r.value, text: r.text, date: r.date });
+  }
+  const pick = (list, tie) => list.sort((a, b) => b.n - a.n || (tie ? b.reps - a.reps : 0) || b.date.localeCompare(a.date))[0];
+  const w = pick(weight, true);
+  if (w) return { kind: 'weight', text: w.text, est1rm: est1RM(w.n, w.reps), date: w.date };
+  const r = pick(reps, false);
+  if (r) return { kind: 'reps', text: r.text, est1rm: null, date: r.date };
+  const s = pick(sec, false);
+  return s ? { kind: 'sec', text: s.text, est1rm: null, date: s.date } : null;
+}
+
 /** Prior records plus anything better in the current entries. Never loses a kept record. */
 export function mergeRecords(prev, entries) {
   const base = { ...emptyRecords(), ...(prev || {}) };

@@ -2,6 +2,7 @@
 
 import { addDays } from './dates.js';
 import { est1RM } from './records.js';
+import { setText } from './workout.js';
 import { weekDates, GOAL_WEIGHT } from './weekView.js';
 import { isChecked } from './habits.js';
 
@@ -30,7 +31,7 @@ export function prCheck(entries, entry, stats) {
   for (const r of stats?.records?.lifts?.[name] || []) if (r.unit === cur.unit) prior.push(r.value);
   if (!prior.length) return null;
   const previous = Math.max(...prior);
-  return cur.value > previous ? { exercise: name, value: cur.value, unit: cur.unit, previous } : null;
+  return cur.value > previous ? { exercise: name, value: cur.value, unit: cur.unit, previous, text: setText(entry.data) } : null;
 }
 
 /** Lift names with a weighted working set in the last `weeks` weeks, sorted. */

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { newEntry } from '../src/logic/entries.js';
-import { est1RM, mergeRecords, recordsMarkdown, emptyRecords, TOP_N } from '../src/logic/records.js';
+import { est1RM, bestSet, mergeRecords, recordsMarkdown, emptyRecords, TOP_N } from '../src/logic/records.js';
 import { computeStats, emptyStats } from '../src/logic/retainedStats.js';
 import { buildExport } from '../src/logic/exportBuilder.js';
 
@@ -61,4 +61,30 @@ test('recordsMarkdown and the export end with a Personal records section', () =>
   const out = buildExport([lift('Bench', 100, 8, '2026-11-01')], { now: Date.parse('2026-11-10T12:00:00'), recordsMd: recordsMarkdown(rec) });
   assert.match(out.markdown, /## Workout[\s\S]*## Personal records/);
   assert.equal(recordsMarkdown(emptyRecords()).length, 0);
+});
+
+test('bestSet gives the heaviest weighted set and its est. 1RM, not the best 1RM', () => {
+  const entries = [lift('Bench', 185, 1, '2026-11-01'), lift('Bench', 155, 10, '2026-11-02'), lift('Bench', 185, 3, '2026-11-03')];
+  const b = bestSet(entries, null, 'Bench');
+  assert.equal(b.kind, 'weight');
+  assert.equal(b.text, '185 x 3');
+  assert.equal(b.est1rm, est1RM(185, 3));
+  assert.equal(b.date, '2026-11-03');
+});
+
+test('bestSet ignores warm-ups, deleted sets and other lifts; uses kept records after a wipe', () => {
+  const warm = { ...lift('Bench', 300, 5, '2026-11-04'), data: { ...lift('Bench', 300, 5, '2026-11-04').data, kind: 'warmup' } };
+  const gone = { ...lift('Bench', 400, 5, '2026-11-04'), deletedAt: 9 };
+  assert.equal(bestSet([warm, gone, lift('Squat', 300, 5, '2026-11-04')], null, 'Bench'), null);
+  const stats = { records: { lifts: { Bench: [{ value: 216, unit: '1RM', text: '185 x 5', date: '2026-01-01' }] } } };
+  const b = bestSet([lift('Bench', 135, 8, '2026-11-05')], stats, 'Bench');
+  assert.equal(b.text, '185 x 5');
+  assert.equal(b.est1rm, est1RM(185, 5));
+});
+
+test('bestSet falls back to reps, then seconds', () => {
+  const reps = newEntry('lift_set', '2026-11-01', { session: 'x', exercise: 'Dips', kind: 'working', weight: null, reps: 12, seconds: null, side: null }, 1);
+  assert.equal(bestSet([reps], null, 'Dips').kind, 'reps');
+  const hold = newEntry('lift_set', '2026-11-01', { session: 'x', exercise: 'Plank', kind: 'working', weight: null, reps: null, seconds: 70, side: null }, 1);
+  assert.deepEqual([bestSet([hold], null, 'Plank').kind, bestSet([hold], null, 'Plank').text], ['sec', '70 sec']);
 });
