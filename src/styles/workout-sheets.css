@@ -58,3 +58,20 @@
 
 /* Keep the toast above the fixed rest bar (the bar is a sibling rendered before the toast). */
 .w2-restbar ~ .toast { bottom: calc(var(--tabbar-h, 76px) + 16px + 64px + 12px + env(safe-area-inset-bottom)); }
+
+/* Activities (card on Today, log sheet, manage sheet) */
+.w2-acthead { display: flex; align-items: center; justify-content: space-between; }
+.w2-acthead .w2-label { margin: 0; }
+.w2-count.on { color: var(--ink); }
+.w2-add-in { margin: 12px 0 0; }
+.w2-actrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.w2-actrow small { display: block; color: var(--dim); font-size: 13px; }
+.w2-days { display: flex; flex-wrap: wrap; gap: 8px; }
+.w2-daychip { position: relative; }
+.w2-daychip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.w2-daychip span { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: #FFFFFF; font-weight: 700; font-size: 14px; }
+.w2-daychip input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+.w2-daychip input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
+.w2-actsets { list-style: none; margin: 0; padding: 0; }
+.w2-actsets li { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--line); }
+.w2-danger { color: var(--danger, #B3261E); margin-top: 16px; }

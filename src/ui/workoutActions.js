@@ -3,7 +3,7 @@
 
 import { newEntry } from '../logic/entries.js';
 import { sessionById } from '../logic/template.js';
-import { calisthenicsFor } from '../logic/workoutExtras.js';
+import { caliBlockFor } from '../logic/activities.js';
 import { exerciseList } from '../logic/workoutPlan.js';
 import { prCheck } from '../logic/progress.js';
 import { activeSessionId, parseSet, setText } from '../logic/workout.js';
@@ -46,7 +46,7 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
     logSet: async (el) => {
       const day = today();
       const id = activeSessionId(state.wSession, day, state.planDays);
-      const item = exerciseList(sessionById(id) ?? { id, exercises: [] }, extrasToday(), calisthenicsFor(day))[Number(el.dataset.i)];
+      const item = exerciseList(sessionById(id) ?? { id, exercises: [] }, extrasToday(), caliBlockFor(state.activities, day))[Number(el.dataset.i)];
       if (!item) return;
       // Calisthenics block exercises take the Added/Assisted weight like equipment 'calisthenics'.
       const ex = item.kind === 'cali' ? { ...item.ex, equipment: 'calisthenics' } : item.ex;

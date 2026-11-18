@@ -6,7 +6,7 @@
 import { sessionById } from '../logic/template.js';
 import { extrasFor } from '../logic/extras.js';
 import { activeSessionId } from '../logic/workout.js';
-import { calisthenicsFor } from '../logic/workoutExtras.js';
+import { caliBlockFor } from '../logic/activities.js';
 import { exerciseList } from '../logic/workoutPlan.js';
 
 /** Today's active session, extras, calisthenics block and the flat exercise list the pages index into. */
@@ -14,7 +14,7 @@ export function workoutContext(state, day) {
   const id = activeSessionId(state.wSession, day, state.planDays);
   const session = sessionById(id) ?? { id, name: '', exercises: [] };
   const extras = extrasFor(state.wExtras, day);
-  const cali = calisthenicsFor(day);
+  const cali = caliBlockFor(state.activities, day);
   return { id, session, extras, cali, list: exerciseList(session, extras, cali) };
 }
 

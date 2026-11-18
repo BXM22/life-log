@@ -152,7 +152,7 @@ All "back" arrows return to the page that opened them, not always Today. Today i
 
 ### Screens
 
-**1. Today (main).** Top to bottom: header (`LIFE LOG · date`, title `Workout`, three-dot button at right) → PR banner (slim, only after a record, tap to dismiss) → template card (name, Switch button, set-progress bar `5 of 14 sets`, focus line) → "Before you lift" card (Upper or Lower warm-up row with `0 / 4`, BJJ row) → `EXERCISES · n` label → exercise rows → dashed `+ Add exercise for today` → floating rest bar (peach, `REST TIMER`, time, dark `Open` pill) above the tab bar. The row being worked on gets a 2 px peach border. Spontaneous exercises are dashed white rows with a `Today only` tag, placed after the template rows.
+**1. Today (main).** Top to bottom: header (`LIFE LOG · date`, title `Workout`, three-dot button at right) → PR banner (slim, only after a record, tap to dismiss) → template card (name, Switch button, set-progress bar `5 of 14 sets`, focus line) → "Before you lift" card (the template's warm-up row with `0 / 4`, only when the template has one) → "Activities" card (see below) → `EXERCISES · n` label → exercise rows → dashed `+ Add exercise for today` → floating rest bar (peach, `REST TIMER`, time, dark `Open` pill) above the tab bar. The row being worked on gets a 2 px peach border. Spontaneous exercises are dashed white rows with a `Today only` tag, placed after the template rows.
 
 **2. Today menu.** Dropdown under the three-dot button, 290 px wide, scrim behind. Three items, each with a one-line hint: Templates and tags, Edit this template, Workout history. This replaces the three v1 buttons (`EDIT TEMPLATES`, `HISTORY`, `TEMPLATES AND TAGS`). The old edit mode is gone, Edit this template opens the normal Edit template page.
 
@@ -174,7 +174,9 @@ All "back" arrows return to the page that opened them, not always Today. Today i
 
 **11. History (page).** Grouped by `This week`, `Last week`, `Earlier`. Each day is a fold `Tue 11-17 · Upper A` with `12 sets`. Opening shows per-exercise set chips (warm-ups muted). Footer fold notes the 60-day limit and Dropbox exports.
 
-**12. Today, BJJ day.** The "Before you lift" card gains a highlighted BJJ block at the top: checked `BJJ class done today` with time, and a `Post-BJJ warm-up 1 / 3` row that opens the sheet. Lower warm-up row below it.
+**12. Today, BJJ day.** BJJ is now an activity (see Activities), not part of "Before you lift". Its log sheet holds the `BJJ done today` check and the `Post-BJJ warm-up` list.
+
+**Activities (added 2026-11-17).** A separate card under "Before you lift": label `ACTIVITIES` with an `Edit` link, one row per activity scheduled today (name, status such as `Not yet`, `Done`, `3.1 mi · 2 sets`, chevron), and a dashed `+ Add activity`. Built in: BJJ (Mon and Wed, done check, post-BJJ warm-up) and Calisthenics (Mon push, Wed pull; its row opens the first calisthenics exercise, and its exercises stay in their own list below). Your own: name, days of the week (chips), and what to log (done check, distance in mi or km, sets and reps). Tap a row to open its log sheet; `Edit` opens the manage sheet to add, edit or remove. Removing BJJ or Calisthenics hides them everywhere; logs already saved stay in History. Stored in `localStorage` key `lifelog.activities` (this device only); each day's log is one `habit_check` entry per activity, so the done check counts toward streaks. Source: `src/logic/activities.js`, `src/ui/workoutActivities.js`, `src/ui/activityActions.js`.
 
 **13. Today, calisthenics day (Mon push, Wed pull).** The list splits into `LIFTS` and `CALISTHENICS · push`. Each calisthenics row shows its load type as a tag (Added weight, Assisted, or Calisthenics for seconds). Tapping opens the normal Exercise page with the Added/Assisted select.
 

@@ -23,7 +23,7 @@ export function createWorkoutSheetActions({ state, today }) {
       if (el.dataset.tab) state.wSheetTab = el.dataset.tab;
       state.wAdd = state.wSheet === 'add';
     },
-    wSheetClose: () => { state.wSheet = null; state.wAdd = false; },
+    wSheetClose: () => { state.wSheet = null; state.wAdd = false; state.wAct = null; state.wActForm = null; },
     wSheetTab: (el) => { state.wSheetTab = el.dataset.tab; },
     wMenuToggle: (el) => { state.wMenu = state.wMenu === el.dataset.menu ? null : el.dataset.menu; },
     wMenuClose: () => { state.wMenu = null; },

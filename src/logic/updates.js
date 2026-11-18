@@ -1,5 +1,6 @@
 // Recent updates shown in Settings > WHAT'S NEW. Newest first. Add a line here when you ship something you'd notice.
 export const UPDATES = [
+  { date: '2026-11-17', text: 'Workout: a new Activities card, separate from Before you lift. BJJ and Calisthenics are in it, and you can add your own (run, bike, yoga) with chosen days, a done check, distance and sets.' },
   { date: '2026-11-17', text: 'Exercises have equipment (barbell, dumbbell, calisthenics, machine). Calisthenics sets log added or assisted weight with reps.' },
   { date: '2026-11-17', text: 'Workout: add a spontaneous exercise for today, and tap Keep in template if you want it permanently.' },
   { date: '2026-11-17', text: 'Workout templates: start a blank one (or copy the active one) from the Templates window and add exercises over time.' },

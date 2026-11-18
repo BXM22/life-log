@@ -1,10 +1,11 @@
 // WORKOUT v2 Today page (screens 1, 12, 13): template card, "Before you lift", one row per exercise.
 //   html: todayPage(state) (no rest bar, menus or sheets; the integrator appends them)
-//   actions used: wOpenEx (data-i), wMenuToggle, wSheetOpen (data-sheet = switch | warm | add), toggleBjj
+//   actions used: wOpenEx (data-i), wMenuToggle, wSheetOpen (data-sheet = switch | warm | add), aOpen / aManage / aNew (activities)
 
 import { logicalDate } from '../logic/dates.js';
 import { setsFor, lastWorking } from '../logic/workout.js';
-import { CHECKLISTS, checklistKey, checkedCount, bjjDone, isBjjDay } from '../logic/workoutExtras.js';
+import { CHECKLISTS, checklistKey, checkedCount } from '../logic/workoutExtras.js';
+import { activitiesCard } from './workoutActivities.js';
 import { setDots, sessionProgress } from '../logic/workoutPlan.js';
 import { esc } from './format.js';
 import { EQUIP_TEXT } from './templateView.js';
@@ -71,15 +72,8 @@ const sheetRow = (title, count, sheet, extraCls = '') => `<button class="w2-line
 
 function beforeYouLift(state, session, day) {
   const key = checklistKey(session);
-  const lines = [];
-  if (isBjjDay(day)) {
-    const done = bjjDone(state.entries, day);
-    lines.push(`<div class="w2-bjj"><label class="check"><input type="checkbox" data-action="toggleBjj" ${done ? 'checked' : ''}><span>BJJ class done today</span></label></div>`);
-    lines.push(sheetRow(CHECKLISTS.bjj.title, `${checkedCount(state.wChecks, day, 'bjj')} / ${CHECKLISTS.bjj.items.length}`, 'warm'));
-  }
-  if (key) lines.push(sheetRow(CHECKLISTS[key].title, `${checkedCount(state.wChecks, day, key)} / ${CHECKLISTS[key].items.length}`, 'warm'));
-  if (!lines.length) return '';
-  return `<section class="w2-card${isBjjDay(day) ? ' bjj' : ''}"><h2 class="w2-label">BEFORE YOU LIFT</h2>${lines.join('')}</section>`;
+  if (!key) return '';
+  return `<section class="w2-card"><h2 class="w2-label">BEFORE YOU LIFT</h2>${sheetRow(CHECKLISTS[key].title, `${checkedCount(state.wChecks, day, key)} / ${CHECKLISTS[key].items.length}`, 'warm')}</section>`;
 }
 
 /** Today page markup. */
@@ -111,6 +105,7 @@ export function todayPage(state) {
       ${session.focus ? `<p class="w2-sub">${esc(session.focus)}</p>` : ''}
     </section>
     ${beforeYouLift(state, session, day)}
+    ${activitiesCard(state, day, list.findIndex((x) => x.kind === 'cali'))}
     ${body}
   </div>`;
 }

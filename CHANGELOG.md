@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- feat: Workout Activities card (F54): BJJ and Calisthenics moved out of Before you lift into their own card; add, edit and remove your own activities with days of the week, a done check, distance (mi or km) and sets and reps; stored on this device; 7 new tests (2026-11-17)
 - feat: Workout tab v2 redesign (F53, not yet released): Today list with set dots and a template progress bar, Exercise page with steppers, sheets and dropdown menus, fixed rest bar, restyled Templates, Edit template and History pages; old edit-templates mode removed; new files added to the offline cache; 196 tests (2026-11-17)
 - fix: status tags (WAITING, EXPORTED) had text the same color as their background; forma.css now sets ink text on `.tag.waiting` and `.tag.done` (2026-11-17)
 - feat: exercise equipment (F52): Barbell, Dumbbell, Calisthenics or Machine on each exercise; calisthenics sets log optional Added or Assisted weight with reps; favicon link added; tests added (2026-11-17)

@@ -1,6 +1,6 @@
 // Workout v2 sheets and dropdown menus (docs/screens/workout.md screens 2, 3, 4, 6, 7).
 //   html:    sheetLayer(state) -> open sheet + scrim or ''; menuLayer(state) -> open dropdown + transparent scrim or ''
-//   state:   wSheet (null | 'switch' | 'warm' | 'add'), wSheetTab ('warm' | 'bjj' | 'cali'), wMenu (null | 'today' | 'exercise'), wEx (exercise index or null)
+//   state:   wSheet (null | 'switch' | 'warm' | 'add' | 'activity' | 'actmgr'), wMenu (null | 'today' | 'exercise'), wEx (exercise index or null)
 //   actions: wSheetOpen, wSheetClose, wSheetTab, wMenuToggle, wMenuClose, wEditTemplate, wEditExercise, wOpenTemplates, wOpenHistory
 //            (see workoutSheetActions.js); sheets reuse tplPick, tplFilter, toggleCheck, toggleBjj, addExtraSave, addExtraCancel,
 //            trimSet, untrimSet, toggleCue, tDelete, keepExtra, removeExtra.
@@ -9,7 +9,9 @@ import { getSessions, sessionById } from '../logic/template.js';
 import { activeSessionId } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
 import { filterByTag, tagsOf, usedTags } from '../logic/templateTags.js';
-import { CHECKLISTS, backCue, bjjDone, calisthenicsFor, checkKey, checkedCount, checklistKey, isBjjDay, setCount, trimmedFor } from '../logic/workoutExtras.js';
+import { CHECKLISTS, backCue, checkKey, checkedCount, checklistKey, setCount, trimmedFor } from '../logic/workoutExtras.js';
+import { caliBlockFor } from '../logic/activities.js';
+import { activitySheet, manageSheet } from './workoutActivities.js';
 import { exerciseList } from '../logic/workoutPlan.js';
 import { extrasFor } from '../logic/extras.js';
 import { EQUIPMENT } from '../logic/templateEdit.js';
@@ -60,28 +62,8 @@ function warmSheet(state) {
   const day = dayOf(state);
   const session = sessionById(activeSessionId(state.wSession, day, state.planDays));
   const wKey = checklistKey(session);
-  const cali = calisthenicsFor(day);
-  const enabled = { warm: Boolean(wKey), bjj: isBjjDay(day), cali: Boolean(cali) };
-  const tab = enabled[state.wSheetTab] ? state.wSheetTab : (['warm', 'bjj', 'cali'].find((t) => enabled[t]) ?? 'warm');
-  const label = {
-    warm: `Warm-up${wKey ? ` ${checkedCount(state.wChecks, day, wKey)}/${CHECKLISTS[wKey].items.length}` : ''}`,
-    bjj: 'BJJ',
-    cali: 'Calisthenics',
-  };
-  const seg = ['warm', 'bjj', 'cali'].map((t) => `<button data-action="wSheetTab" data-tab="${t}" ${tab === t ? 'aria-current="page"' : ''} ${enabled[t] ? '' : 'disabled'}>${label[t]}</button>`).join('');
-  let body;
-  if (tab === 'warm') body = wKey ? checkRows(state, day, wKey) : '<p class="w2-empty">No warm-up list for this template.</p>';
-  else if (tab === 'bjj') {
-    const done = bjjDone(state.entries, day);
-    body = `<label class="check w2-check"><input type="checkbox" data-action="toggleBjj" ${done ? 'checked' : ''}><span>BJJ class done today</span></label>
-      <p class="w2-label">${CHECKLISTS.bjj.title} ${checkedCount(state.wChecks, day, 'bjj')}/${CHECKLISTS.bjj.items.length}</p>${checkRows(state, day, 'bjj')}`;
-  } else {
-    body = `<p class="w2-label">${esc(cali.name)}${cali.focus ? ` · ${esc(cali.focus)}` : ''}</p>
-      <ul class="w2-list">${cali.exercises.map((e) => `<li><b>${esc(e.name)}</b><small>${esc(e.target)}</small></li>`).join('')}</ul>
-      <p class="w2-empty">Log these from their rows on the Today list.</p>`;
-  }
-  return frame('Warm-up and BJJ', `<div class="w2-sheet-head"><h2>Before you lift</h2>${closeBtn}</div>
-    <div class="seg w2-seg3" role="group" aria-label="Checklist">${seg}</div>
+  const body = wKey ? `<p class="w2-label">${esc(CHECKLISTS[wKey].title)} ${checkedCount(state.wChecks, day, wKey)}/${CHECKLISTS[wKey].items.length}</p>${checkRows(state, day, wKey)}` : '<p class="w2-empty">No warm-up list for this template.</p>';
+  return frame('Warm-up', `<div class="w2-sheet-head"><h2>Before you lift</h2>${closeBtn}</div>
     <div class="w2-body">${body}</div>
     <button class="btn w2-done" data-action="wSheetClose">Done</button>`);
 }
@@ -104,6 +86,8 @@ export function sheetLayer(state) {
   if (state.wSheet === 'switch') return switchSheet(state);
   if (state.wSheet === 'warm') return warmSheet(state);
   if (state.wSheet === 'add') return addSheet();
+  if (state.wSheet === 'activity') return activitySheet(state, dayOf(state), { frame, closeBtn, checkRows });
+  if (state.wSheet === 'actmgr') return manageSheet(state, { frame, closeBtn, checkRows });
   return '';
 }
 
@@ -121,7 +105,7 @@ function exerciseMenu(state) {
   const day = dayOf(state);
   const session = sessionById(activeSessionId(state.wSession, day, state.planDays));
   if (!session) return '';
-  const found = exerciseList(session, extrasFor(state.wExtras, day), calisthenicsFor(day)).find((r) => r.i === state.wEx);
+  const found = exerciseList(session, extrasFor(state.wExtras, day), caliBlockFor(state.activities, day)).find((r) => r.i === state.wEx);
   if (!found) return '';
   const { ex, i, kind } = found;
   if (kind === 'extra') {

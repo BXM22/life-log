@@ -19,6 +19,7 @@ import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
 import { createWorkoutNavActions, captureDraft } from './workoutNavActions.js';
 import { createWorkoutSheetActions } from './workoutSheetActions.js';
+import { createActivityActions } from './activityActions.js';
 import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
 import { createTemplateActions } from './templateActions.js';
 import { createTemplateTagsActions } from './templateTagsActions.js';
@@ -120,6 +121,7 @@ const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
   ...createWorkoutNavActions({ state, today }),
   ...createWorkoutSheetActions({ state, today }),
+  ...createActivityActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createWorkoutExtrasActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createTemplateTagsActions({ state, saveFail, saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); } }),
   ...createPlatesActions({ state, inputValue }),
@@ -137,7 +139,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
   dismissPR: () => { state.pr = null; },
