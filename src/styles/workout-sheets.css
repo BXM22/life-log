@@ -43,25 +43,26 @@
 .w2-item:disabled { cursor: default; }
 .w2-item:disabled b, .w2-item:disabled small { color: var(--dim); }
 
-/* Fixed rest bar, above the tab bar and below sheets (tab bar z 20, sheets 40+) */
+/* Rest timer: a small pill above the tab bar, at the right, so it never covers the logging buttons (tab bar z 20, sheets 40+).
+   Peach while idle, dark while counting down. */
 .w2-restbar {
-  position: fixed; z-index: 30; left: 50%; transform: translateX(-50%);
-  bottom: calc(var(--tabbar-h, 75px) + 16px + env(safe-area-inset-bottom));
-  display: flex; align-items: center; justify-content: space-between; gap: 12px;
-  width: min(100% - 32px, 408px); min-height: 60px; padding: 8px 8px 8px 20px; border: 0; border-radius: 30px;
-  background: var(--accent); color: var(--ink); cursor: pointer; box-shadow: 0 6px 18px rgba(0, 0, 0, .15);
+  position: fixed; z-index: 30; right: 16px; left: auto;
+  bottom: calc(var(--tabbar-h, 75px) + 12px + env(safe-area-inset-bottom));
+  display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 14px; border: 0; border-radius: 22px;
+  background: var(--accent); color: var(--ink); cursor: pointer; box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
 }
-.w2-restbar-text { display: flex; flex-direction: column; text-align: left; }
+.w2-restbar.run { background: var(--ink); color: #FFFFFF; }
+.w2-restbar-text { display: flex; flex-direction: row; align-items: baseline; gap: 8px; text-align: left; }
 .w2-restbar-label { font-size: 11px; font-weight: 800; letter-spacing: .1em; }
-.w2-restbar-time { font-size: 22px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 26px; }
-.w2-restbar-open { display: inline-flex; align-items: center; justify-content: center; min-width: 64px; min-height: 44px; padding: 0 18px; border-radius: 22px; background: var(--ink); color: #FFFFFF; font-size: 14px; font-weight: 700; }
+.w2-restbar-time { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 20px; }
 
-/* Keep the toast above the fixed rest bar (the bar is a sibling rendered before the toast). */
-.w2-restbar ~ .toast { bottom: calc(var(--tabbar-h, 76px) + 16px + 64px + 12px + env(safe-area-inset-bottom)); }
+/* Confirmations ("Set saved") sit at the top on Workout so they never cover the logging buttons. The bar is a sibling rendered before the toast. */
+.w2-restbar ~ .toast { top: calc(12px + env(safe-area-inset-top)); bottom: auto; }
 
 /* Activities (card on Today, log sheet, manage sheet) */
 .w2-acthead { display: flex; align-items: center; justify-content: space-between; }
 .w2-acthead .w2-label { margin: 0; }
+.w2-acthead > span { display: flex; gap: 16px; }
 .w2-count.on { color: var(--ink); }
 .w2-add-in { margin: 12px 0 0; }
 .w2-actrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 56px; padding: 8px 0; border-bottom: 1px solid var(--line); }

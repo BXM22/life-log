@@ -81,6 +81,7 @@ Smaller improvements to shipped features, from the design board ideas. Not mocke
 - [ ] F45 Deload suggestion after 6 weeks of progressive lifting (Could). A card on Workout suggests a lighter week when weights have risen for 6 weeks running; dismiss or accept. Uses F25 progression data
 - [ ] F46 Metronome in the practice timer (Could). BPM stepper and tick while the F12 timer runs; saves the BPM as the entry's best BPM on Stop. Works offline
 - [x] F47 Backup nudge meter on Sync (Could). Shows days since the last export and last JSON backup, turning from calm to urgent as entries wait; complements the F33 reminder
+- [ ] F60 Today tab v2 redesign (Should). Design in docs/screens/today.md, mock-ups on the Design canvas "Life Log Today v2". Build in steps, each shippable on its own: (1) short Today: hero, session card, Habits and Recent drop-downs, Log / Learn / Notes rows, sync chip replacing the Sync row and export banner, Manage habits sheet; (2) Log window trimmed to weigh-in and meals, Notes as its own window; (3) Learn window with user-defined areas, replacing Study and Guitar (F4, F16, F41); (4) `session` entry type, areas list in localStorage, read-side migration of guitar and study entries, export section per area, Quick add chips Weight / Meal / Session / Note; (5) timer moves into Learn, then retire studyView.js and practiceView.js. Check tests and the F49 screen flow after each step
 
 ## Open questions
 

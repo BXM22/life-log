@@ -1,5 +1,5 @@
 /* Workout v2: Today list and Exercise page. All selectors prefixed .w2-. Tokens come from forma.css. */
-.w2-page { padding-bottom: calc(var(--tabbar-h, 76px) + 16px + env(safe-area-inset-bottom)); }
+.w2-page { padding-bottom: calc(var(--tabbar-h, 76px) + 16px + 72px + env(safe-area-inset-bottom)); } /* tab bar, then room for the fixed rest bar */
 .w2-head { display: flex; align-items: flex-start; justify-content: space-between; margin: 0 0 16px; }
 .w2-head h1, .w2-title { margin: 0; }
 .w2-over { display: block; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim); }
@@ -50,7 +50,11 @@
 .w2-titlerow { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin: 0 0 16px; }
 .w2-title { font-size: 24px; line-height: 30px; font-weight: 800; overflow-wrap: anywhere; }
 .w2-strip { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 0 0 16px; }
-.w2-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 12px; border-radius: 16px; background: var(--panel); }
+.w2-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; padding: 8px 12px; border-radius: 16px; background: var(--panel); }
+.w2-cv { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 6px; }
+.w2-continue { margin: 0 0 12px; }
+.w2-alldone { margin: 0 0 12px; padding: 12px 16px; border-radius: 16px; background: var(--peach-soft); color: var(--ink); }
+.w2-setnum { margin: 0 0 8px; font-size: 12px; font-weight: 800; letter-spacing: .08em; color: var(--ink); }
 .w2-cell b { font-size: 15px; line-height: 20px; font-weight: 800; color: var(--ink); overflow-wrap: anywhere; }
 .w2-cell small { color: var(--dim); }
 .w2-cl { font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; color: var(--dim); }

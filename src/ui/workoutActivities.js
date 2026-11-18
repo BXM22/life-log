@@ -21,8 +21,11 @@ export function activitiesCard(state, day, firstCaliIndex) {
     const status = activityStatus(state.entries, a, day);
     return `<button class="w2-line" data-action="aOpen" data-id="${esc(a.id)}"><span class="w2-linetitle">${esc(a.name)}</span><span class="w2-count${status === 'Not yet' ? '' : ' on'}">${esc(status)}</span>${CHEV}</button>`;
   });
+  if (!rows.length) { // nothing today: one slim row instead of a card
+    return `<section class="w2-card"><div class="w2-acthead"><h2 class="w2-label">ACTIVITIES · NONE TODAY</h2><span><button class="editlink" data-action="aNew">+ Add</button> <button class="editlink" data-action="aManage">Edit</button></span></div></section>`;
+  }
   return `<section class="w2-card"><div class="w2-acthead"><h2 class="w2-label">ACTIVITIES</h2><button class="editlink" data-action="aManage">Edit</button></div>
-    ${rows.length ? rows.join('') : '<p class="w2-sub">Nothing scheduled today.</p>'}
+    ${rows.join('')}
     <button class="w2-add w2-add-in" data-action="aNew">+ Add activity</button></section>`;
 }
 

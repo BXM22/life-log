@@ -28,7 +28,7 @@ function stepper(id, field, i, label, value, attrs) {
     </div></div>`;
 }
 
-const cell = (label, value, sub = '') => `<div class="w2-cell"><span class="w2-cl">${label}</span><b>${value}</b>${sub ? `<small>${sub}</small>` : ''}</div>`;
+const cell = (label, value, sub = '') => `<div class="w2-cell"><span class="w2-cl">${label}</span><span class="w2-cv"><b>${value}</b>${sub ? `<small>${sub}</small>` : ''}</span></div>`;
 
 /** Exercise page markup for state.wEx, or the Today page if that index no longer exists. */
 export function exercisePage(state) {
@@ -61,6 +61,8 @@ export function exercisePage(state) {
     : stepper('r', 'reps', i, 'Reps', d.r ?? last?.reps ?? '', 'inputmode="numeric" step="1"');
 
   const complete = !state.wMore?.[i] && setsComplete(ex, state.entries, day, state.wTrims);
+  const dots = setDots(ex, state.entries, day, state.wTrims);
+  const setNum = dots.total == null ? '' : `<p class="w2-setnum" aria-live="polite">${dots.done >= dots.total ? `EXTRA SET ${dots.done + 1}` : `SET ${dots.done + 1} OF ${dots.total}`}</p>`;
   const tryTip = kind === 'template' && i === 0 && progressionPrompt(last, ex) ? `<p class="w2-try"><b>TRY TODAY</b> ${esc(progressionPrompt(last, ex))}</p>` : '';
   const cue = state.wCues?.[i] && backCue(ex.name) ? `<p class="w2-cue"><b>BACK CUE</b> ${esc(backCue(ex.name))}</p>` : '';
 
@@ -88,6 +90,7 @@ export function exercisePage(state) {
     </div>
     ${tryTip}${cue}
     <section class="w2-card w2-log">
+      ${complete ? '' : setNum}
       ${stepper('w', 'weight', i, weightLabel, d.w ?? last?.weight ?? '', 'inputmode="decimal" step="0.5"')}
       ${second}
       ${loadSel}${sideSel}

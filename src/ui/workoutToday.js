@@ -41,12 +41,17 @@ function currentIndex(state, list, day) {
       if (e.updatedAt >= at) { at = e.updatedAt; best = k; }
     }
   });
-  if (best >= 0) return list[best].i;
-  const first = list.find((item) => {
+  // Unfinished: a done spontaneous exercise, a set count reached, or a no-count exercise already logged are finished.
+  const open = (item) => {
+    if (item.kind === 'extra' && item.ex.done) return false;
     const d = setDots(item.ex, state.entries, day, state.wTrims);
-    return d.total != null && d.done < d.total;
-  });
-  return first ? first.i : -1;
+    return d.total == null ? d.done === 0 : d.done < d.total;
+  };
+  if (best >= 0 && open(list[best])) return list[best].i;
+  // The one just worked on is finished: the next unfinished exercise after it (wrapping), or -1 when everything is done.
+  const from = best >= 0 ? best + 1 : 0;
+  const next = [...list.slice(from), ...list.slice(0, from)].find(open);
+  return next ? next.i : -1;
 }
 
 function dotsHtml(state, item, day) {
@@ -90,6 +95,12 @@ export function todayPage(state) {
   const pct = prog.total ? Math.min(100, Math.round((prog.done / prog.total) * 100)) : 0;
   const current = currentIndex(state, list, day);
 
+  // One primary action: jump to the next unfinished exercise.
+  const up = current >= 0 ? list.find((x) => x.i === current) : null;
+  const cont = up
+    ? `<button class="btn w2-continue" data-action="wOpenEx" data-i="${up.i}">${prog.done > 0 ? 'Continue' : 'Start'}: ${esc(up.ex.name)}</button>`
+    : list.length ? '<p class="w2-sub w2-alldone"><b>All exercises done.</b> Nice work.</p>' : '';
+
   const lifts = list.filter((x) => x.kind !== 'cali');
   const calis = list.filter((x) => x.kind === 'cali');
   const group = (label, items) => `<h2 class="w2-label">${label}</h2><div class="w2-list">${items.map((x) => row(state, x, day, current)).join('')}</div>`;
@@ -110,6 +121,7 @@ export function todayPage(state) {
       <p class="w2-sub">${prog.done} of ${prog.total} sets</p>` : ''}
       ${session.focus ? `<p class="w2-sub">${esc(session.focus)}</p>` : ''}
     </section>
+    ${cont}
     ${beforeYouLift(state, session, day)}
     ${activitiesCard(state, day, list.findIndex((x) => x.kind === 'cali'))}
     ${body}

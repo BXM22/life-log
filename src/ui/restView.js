@@ -27,12 +27,11 @@ export function restRow(state) {
   </button>`;
 }
 
-/** Fixed peach rest bar for Today and Exercise (workout v2). The time keeps id rest-row-time so the timer painter updates it. */
+/** Fixed rest pill for Today and Exercise (workout v2). The time keeps id rest-row-time so the timer painter updates it. */
 export function restBar(state) {
-  return `<button class="w2-restbar" data-action="restOpen" aria-label="Open the rest timer">
-    <span class="w2-restbar-text"><span class="w2-restbar-label">REST TIMER</span><span class="w2-restbar-time" id="rest-row-time">${fmt(timeLeft(state.rest))}</span></span>
-    <span class="w2-restbar-open">Open</span>
-  </button>`;
+  const running = state.rest.endAt != null; // a small pill: peach when idle, dark while counting down
+  return `<button class="w2-restbar${running ? ' run' : ''}" data-action="restOpen" aria-label="Open the rest timer">
+    <span class="w2-restbar-text"><span class="w2-restbar-label">REST</span><span class="w2-restbar-time" id="rest-row-time">${fmt(timeLeft(state.rest))}</span></span>  </button>`;
 }
 
 export function restPage(state) {
