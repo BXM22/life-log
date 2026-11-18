@@ -89,6 +89,13 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
       const e = newEntry('lift_set', day, { session: item.sessionKey, exercise: ex.name, kind, ...r.data }, Date.now());
       try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
       state.entries.push(e);
+      // Per-side exercise: the Side box flips to the other side, ready for the next set.
+      if (r.data.side) {
+        const other = r.data.side === 'L' ? 'R' : 'L';
+        state.wDraft = { ...state.wDraft, [el.dataset.i]: { ...state.wDraft?.[el.dataset.i], sd: other } };
+        const box = document.getElementById(`sd-${el.dataset.i}`);
+        if (box) box.value = other; // the page copies input values into the draft before it re-renders
+      }
       state.pr = prCheck(state.entries, e, state.stats);
       state.msg = `${kind === 'warmup' ? 'Warm-up' : 'Set'} saved: ${setText(r.data)}.`;
       if (kind === 'working' && onWorkingSet) onWorkingSet();
