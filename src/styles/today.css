@@ -51,6 +51,9 @@ button.btn.qa-close { width: 44px; min-height: 44px; margin: 0; padding: 0; }
 .panel .qa-chip:not([aria-pressed="true"]):not(.on) { background: #fff; border: 1px solid var(--line); }
 .qa-chip.on { background: var(--ink); color: #fff; }
 span.qa-chip { display: inline-flex; align-items: center; }
+/* Learn: running timer card (soft peach, big clock) */
+.panel.timercard { background: var(--peach-soft); border-radius: 24px; }
+.timercard .big { font-size: 48px; line-height: 52px; font-weight: 800; color: var(--ink); margin: 4px 0 8px; }
 /* Learn: area row = name, minutes and a small Edit button on one line */
 .arow-end { display: inline-flex; align-items: center; gap: 8px; }
 button.btn.editbtn { width: auto; min-height: 44px; margin: 0; padding: 0 14px; }

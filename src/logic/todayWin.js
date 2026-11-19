@@ -1,17 +1,16 @@
-// Which Today window is open (F49). Pure. state.todayWin is null | 'log' | 'learn' | 'notes' | 'timer'.
-// 'learn' is the interim Learn window (guitar, study); 'timer' is the practice timer opened from it, and Back returns to Learn.
+// Which Today window is open (F49). Pure. state.todayWin is null | 'log' | 'learn' | 'notes'.
 import { liveEntries, dayProtein, PROTEIN_TARGET } from './entries.js';
 import { isDirty } from './exportBuilder.js';
 import { dayStudyMinutes } from './study.js';
 import { sessionOf, guitarView } from './sessions.js';
 
-export const TODAY_WINDOWS = ['log', 'learn', 'notes', 'timer'];
+export const TODAY_WINDOWS = ['log', 'learn', 'notes'];
 
 /** A safe window value: anything unknown means no window. */
 export const normalizeWin = (v) => (TODAY_WINDOWS.includes(v) ? v : null);
 
 /** Where Back goes from a window. */
-export const parentWin = (win) => (win === 'timer' ? 'learn' : null);
+export const parentWin = (_win) => null;
 
 /** Row summary for Today's Guitar log row. */
 export function guitarSummary(entries, date) {

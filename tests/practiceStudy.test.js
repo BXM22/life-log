@@ -33,7 +33,9 @@ test('clock formats mm:ss and h:mm:ss', () => {
 test('practice timer survives a reload through storage and clears when idle', () => {
   const s = mem();
   savePractice(s, startPractice(123, 'songs'));
-  assert.deepEqual(loadPractice(s), { startAt: 123, focus: 'songs' });
+  assert.deepEqual(loadPractice(s), { startAt: 123, focus: 'songs', area: 'Guitar', type: 'practice' });
+  savePractice(s, startPractice(5, 'x', 'Coding', 'project'));
+  assert.deepEqual(loadPractice(s), { startAt: 5, focus: 'x', area: 'Coding', type: 'project' });
   savePractice(s, idlePractice());
   assert.equal(s.getItem(PRACTICE_KEY), null);
   assert.deepEqual(loadPractice(s), idlePractice());

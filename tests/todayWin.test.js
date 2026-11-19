@@ -4,12 +4,12 @@ import { normalizeWin, parentWin, guitarSummary, studySummary } from '../src/log
 import { newEntry } from '../src/logic/entries.js';
 
 test('normalizeWin keeps known windows and drops anything else', () => {
-  for (const w of ['log', 'learn', 'notes', 'timer']) assert.equal(normalizeWin(w), w);
+  for (const w of ['log', 'learn', 'notes']) assert.equal(normalizeWin(w), w);
   for (const w of [null, undefined, '', 'nope', 3]) assert.equal(normalizeWin(w), null);
 });
 
-test('Back from the timer returns to Log; Log and Study return to Today', () => {
-  assert.equal(parentWin('timer'), 'learn');
+test('Back from any window returns to Today', () => {
+  assert.equal(parentWin('timer'), null);
   assert.equal(parentWin('log'), null);
   assert.equal(parentWin('learn'), null);
   assert.equal(parentWin('notes'), null);

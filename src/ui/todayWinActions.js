@@ -8,6 +8,5 @@ export function createTodayWinActions({ state }) {
   return {
     openTodayWin: (el) => go(el.dataset.win),
     closeTodayWin: () => go(parentWin(state.todayWin)),
-    openTimer: () => go('timer'),
   };
 }

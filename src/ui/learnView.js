@@ -1,10 +1,11 @@
 // Learn window (Today v2): log a session by area, weekly area progress, edit areas, recent sessions.
 //   html:    learnView(state, day)
-//   actions: closeTodayWin, pickArea, pickType, learnMin, logSession, openTimer, toggleLearn,
+//   actions: closeTodayWin, pickArea, pickType, learnMin, logSession, practiceStart, practiceStop,
+//            practiceDiscard, toggleLearn,
 //            openAreaEdit, addStarterArea, saveArea, deleteArea, closeAreaEdit
 import { esc } from './format.js';
 import { sessionOf } from '../logic/sessions.js';
-import { practicePanel } from './practiceView.js';
+import { clock, elapsedSeconds, practiceMinutes } from '../logic/practiceTimer.js';
 import { todayByArea, minutesToday, weekMinutes, areaOfEntry, AREA_TYPES } from '../logic/areas.js';
 
 // One-tap suggestions under 'Add an area'. The fresh-install defaults live in logic/areas.js (STARTER_AREAS).
@@ -37,6 +38,26 @@ function editPanel(areas, name) {
         <button class="btn secondary" data-action="closeAreaEdit">Cancel</button>
       </div>
       ${cur ? `<button class="btn secondary" data-action="deleteArea" data-area="${esc(cur.name)}">Remove</button>` : ''}
+    </div>`;
+}
+
+/** Soft-peach card shown only while the timer runs. An interval repaints #practice-time. */
+function timerCard(state, areas, fallbackArea) {
+  const p = state.practice;
+  const secs = elapsedSeconds(p, Date.now());
+  const name = p.area || (fallbackArea ? fallbackArea.name : '');
+  const a = areas.find((x) => x.name === name);
+  const label = (a && a.metricLabel) || (name === 'Guitar' ? 'Best BPM' : '');
+  const metric = label
+    ? `<label class="lbl" for="pt-metric">${esc(label)} (optional)</label>
+      <input id="pt-metric" class="field" type="number" inputmode="decimal" step="any" aria-label="${esc(label)}, optional">` : '';
+  return `<div class="panel timercard">
+      <h2>TIMER RUNNING${name ? ` · ${esc(name.toUpperCase())}` : ''}</h2>
+      <div class="big" id="practice-time" role="timer">${clock(secs)}</div>
+      <p class="note">Practising${p.focus ? `: ${esc(p.focus)}` : ''}. Stopping logs ${practiceMinutes(secs)} min.</p>
+      ${metric}
+      <button class="btn" data-action="practiceStop">STOP AND LOG</button>
+      <button class="btn secondary" data-action="practiceDiscard">DISCARD</button>
     </div>`;
 }
 
@@ -88,7 +109,7 @@ export function learnView(state, day) {
       <input id="learn-notes" class="field" maxlength="500" value="${esc(d.notes ?? '')}" placeholder="Notes (optional)" aria-label="Notes, optional" autocomplete="off">`;
   return `<div class="backrow">${BACK}</div>
     <h2 class="subtitle">Learn</h2>
-    ${running ? practicePanel(state) : ''}
+    ${running ? timerCard(state, areas, area) : ''}
     <div class="panel">
       <h2>TODAY</h2>
       <p class="note">${esc(total)} min today</p>
@@ -104,7 +125,7 @@ export function learnView(state, day) {
       ${accordion(!!l.more, 'more', 'MORE DETAILS', more)}
       <div class="inline">
         <button class="btn" data-action="logSession">SAVE SESSION</button>
-        <button class="btn secondary" data-action="openTimer">START TIMER</button>
+        ${running ? '' : '<button class="btn secondary" data-action="practiceStart">START TIMER</button>'}
       </div>
     </div>
     ${body}

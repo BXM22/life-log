@@ -1,30 +1,45 @@
-// Practice timer (F12). Pure except for the storage object the caller passes in.
+// Practice timer (Learn window). Pure except for the storage object the caller passes in.
 // The timer stores its START time, not a count, so it stays right when the phone sleeps or the app is closed.
-// Stopping turns the elapsed time into whole minutes for a normal guitar entry.
+// Stopping turns the elapsed time into whole minutes for a `session` entry.
 //
-// practice: { startAt, focus }   startAt is epoch ms while running, null when idle.
+// practice: { startAt, focus, area, type }   startAt is epoch ms while running, null when idle.
+// A timer stored before areas existed has no area/type: it loads as Guitar / practice.
 
 export const PRACTICE_KEY = 'lifelog.practice';
-export const MAX_PRACTICE_MINUTES = 600; // matches the guitar form's upper limit
+export const MAX_PRACTICE_MINUTES = 600; // matches the session form's upper limit
+export const DEFAULT_AREA = 'Guitar';
+export const DEFAULT_TYPE = 'practice';
 
-export const idlePractice = () => ({ startAt: null, focus: '' });
+export const idlePractice = () => ({ startAt: null, focus: '', area: DEFAULT_AREA, type: DEFAULT_TYPE });
 
 /** Saved timer, or an idle one when nothing valid is stored. */
 export function loadPractice(storage) {
   try {
     const p = JSON.parse(storage.getItem(PRACTICE_KEY));
-    if (p && typeof p.startAt === 'number' && Number.isFinite(p.startAt)) return { startAt: p.startAt, focus: String(p.focus ?? '').slice(0, 40) };
+    if (p && typeof p.startAt === 'number' && Number.isFinite(p.startAt)) {
+      return {
+        startAt: p.startAt,
+        focus: String(p.focus ?? '').slice(0, 40),
+        area: String(p.area ?? '').trim().slice(0, 60) || DEFAULT_AREA,
+        type: String(p.type ?? '').trim() || DEFAULT_TYPE,
+      };
+    }
   } catch { /* missing or corrupt: start idle */ }
   return idlePractice();
 }
 
 export function savePractice(storage, p) {
   if (p.startAt == null) storage.removeItem(PRACTICE_KEY);
-  else storage.setItem(PRACTICE_KEY, JSON.stringify({ startAt: p.startAt, focus: p.focus }));
+  else storage.setItem(PRACTICE_KEY, JSON.stringify({ startAt: p.startAt, focus: p.focus, area: p.area, type: p.type }));
 }
 
 /** A running timer from now. */
-export const startPractice = (now, focus = '') => ({ startAt: now, focus: String(focus).replace(/\s+/g, ' ').trim().slice(0, 40) });
+export const startPractice = (now, focus = '', area = DEFAULT_AREA, type = DEFAULT_TYPE) => ({
+  startAt: now,
+  focus: String(focus ?? '').replace(/\s+/g, ' ').trim().slice(0, 40),
+  area: String(area || DEFAULT_AREA),
+  type: String(type || DEFAULT_TYPE),
+});
 
 /** Whole seconds since start, never negative. 0 when idle. */
 export const elapsedSeconds = (p, now) => (typeof p.startAt === 'number' ? Math.max(0, Math.floor((now - p.startAt) / 1000)) : 0);

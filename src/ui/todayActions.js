@@ -1,26 +1,12 @@
-// Actions for the TODAY extras: quick add sheet (F36), custom study subjects (F41) and collapsible
-// sections (F43). app.js merges these into its action table. State used: state.quick, state.sections,
-// state.studySubjects (loaded lazily from localStorage by subjectsOf).
+// Actions for the TODAY extras: quick add sheet (F36) and collapsible sections (F43). app.js merges
+// these into its action table. State used: state.quick, state.sections, state.todaySections.
 
 import { buildQuickEntry, QUICK_FIELDS } from '../logic/quickAdd.js';
-import { loadSubjects, saveSubjects, addSubject, removeSubject } from '../logic/studySubjects.js';
-
-/** The subject list, read from this device the first time it is needed. */
-export function subjectsOf(state) {
-  if (!state.studySubjects) {
-    try { state.studySubjects = loadSubjects(localStorage); } catch { state.studySubjects = []; }
-  }
-  return state.studySubjects;
-}
 
 export function createTodayActions({ state, saveEntries, saveFail, inputValue, today }) {
   const readQuick = (kind) => Object.fromEntries(QUICK_FIELDS[kind].map((f) => [f.key, inputValue(`qa-${f.key}`)]));
   // Values of the fields currently on screen, merged over the saved draft (closed sections keep theirs).
   const keepQuick = (q) => ({ ...(q.draft || {}), ...Object.fromEntries(QUICK_FIELDS[q.kind].filter((f) => document.getElementById(`qa-${f.key}`)).map((f) => [f.key, inputValue(`qa-${f.key}`)])) });
-  const persist = (list) => {
-    state.studySubjects = list;
-    try { if (!saveSubjects(localStorage, list)) state.msg = 'Could not keep the subject list on this phone.'; } catch { state.msg = 'Could not keep the subject list on this phone.'; }
-  };
   return {
     toggleSection: (el) => {
       const k = el.dataset.section;
@@ -50,17 +36,6 @@ export function createTodayActions({ state, saveEntries, saveFail, inputValue, t
       state.entries.push(r.entry);
       state.quick = null;
       state.msg = r.message;
-    },
-
-    addSubject: () => {
-      const r = addSubject(subjectsOf(state), inputValue('subject-new'));
-      if (r.error) { state.msg = r.error; return; }
-      persist(r.list);
-    },
-    removeSubject: (el) => { persist(removeSubject(subjectsOf(state), el.dataset.subject)); },
-    pickSubject: (el) => {
-      const draft = state.studyDraft || {};
-      state.studyDraft = { kind: inputValue('study-kind') || draft.kind, topic: el.dataset.subject, minutes: inputValue('study-min'), notes: inputValue('study-notes') };
     },
   };
 }

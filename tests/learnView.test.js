@@ -16,11 +16,29 @@ test('area select lists areas and carries pickArea', () => {
   assert.match(c, /<option value="Coding" selected>/);
 });
 
-test('timer card only while running', () => {
+test('timer card only while running, with area and note', () => {
   const idle = learnView(base, day);
-  const on = learnView({ ...base, practice: { startAt: Date.now(), focus: '' } }, day);
-  assert.ok(on.length > idle.length);
-  assert.match(idle, /data-action="openTimer"/);
+  const on = learnView({ ...base, practice: { startAt: Date.now() - 125000, focus: 'songs', area: 'Guitar', type: 'practice' } }, day);
+  assert.doesNotMatch(idle, /timercard|id="practice-time"/);
+  assert.match(on, /<div class="panel timercard">/);
+  assert.match(on, /TIMER RUNNING · GUITAR/);
+  assert.match(on, /id="practice-time" role="timer"/);
+  assert.match(on, /Practising: songs\. Stopping logs 2 min\./);
+  assert.match(on, /id="pt-metric"/);
+  assert.match(on, /Best BPM/);
+  assert.match(on, /data-action="practiceStop"/);
+  assert.match(on, /data-action="practiceDiscard"/);
+  const noFocus = learnView({ ...base, practice: { startAt: Date.now(), focus: '', area: 'Coding', type: 'study' } }, day);
+  assert.match(noFocus, /Practising\. Stopping logs 1 min\./);
+  assert.doesNotMatch(noFocus, /pt-metric/);
+});
+
+test('START TIMER emits practiceStart and hides while running', () => {
+  const idle = learnView(base, day);
+  const on = learnView({ ...base, practice: { startAt: Date.now(), focus: '', area: 'Guitar', type: 'practice' } }, day);
+  assert.match(idle, /data-action="practiceStart">START TIMER/);
+  assert.doesNotMatch(on, /START TIMER/);
+  for (const h of [idle, on]) assert.doesNotMatch(h, /openTimer|practicePanel|pt-bpm|pt-focus/);
 });
 
 test('type chips mark the selected one', () => {

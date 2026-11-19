@@ -4,7 +4,7 @@ import { markExported, planWipe } from '../logic/wipeEligibility.js';
 import { logicalDate } from '../logic/dates.js';
 import { addHabit, toggleCheck, toggleRestDay, starterHabits } from '../logic/habits.js';
 import { computeStats, emptyStats } from '../logic/retainedStats.js';
-import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry } from '../logic/entries.js';
+import { newEntry as makeEntry, parseWeight, parseEdit, editEntry, deleteEntry } from '../logic/entries.js';
 import { demoEntries } from '../logic/demo.js';
 import { loadAutoSync, saveAutoSync } from '../logic/autoSync.js';
 import { loadAreas, saveAreas } from '../logic/areas.js';
@@ -35,7 +35,6 @@ import { createRestActions } from './restActions.js';
 import { createMealActions } from './mealActions.js';
 import { createNotesActions } from './notesActions.js';
 import { createPracticeActions } from './practiceActions.js';
-import { createStudyActions } from './studyActions.js';
 import { createTodayActions } from './todayActions.js';
 import { createTodayWinActions } from './todayWinActions.js';
 import { positionWheels, restPage } from './restView.js';
@@ -140,7 +139,6 @@ const actions = {
   ...rest.actions,
   ...createSyncActions({ state, onChange: () => render() }),
   ...practice.actions,
-  ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createTodayActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createManageHabitsActions({ state }),
   ...createLearnActions({ state, saveEntries, saveFail, inputValue, today, persistAreas: () => { try { saveAreas(localStorage, state.areas); } catch { /* storage blocked */ } } }),
@@ -207,15 +205,6 @@ const actions = {
     try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
     state.entries.push(e);
     state.msg = `Saved ${r.value} lb.`;
-  },
-
-  logGuitar: async () => {
-    const r = parseGuitar({ minutes: inputValue('gm'), focus: inputValue('gf'), bpm: inputValue('gb') });
-    if (r.error) { state.msg = r.error; return; }
-    const e = makeEntry('guitar', today(), r.data, Date.now());
-    try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
-    state.entries.push(e);
-    state.msg = `Saved ${r.data.minutes} min of guitar.`;
   },
 
   openHistWin: (el) => { state.histWin = el.dataset.win; state.editId = null; window.scrollTo(0, 0); },

@@ -1,8 +1,7 @@
-// Actions and the ticking clock for the practice timer (F12). app.js merges `actions` into its action
-// table and passes in what it owns. Stopping saves an ordinary guitar entry, so streaks, records and
-// the export all pick it up with no extra work.
+// Actions and the ticking clock for the practice timer (Learn window). app.js merges `actions` into its
+// action table and passes in what it owns. Stopping saves a `session` entry for the timer's area.
 
-import { newEntry, parseGuitar } from '../logic/entries.js';
+import { buildSession } from '../logic/sessions.js';
 import { clock, elapsedSeconds, idlePractice, loadPractice, practiceMinutes, savePractice, startPractice } from '../logic/practiceTimer.js';
 
 export function createPracticeActions({ state, saveEntries, saveFail, inputValue, today }) {
@@ -20,7 +19,12 @@ export function createPracticeActions({ state, saveEntries, saveFail, inputValue
   return {
     actions: {
       practiceStart: () => {
-        state.practice = startPractice(Date.now(), inputValue('pt-focus'));
+        state.practice = startPractice(
+          Date.now(),
+          inputValue('learn-focus'),
+          state.learn?.area || (state.areas || [])[0]?.name || 'Guitar',
+          state.learn?.type || 'practice',
+        );
         persist();
         begin();
       },
@@ -28,15 +32,15 @@ export function createPracticeActions({ state, saveEntries, saveFail, inputValue
         const p = state.practice;
         if (p.startAt == null) return;
         const mins = practiceMinutes(elapsedSeconds(p, Date.now()));
-        const r = parseGuitar({ minutes: mins, focus: p.focus, bpm: inputValue('pt-bpm') });
+        const area = (state.areas || []).find((a) => String(a.name).toLowerCase() === String(p.area).toLowerCase());
+        const r = buildSession({ area: p.area, type: p.type, minutes: mins, metric: inputValue('pt-metric'), metricLabel: area?.metricLabel ?? '', focus: p.focus, notes: '' }, today(), Date.now());
         if (r.error) { state.msg = r.error; return; } // timer keeps running so nothing is lost
-        const e = newEntry('guitar', today(), r.data, Date.now());
-        try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
-        state.entries.push(e);
+        try { await saveEntries([r.entry]); } catch (err) { state.msg = saveFail(err); return; }
+        state.entries.push(r.entry);
         state.practice = idlePractice();
         persist();
         end();
-        state.msg = `Saved ${mins} min of guitar.`;
+        state.msg = r.message;
       },
       practiceDiscard: () => {
         if (!window.confirm('Discard this practice without logging it?')) return;
