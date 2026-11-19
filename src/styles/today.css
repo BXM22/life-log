@@ -47,6 +47,14 @@ button.btn.qa-close { width: 44px; min-height: 44px; margin: 0; padding: 0; }
 .acc-body .btn { margin-bottom: 8px; }
 @media (prefers-reduced-motion: reduce) { .acc-chev { transition: none; } }
 
+/* Chips inside cream panels: white with a hairline, so they read as buttons (forma.css gives them the panel colour) */
+.panel .qa-chip:not([aria-pressed="true"]):not(.on) { background: #fff; border: 1px solid var(--line); }
+.qa-chip.on { background: var(--ink); color: #fff; }
+span.qa-chip { display: inline-flex; align-items: center; }
+/* Learn: area row = name, minutes and a small Edit button on one line */
+.arow-end { display: inline-flex; align-items: center; gap: 8px; }
+button.btn.editbtn { width: auto; min-height: 44px; margin: 0; padding: 0 14px; }
+
 /* Today v2: header sync chip and Sync row */
 .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
 .top .kicker { flex: 1 0 100%; }

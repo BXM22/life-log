@@ -113,3 +113,23 @@ test('toggleLearn, pickArea, pickType, learnMin, starter, lazy init', () => {
   t.a.toggleLearn({ dataset: { section: 'more' } });
   assert.equal(t.state.learn.more, true);
 });
+
+test('changing area or type, or opening More details, keeps what was typed (regression)', () => {
+  const t = setup({ inputs: { 'learn-min': '20', 'learn-focus': 'scales', 'learn-metric': '96' } });
+  t.a.toggleLearn({ dataset: { section: 'more' } });
+  assert.equal(t.state.learn.draft.minutes, '20');
+  assert.equal(t.state.learn.draft.focus, 'scales');
+  t.a.pickType({ dataset: { type: 'study' } });
+  assert.equal(t.state.learn.draft.minutes, '20');
+  t.a.pickArea({ value: 'Coding' });
+  assert.equal(t.state.learn.draft.minutes, '20');
+  assert.equal(t.state.learn.draft.metric, '', 'the metric (BPM) does not carry over to another area');
+});
+
+test('a field that is not on screen keeps its earlier draft value', () => {
+  const t = setup({ inputs: { 'learn-min': '' } }); // More details closed: focus/notes inputs absent, minutes empty
+  t.state.learn.draft = { minutes: '30', focus: 'songs' };
+  t.a.pickType({ dataset: { type: 'review' } });
+  assert.equal(t.state.learn.draft.minutes, '30');
+  assert.equal(t.state.learn.draft.focus, 'songs');
+});

@@ -10,10 +10,19 @@ export function createLearnActions({ state, saveEntries, saveFail, inputValue, t
   const areas = () => (Array.isArray(state.areas) ? state.areas : (state.areas = []));
   const persist = () => { if (typeof persistAreas === 'function') persistAreas(); };
 
+  // The view re-renders after every action, which would clear the form. Copy what is typed into the draft first.
+  // A field that is not on screen (More details closed) reads '' and keeps its earlier draft value.
+  const keepTyped = () => {
+    const l = learn();
+    const d = l.draft || {};
+    const get = (id, k) => { const v = inputValue(id); return v !== '' ? v : (d[k] ?? ''); };
+    l.draft = { minutes: get('learn-min', 'minutes'), metric: get('learn-metric', 'metric'), focus: get('learn-focus', 'focus'), notes: get('learn-notes', 'notes') };
+  };
+
   return {
-    pickArea: (el) => { learn().area = el.value; },
-    pickType: (el) => { if (AREA_TYPES.includes(el.dataset.type)) learn().type = el.dataset.type; },
-    learnMin: (el) => { const l = learn(); l.draft = { ...(l.draft || {}), minutes: el.dataset.min }; },
+    pickArea: (el) => { keepTyped(); const l = learn(); l.area = el.value; l.draft.metric = ''; }, // the metric belongs to one area
+    pickType: (el) => { keepTyped(); if (AREA_TYPES.includes(el.dataset.type)) learn().type = el.dataset.type; },
+    learnMin: (el) => { keepTyped(); learn().draft.minutes = el.dataset.min; },
 
     logSession: async () => {
       const l = learn();
@@ -31,7 +40,7 @@ export function createLearnActions({ state, saveEntries, saveFail, inputValue, t
 
     toggleLearn: (el) => {
       const s = el.dataset.section;
-      if (s === 'more' || s === 'recent') { const l = learn(); l[s] = !l[s]; }
+      if (s === 'more' || s === 'recent') { keepTyped(); const l = learn(); l[s] = !l[s]; }
     },
 
     openAreaEdit: (el) => { learn().edit = { name: el.dataset.area || '' }; },

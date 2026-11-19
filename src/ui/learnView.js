@@ -45,9 +45,8 @@ function areaRows(state, areas, day) {
     const min = weekMinutes(state.entries, a.name, day);
     const text = a.weeklyGoal ? `${min} of ${a.weeklyGoal} min` : `${min} min`;
     const pct = a.weeklyGoal ? Math.min(100, Math.round((min / a.weeklyGoal) * 100)) : 0;
-    return `<div class="row"><span>${esc(a.name)}</span><span>${text}</span></div>
-      ${a.weeklyGoal ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}
-      <button class="btn secondary" data-action="openAreaEdit" data-area="${esc(a.name)}" aria-label="Edit ${esc(a.name)}">Edit</button>`;
+    return `<div class="row"><span>${esc(a.name)}</span><span class="arow-end"><span>${text}</span><button class="btn secondary editbtn" data-action="openAreaEdit" data-area="${esc(a.name)}" aria-label="Edit ${esc(a.name)}">Edit</button></span></div>
+      ${a.weeklyGoal ? `<div class="bar"><i style="width:${pct}%"></i></div>` : ''}`;
   }).join('');
   const have = new Set(areas.map((a) => a.name.toLowerCase()));
   const starters = SUGGESTED_AREAS.filter((n) => !have.has(n.toLowerCase()))

@@ -66,7 +66,12 @@ export function createSyncNow({ state, render, stamp }) {
   let busy = false;
 
   async function syncNow() {
-    if (busy || flowBusy(state)) return;
+    if (busy) return;
+    if (flowBusy(state)) { // a manual export is mid-way on the Sync tab; say so instead of doing nothing
+      state.msg = 'Finish or cancel the export on the Sync tab first.';
+      render();
+      return;
+    }
     if (!isConnected()) {
       state.tab = 'export';
       state.msg = 'Connect Dropbox to sync from here.';
