@@ -425,7 +425,7 @@ There are 17 must-have features: 11 Must-M1 (v1) and 6 Must-M2. Everything else 
 - Opens to the Today screen in under 2 seconds on a mid-range phone.
 - Logging works with no connection.
 - Usable one-handed at phone width (about 400 px), with tap targets of at least 44 px.
-- Light and dark themes follow the phone setting.
+- Light and dark themes follow the phone setting by default (Settings can lock Light or Dark).
 
 ## SDLC
 

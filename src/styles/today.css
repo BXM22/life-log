@@ -36,20 +36,20 @@ button.btn.qa-close { width: 44px; min-height: 44px; margin: 0; padding: 0; }
   display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 56px;
   padding: 0; background: transparent; border: 0; color: inherit; text-align: left; cursor: pointer;
 }
-.acc-head h2 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: #5A5A5F; }
+.acc-head h2 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--dim); }
 .acc-chev { flex: none; transition: transform 150ms ease-out; }
 .acc.open .acc-chev { transform: rotate(180deg); }
 .acc-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 12px; }
 .acc-body .habit { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .acc-body .habit label.check { flex: 1; }
-.acc-body .rowbtn.acc-manage { margin: 8px 0 0; background: #FFFFFF; border: 1px solid var(--line); }
+.acc-body .rowbtn.acc-manage { margin: 8px 0 0; background: var(--panel-2); border: 1px solid var(--line); }
 .acc-body .rowbtn.acc-manage:active { background: var(--peach-soft); }
 .acc-body .btn { margin-bottom: 8px; }
 @media (prefers-reduced-motion: reduce) { .acc-chev { transition: none; } }
 
 /* Chips inside cream panels: white with a hairline, so they read as buttons (forma.css gives them the panel colour) */
-.panel .qa-chip:not([aria-pressed="true"]):not(.on) { background: #fff; border: 1px solid var(--line); }
-.qa-chip.on { background: var(--ink); color: #fff; }
+.panel .qa-chip:not([aria-pressed="true"]):not(.on) { background: var(--panel-2); border: 1px solid var(--line); }
+.qa-chip.on { background: var(--ink); color: var(--on-ink); }
 span.qa-chip { display: inline-flex; align-items: center; }
 /* Learn: running timer card (soft peach, big clock) */
 .panel.timercard { background: var(--peach-soft); border-radius: 24px; }

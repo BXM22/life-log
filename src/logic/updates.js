@@ -1,5 +1,6 @@
 // Recent updates shown in Settings > WHAT'S NEW. Newest first. Add a line here when you ship something you'd notice.
 export const UPDATES = [
+  { date: '2026-11-19', text: 'Appearance: choose System, Light or Dark in Settings. System follows your phone; Light and Dark stay fixed.' },
   { date: '2026-11-19', text: 'Auto sync: when you open the app, finished days upload to Dropbox on their own (switch in Settings, needs Dropbox connected). Today also has a SYNC NOW button and a status chip at the top.' },
   { date: '2026-11-19', text: 'Learn: practise or study anything, not just guitar. Make your own areas (Coding, Spanish, Reading), log sessions with a type, set weekly goals, and run the timer right inside Learn. Quick add has a Session chip too.' },
   { date: '2026-11-19', text: 'Today is shorter: Habits and Recent fold open, and Log (weigh-in, meals), Learn and Notes each open in their own window. Remove habits from Manage habits.' },

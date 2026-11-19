@@ -5,15 +5,17 @@ export const SETTINGS_KEY = 'lifelog.settings';
 export const KEEP_OPTIONS = [0, 3, 7, 14];
 export const DAY_START_OPTIONS = [0, 1, 2, 3, 4, 5, 6];
 export const PLAN_DAYS_OPTIONS = [3, 4];
-export const DEFAULT_SETTINGS = { keepDays: 7, dayStartHour: 4, planDays: 4 };
+export const THEME_OPTIONS = ['system', 'light', 'dark'];
+export const DEFAULT_SETTINGS = { keepDays: 7, dayStartHour: 4, planDays: 4, theme: 'system' };
 
-/** Any stored value in, a valid { keepDays, dayStartHour, planDays } out. Bad or missing values use defaults. */
+/** Any stored value in, a valid { keepDays, dayStartHour, planDays, theme } out. Bad or missing values use defaults. */
 export function normalizeSettings(raw) {
   const s = raw && typeof raw === 'object' ? raw : {};
   return {
     keepDays: KEEP_OPTIONS.includes(s.keepDays) ? s.keepDays : DEFAULT_SETTINGS.keepDays,
     dayStartHour: DAY_START_OPTIONS.includes(s.dayStartHour) ? s.dayStartHour : DEFAULT_SETTINGS.dayStartHour,
     planDays: PLAN_DAYS_OPTIONS.includes(s.planDays) ? s.planDays : DEFAULT_SETTINGS.planDays,
+    theme: THEME_OPTIONS.includes(s.theme) ? s.theme : DEFAULT_SETTINGS.theme,
   };
 }
 

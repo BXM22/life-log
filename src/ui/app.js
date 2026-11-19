@@ -13,6 +13,7 @@ import { createAutoSync, createSyncNow } from './autoSync.js';
 import { syncChipHtml } from './syncChip.js';
 import { createManageHabitsActions } from './manageHabitsActions.js';
 import { loadSettings, saveSettings, normalizeSettings, isSeeded, markSeeded } from '../logic/settings.js';
+import { applyTheme, watchSystemTheme } from '../logic/theme.js';
 import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
 import { icon } from './icons.js';
@@ -49,7 +50,13 @@ import { loadAll, putEntries, wipeWithStats, confirmExportRecord, putHabit, dele
 
 const settings = (() => { try { return loadSettings(localStorage); } catch { return normalizeSettings(null); } })();
 const persistSettings = () => {
-  try { saveSettings(localStorage, { keepDays: state.keepDays, dayStartHour: state.dayStartHour, planDays: state.planDays }); } catch { /* storage blocked */ }
+  try { saveSettings(localStorage, { keepDays: state.keepDays, dayStartHour: state.dayStartHour, planDays: state.planDays, theme: state.theme }); } catch { /* storage blocked */ }
+};
+let stopThemeWatch = () => {};
+const syncTheme = () => {
+  applyTheme(state.theme);
+  stopThemeWatch();
+  stopThemeWatch = watchSystemTheme(state.theme, () => applyTheme(state.theme));
 };
 // Bottom tab bar: five top-level screens. Export and Wipe share the Sync tab and switch with a segmented control.
 const NAV = [['today', 'TODAY'], ['workout', 'WORKOUT'], ['history', 'HISTORY'], ['export', 'SYNC'], ['settings', 'SETTINGS']];
@@ -65,6 +72,7 @@ const state = {
   keepDays: settings.keepDays,
   dayStartHour: settings.dayStartHour,
   planDays: settings.planDays, // 3 or 4 lifting days a week, see logic/template.js scheduleFor
+  theme: settings.theme, // system | light | dark — see logic/theme.js
   editId: null, // id of the entry being edited on the History tab
   histWin: null, // History own window: null | 'lifts' | 'entries'
   histLift: null, // lift shown in the Lift progress window
@@ -175,6 +183,8 @@ const actions = {
   setKeep: (el) => { state.keepDays = Number(el.value); state.wipeTick = false; persistSettings(); },
 
   setDayStart: (el) => { state.dayStartHour = Number(el.value); persistSettings(); },
+
+  setTheme: (el) => { state.theme = el.value; persistSettings(); syncTheme(); },
 
   setExportReminder: async (el) => {
     state.exportReminder = el.checked;
@@ -503,6 +513,7 @@ const { syncNow } = createSyncNow({ state, render, stamp: stampExport });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') autoSync.run(); });
 
 // ---- boot ----
+syncTheme(); // before first paint from the module (inline head script already reduced FOUC)
 async function boot() {
   try {
     const saved = await loadAll();

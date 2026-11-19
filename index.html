@@ -8,6 +8,23 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Life Log">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <script>
+    // Apply theme before CSS paints to avoid a light flash when dark is preferred.
+    (function () {
+      try {
+        var raw = JSON.parse(localStorage.getItem('lifelog.settings') || 'null');
+        var theme = raw && (raw.theme === 'light' || raw.theme === 'dark' || raw.theme === 'system') ? raw.theme : 'system';
+        var dark = theme === 'dark' || (theme === 'system' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+        var effective = dark ? 'dark' : 'light';
+        document.documentElement.dataset.theme = effective;
+        document.documentElement.style.colorScheme = effective;
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', effective === 'dark' ? '#141210' : '#FFFFFF');
+        var bar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
+        if (bar) bar.setAttribute('content', effective === 'dark' ? 'black-translucent' : 'default');
+      } catch (e) { /* storage blocked or corrupt: stay light */ }
+    })();
+  </script>
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" href="icons/icon-192.png">
   <link rel="apple-touch-icon" href="icons/icon-192.png">

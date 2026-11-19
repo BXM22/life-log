@@ -14,8 +14,8 @@
 .w2-tplhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .w2-tplhead .w2-sub { margin: 0; }
 .w2-tplname { display: block; font-size: 20px; line-height: 26px; font-weight: 800; color: var(--ink); }
-.w2-switch { min-height: 44px; padding: 0 18px; border: 1px solid var(--line); border-radius: 22px; background: #FFFFFF; color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; }
-.w2-bar { height: 10px; margin-top: 14px; border-radius: 99px; background: #FFFFFF; border: 1px solid var(--line); overflow: hidden; }
+.w2-switch { min-height: 44px; padding: 0 18px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel-2); color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; }
+.w2-bar { height: 10px; margin-top: 14px; border-radius: 99px; background: var(--panel-2); border: 1px solid var(--line); overflow: hidden; }
 .w2-bar i { display: block; height: 100%; background: var(--accent); border-radius: 99px; }
 
 .w2-line { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 0; border: 0; background: transparent; color: var(--ink); font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
@@ -29,7 +29,7 @@
 .w2-list { display: flex; flex-direction: column; gap: 8px; }
 .w2-row { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 68px; padding: 8px 14px 8px 16px; border: 2px solid transparent; border-radius: 20px; background: var(--panel); color: var(--ink); text-align: left; cursor: pointer; }
 .w2-row.current { border-color: var(--accent); }
-.w2-row.extra { background: #FFFFFF; border: 1.5px dashed var(--line); }
+.w2-row.extra { background: var(--panel-2); border: 1.5px dashed var(--line); }
 .w2-row.done .w2-name { text-decoration: line-through; }
 .w2-row.extra.current { border: 2px solid var(--accent); }
 .w2-rowmain { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
@@ -37,9 +37,9 @@
 .w2-detail { font-size: 12px; line-height: 16px; font-weight: 600; color: var(--dim); }
 .w2-tag { flex: none; }
 .w2-dots { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; max-width: 76px; }
-.w2-dots i { width: 10px; height: 10px; border-radius: 50%; background: #FFFFFF; border: 1.5px solid var(--line); box-sizing: border-box; }
+.w2-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--panel-2); border: 1.5px solid var(--line); box-sizing: border-box; }
 .w2-dots i.on { background: var(--accent); border-color: var(--accent); }
-.w2-add { width: 100%; min-height: 56px; margin: 8px 0 16px; border: 1.5px dashed var(--dim); border-radius: 20px; background: #FFFFFF; color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; }
+.w2-add { width: 100%; min-height: 56px; margin: 8px 0 16px; border: 1.5px dashed var(--dim); border-radius: 20px; background: var(--panel-2); color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; }
 
 /* Exercise page */
 .w2-exhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: -8px 0 8px; }
@@ -55,10 +55,10 @@
 .w2-recent { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: -8px 0 12px; padding: 0 4px; font-size: 13px; color: var(--ink); }
 .w2-recent b { font-weight: 800; }
 .w2-trend { margin-left: auto; color: var(--dim); font-weight: 700; }
-.toast-undo { margin-left: 8px; padding: 4px 10px; border-radius: 12px; background: var(--accent); color: var(--ink); font-size: 12px; font-weight: 800; letter-spacing: .06em; }
+.toast-undo { margin-left: 8px; padding: 4px 10px; border-radius: 12px; background: var(--accent); color: var(--on-accent); font-size: 12px; font-weight: 800; letter-spacing: .06em; }
 .w2-summary { margin: 0 0 12px; }
 .w2-sumrow { display: flex; gap: 8px; margin: 8px 0 12px; }
-.w2-sumrow > div { flex: 1; display: flex; flex-direction: column; padding: 8px 12px; border-radius: 16px; background: #FFFFFF; }
+.w2-sumrow > div { flex: 1; display: flex; flex-direction: column; padding: 8px 12px; border-radius: 16px; background: var(--panel-2); }
 .w2-sumrow b { font-size: 20px; font-weight: 800; line-height: 26px; font-variant-numeric: tabular-nums; }
 .w2-sumrow small { color: var(--dim); }
 .w2-prs { margin: 0 0 12px; padding: 10px 14px; border-radius: 14px; background: var(--peach-soft); color: var(--ink); font-size: 14px; }
@@ -69,14 +69,14 @@
 .w2-cell small { color: var(--dim); }
 .w2-cl { font-size: 11px; line-height: 14px; font-weight: 700; letter-spacing: 0.04em; color: var(--dim); }
 .w2-try, .w2-cue { margin: 0 0 16px; padding: 14px 16px; border-radius: 16px; background: var(--peach-soft); border: 1px solid var(--peach-mid); font-size: 14px; line-height: 20px; color: var(--ink); }
-.w2-cue { background: #FFFFFF; }
+.w2-cue { background: var(--panel-2); }
 
 .w2-step { margin: 0 0 16px; }
 .w2-steplbl { display: block; margin: 0 0 8px; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; color: var(--dim); }
 .w2-stepbox { display: flex; align-items: center; gap: 8px; }
-.w2-stepbtn { flex: none; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; padding: 0; border: 1px solid var(--line); border-radius: 24px; background: #FFFFFF; color: var(--ink); cursor: pointer; }
+.w2-stepbtn { flex: none; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; padding: 0; border: 1px solid var(--line); border-radius: 24px; background: var(--panel-2); color: var(--ink); cursor: pointer; }
 .w2-stepbtn:active { background: var(--peach-soft); }
-.w2-stepin { flex: 1; min-width: 0; min-height: 56px; padding: 0 8px; border: 1px solid var(--line); border-radius: 16px; background: #FFFFFF; color: var(--ink); font-size: 24px; font-weight: 800; text-align: center; }
+.w2-stepin { flex: 1; min-width: 0; min-height: 56px; padding: 0 8px; border: 1px solid var(--line); border-radius: 16px; background: var(--field); color: var(--ink); font-size: 24px; font-weight: 800; text-align: center; }
 .w2-stepin:focus { border-color: var(--ink); outline: none; }
 .w2-log .field { width: 100%; margin-bottom: 4px; }
 .w2-log .lbl { display: block; margin: 4px 0 8px; }
@@ -85,10 +85,10 @@
 .w2-accbtn { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 56px; padding: 0 20px; border: 0; background: transparent; color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; }
 .w2-acc .plates { padding: 0 20px 20px; }
 /* Plate calculator: one side of the barbell, plate steppers (F56) */
-.pl-rack { display: flex; align-items: center; min-height: 72px; margin: 4px 0 8px; padding: 4px 8px; border-radius: 16px; background: #FFFFFF; overflow-x: auto; }
-.pl-bar { flex: none; width: 56px; height: 10px; border-radius: 5px; background: #B8B0AA; }
-.pl-tip { flex: none; width: 16px; height: 10px; margin-left: 2px; border-radius: 0 5px 5px 0; background: #B8B0AA; }
-.pl-plate { flex: none; display: flex; align-items: center; justify-content: center; margin-left: 2px; border-radius: 4px; background: var(--ink); color: #FFFFFF; font-style: normal; overflow: hidden; }
+.pl-rack { display: flex; align-items: center; min-height: 72px; margin: 4px 0 8px; padding: 4px 8px; border-radius: 16px; background: var(--panel-2); overflow-x: auto; }
+.pl-bar { flex: none; width: 56px; height: 10px; border-radius: 5px; background: var(--bar-metal); }
+.pl-tip { flex: none; width: 16px; height: 10px; margin-left: 2px; border-radius: 0 5px 5px 0; background: var(--bar-metal); }
+.pl-plate { flex: none; display: flex; align-items: center; justify-content: center; margin-left: 2px; border-radius: 4px; background: var(--ink); color: var(--on-ink); font-style: normal; overflow: hidden; }
 .pl-plate b { font-size: 9px; font-weight: 800; writing-mode: vertical-rl; transform: rotate(180deg); }
 .plates .pair { display: flex; gap: 8px; }
 .plates .pair .btn { flex: 1; }

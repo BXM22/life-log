@@ -3,24 +3,24 @@
 .w2-grab { width: 40px; height: 4px; margin: 0 auto 12px; border-radius: 2px; background: var(--line); }
 .w2-sheet-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px; }
 .w2-sheet-head h2 { margin: 0; }
-.w2-sheet-x { width: 44px; height: 44px; border: 0; border-radius: 22px; background: #FFFFFF; color: var(--ink); font-size: 24px; cursor: pointer; }
+.w2-sheet-x { width: 44px; height: 44px; border: 0; border-radius: 22px; background: var(--panel-2); color: var(--ink); font-size: 24px; cursor: pointer; }
 .w2-link { min-height: 44px; padding: 0 4px; border: 0; background: none; color: var(--ink); font-size: 14px; font-weight: 700; text-decoration: underline; cursor: pointer; }
 .w2-chiprow { display: flex; gap: 8px; overflow-x: auto; margin-bottom: 12px; padding-bottom: 4px; }
-.w2-chip { flex: 0 0 auto; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 22px; background: #FFFFFF; color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; }
-.w2-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); }
-.w2-radio { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; margin-bottom: 8px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 20px; background: #FFFFFF; color: var(--ink); text-align: left; cursor: pointer; }
+.w2-chip { flex: 0 0 auto; min-height: 44px; padding: 0 16px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel-2); color: var(--ink); font-size: 14px; font-weight: 700; cursor: pointer; }
+.w2-chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.w2-radio { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; margin-bottom: 8px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel-2); color: var(--ink); text-align: left; cursor: pointer; }
 .w2-radio.on { border: 2px solid var(--accent); padding: 8px 15px; }
-.w2-dot { flex: 0 0 22px; width: 22px; height: 22px; border: 2px solid #C9B8AB; border-radius: 50%; background: #FFFFFF; }
-.w2-radio.on .w2-dot { border-color: var(--accent); background: radial-gradient(circle, var(--accent) 0 5px, #FFFFFF 6px); }
+.w2-dot { flex: 0 0 22px; width: 22px; height: 22px; border: 2px solid var(--check-border); border-radius: 50%; background: var(--panel-2); }
+.w2-radio.on .w2-dot { border-color: var(--accent); background: radial-gradient(circle, var(--accent) 0 5px, var(--panel-2) 6px); }
 .w2-radio-text { display: flex; flex: 1; flex-direction: column; min-width: 0; }
 .w2-radio-text b { font-size: 15px; font-weight: 800; }
 .w2-radio-text small { color: var(--dim); font-size: 13px; font-weight: 600; }
 .w2-tag { padding: 4px 10px; border-radius: 12px; background: var(--peach-soft); color: var(--ink); font-size: 12px; font-weight: 700; }
-.w2-dashed { width: 100%; min-height: 52px; margin-top: 4px; border: 2px dashed var(--line); border-radius: 20px; background: #FFFFFF; color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; }
+.w2-dashed { width: 100%; min-height: 52px; margin-top: 4px; border: 2px dashed var(--line); border-radius: 20px; background: var(--panel-2); color: var(--ink); font-size: 15px; font-weight: 700; cursor: pointer; }
 .w2-empty { color: var(--dim); font-size: 13px; font-weight: 600; }
 .w2-label { margin: 12px 0 4px; color: var(--dim); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
 .w2-seg3 { display: grid; grid-template-columns: repeat(3, 1fr); }
-.w2-seg3 button:disabled { background: #FFFFFF; color: var(--dim); opacity: 1; cursor: default; }
+.w2-seg3 button:disabled { background: var(--panel-2); color: var(--dim); opacity: 1; cursor: default; }
 .w2-check input { width: 26px; height: 26px; flex: 0 0 26px; }
 .w2-list { margin: 0; padding: 0; list-style: none; }
 .w2-list li { display: flex; flex-direction: column; min-height: 44px; padding: 8px 0; border-bottom: 1px solid var(--line); }
@@ -49,9 +49,9 @@
   position: fixed; z-index: 30; right: 16px; left: auto;
   bottom: calc(var(--tabbar-h, 75px) + 12px + env(safe-area-inset-bottom));
   display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 14px; border: 0; border-radius: 22px;
-  background: var(--accent); color: var(--ink); cursor: pointer; box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
+  background: var(--accent); color: var(--on-accent); cursor: pointer; box-shadow: 0 3px 10px rgba(0, 0, 0, .15);
 }
-.w2-restbar.run { background: var(--ink); color: #FFFFFF; }
+.w2-restbar.run { background: var(--ink); color: var(--on-ink); }
 .w2-restbar-text { display: flex; flex-direction: row; align-items: baseline; gap: 8px; text-align: left; }
 .w2-restbar-label { font-size: 11px; font-weight: 800; letter-spacing: .1em; }
 .w2-restbar-time { font-size: 16px; font-weight: 800; font-variant-numeric: tabular-nums; line-height: 20px; }
@@ -59,7 +59,7 @@
 /* Confirmations ("Set saved") sit at the top on Workout so they never cover the logging buttons. The bar is a sibling rendered before the toast. */
 .w2-page ~ .toast { top: calc(12px + env(safe-area-inset-top)); bottom: auto; }
 .w2-restchip { display: inline-flex; align-items: baseline; gap: 8px; min-height: 44px; padding: 0 16px; align-items: center; border: 0; border-radius: 22px; background: var(--accent); color: var(--ink); cursor: pointer; }
-.w2-restchip.run { background: var(--ink); color: #FFFFFF; }
+.w2-restchip.run { background: var(--ink); color: var(--on-ink); }
 .w2-logtop { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
 .w2-logtop .w2-setnum { margin: 0; }
 
@@ -74,8 +74,8 @@
 .w2-days { display: flex; flex-wrap: wrap; gap: 8px; }
 .w2-daychip { position: relative; }
 .w2-daychip input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.w2-daychip span { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: #FFFFFF; font-weight: 700; font-size: 14px; }
-.w2-daychip input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--ink); }
+.w2-daychip span { display: inline-flex; align-items: center; justify-content: center; min-width: 48px; min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--panel-2); font-weight: 700; font-size: 14px; }
+.w2-daychip input:checked + span { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 .w2-daychip input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 2px; }
 .w2-actsets { list-style: none; margin: 0; padding: 0; }
 .w2-actsets li { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--line); }
