@@ -12,8 +12,9 @@ Each section is an H2 overline, a grouped cream card of 56 px rows (label left, 
    - `New day starts at`: select `midnight` or `1:00 AM` to `6:00 AM` (default 4:00 AM).
    - Note: the lifting plan for the choice (`Tue Upper A, Thu Lower, Sat Upper B.` or with `Sun Upper C`) and "Logs made before the start hour count toward the previous day."
 2. **EXPORT**
+   - `Auto-sync finished days to Dropbox`: toggle switch (on by default; does nothing until Dropbox is connected). Stored under `lifelog.autoSync`.
    - `Remind me to export weekly`: toggle switch (on by default).
-   - Note: shows a banner on Today when the last export is 7 or more days old, and a notification if the browser supports and you allow them.
+   - Notes: auto-sync uploads the days before today when you open the app; it cannot run while the app is closed, and notes still send from the Today tab. The reminder turns the Today header chip to `Export due` when the last export is 7 or more days old, and sends a notification if the browser supports and you allow them.
 3. **STORAGE AND DROPBOX**
    - Row `Dropbox` with `Set up >` (opens the Dropbox setup modal) or `Connected`.
    - Note: the storage status line, plus an install hint (iOS Add to Home Screen steps) when relevant.
@@ -40,8 +41,9 @@ Each section is an H2 overline, a grouped cream card of 56 px rows (label left, 
 | Settings model, options, defaults | `src/logic/settings.js` (`KEEP_OPTIONS`, `DAY_START_OPTIONS`, `PLAN_DAYS_OPTIONS`, `loadSettings`, `saveSettings`) |
 | Update log | `src/logic/updates.js` |
 | Export reminder | `src/logic/exportReminder.js` |
+| Auto sync | `src/logic/autoSync.js`, `src/ui/autoSync.js` |
 | Install messages | `src/logic/install.js` |
 | Dropbox | `src/dropbox/dropbox.js`, `src/ui/exportWipeView.js` (`dropboxModal`) |
-| Actions | `setKeep`, `setPlanDays`, `setDayStart`, `setExportReminder`, `install`, `openDropbox`, `disconnect` |
+| Actions | `setKeep`, `setPlanDays`, `setDayStart`, `setExportReminder`, `setAutoSync`, `install`, `openDropbox`, `disconnect` |
 | Styles | `.setlabel`, `.setgroup`, `.setrow`, `.setnote` in `src/styles/forma.css` |
 | Backlog items | F26, F27, F28, F31, F33, F43 in `docs/BACKLOG.md` |

@@ -10,7 +10,7 @@ Title `SYNC`, then a two-button segmented control `EXPORT | WIPE`.
 
 1. **BACKUP METER panel:** two lines with a progress meter each: time since the last Dropbox export and since the last JSON backup. Meter fill turns red `#B3261E` (`due` or `never`) when overdue. If a copy is overdue: "A copy is overdue. Export to Dropbox and take a JSON backup."
 2. **EXPORT panel** (a small flow, one step at a time):
-   - *Idle:* `N entries waiting.` and `EXPORT` (disabled when nothing is waiting). Notes are excluded here, they are sent from the Study window on Today.
+   - *Idle:* `N entries waiting.` and `EXPORT` (disabled when nothing is waiting). Notes are excluded here, they are sent from the Notes window on Today.
    - *Built:* file name in bold and `N entries, 11-10 to 11-17`; `UPLOAD TO DROPBOX` (when connected, with the folder shown) and `DISCONNECT DROPBOX`, or `SET UP DROPBOX` when not connected; `SAVE VIA SHARE SHEET`; `CANCEL`; then a preview of the Markdown file.
    - *Shared:* "The share sheet closed" (or "The file was downloaded…"), the question **Is <file> in Dropbox?** with `YES, IT IS` and `NO`.
    - *Confirmed:* "Confirmed: <file>. Go to WIPE when you are ready." and `GO TO WIPE`.

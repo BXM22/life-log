@@ -1,8 +1,10 @@
-# Today tab (v2 design)
+# Today tab (v2)
 
-Status: **design only, not built yet.** Mock-ups are on the Design canvas "Life Log Today v2". The v1 layout is in git history (last v1 edit 2026-11-17).
+Status: **built** (backlog F60, all five steps, 2026-11-19). Mock-ups are on the Design canvas "Life Log Today v2". The v1 layout is in git history (last v1 edit 2026-11-17).
 
-Quick daily logging and a glance at how today is going. Source today: `src/ui/todayView.js`, `todayWindows.js`, `quickAddView.js`, `mealView.js`, `notesView.js`, `practiceView.js`, `studyView.js`. v2 renames and merges some of these (see "Code changes").
+Not built from the original design: the Learn window's *Type* chips apply to non-Guitar areas only (a Guitar session ignores the type); sessions cannot be edited in History (delete and log again, like study entries); the Quick add Area drop-down has no "New area" option; Log window's "Guitar timer moved to Learn" row is still there (remove it after one release).
+
+Quick daily logging and a glance at how today is going. Source: `src/ui/todayView.js`, `todayWindows.js`, `logWindow.js`, `learnView.js`, `notesWindow.js`, `quickAddView.js`, `mealView.js`, `notesView.js`, `manageHabitsView.js`, `syncChip.js` (see "Where the code lives"). The old `studyView.js` and `practiceView.js` are gone.
 
 ## What changed from v1, and why
 
@@ -10,27 +12,28 @@ Quick daily logging and a glance at how today is going. Source today: `src/ui/to
 - **Drop-downs (accordions):** Habits and Recent. Tapping the header row opens or closes the panel; a chevron shows the state.
 - **Windows:** Log, Learn and Notes each open a full window with a back arrow. Today only shows a one-line summary row for each.
 - **Study became Learn.** v1 had a KUMIO panel tied to one job. v2 has user-defined **areas** (Guitar, Coding, Spanish, Reading, exam prep...), so it works for anything you practise or study. Guitar and the practice timer moved into Learn because they are the same kind of thing.
-- **Sync moved to a header chip.** The "N waiting to export" row and the export banner are one pill at top right.
+- **Sync is a chip plus a button.** The header chip shows status at a glance (and replaces the export banner); a Sync row under the hero has a `SYNC NOW` button.
 - **Habit removal moved** out of the checklist (no `X` next to every row) into a Manage habits sheet.
 
 ## Main screen, top to bottom
 
-1. **Header:** overline `LIFE LOG · <weekday, date>`, title `TODAY`. Right side: **sync chip** (soft peach pill) `3 waiting` or `Synced`, opens the Sync tab. When the last export is 7 or more days old and the Settings reminder is on, the chip reads `Export due` and shows a peach dot (replaces the old banner and the Sync row).
+1. **Header:** overline `LIFE LOG · <weekday, date>`, title `TODAY`. Right side: **sync chip** (soft peach pill, status only) `3 waiting` or `Synced`; tapping it opens the Sync tab. When the last export is 7 or more days old and the Settings reminder is on, the chip reads `Export due` and shows a peach dot (replaces the old banner).
 2. **Hero card (peach):** big `done/total` of habits (`2/3`), caption "habits done today", pips (filled ink when done, ring when not).
-3. **TODAY'S SESSION card:** session name (`Upper A`) and focus line (`Upper chest and back`), or "No lifting scheduled. BJJ, rest or a walk." when empty.
+3. **Sync row** (soft peach row, directly under the hero): caption `SYNC`, text `3 entries waiting to export` or `Everything exported`, and a `SYNC NOW` button on the right (secondary `SYNCED` once nothing is waiting). `SYNC NOW` runs the export and updates the chip; the row itself is not a link, the Sync tab stays in the tab bar for the full export screen.
+4. **TODAY'S SESSION card:** session name (`Upper A`) and focus line (`Upper chest and back`), or "No lifting scheduled. BJJ, rest or a walk." when empty.
    - Primary `START WORKOUT` (or `PICK A WORKOUT` on a free day) switches to the Workout tab.
    - Secondary `Mark as rest day`; becomes `Undo rest day` once used; hidden if a real workout is checked. A rest day is a `habit_check` with `rest: true`, so the streak continues.
-4. **HABITS drop-down** (header `HABITS · 2 OF 3`, open by default):
+5. **HABITS drop-down** (header `HABITS · 2 OF 3`, open by default):
    - One tappable row per habit: checkbox, name, streak pill (`4d`, shown when the streak is 1 or more).
    - `Manage habits` row at the bottom opens the Manage habits sheet.
    - Empty state: "No habits yet. Add one in Manage habits."
-5. **LOG AND LEARN rows** (three row buttons, small caption over a one-line summary):
+6. **LOG AND LEARN rows** (three row buttons, small caption over a one-line summary):
    - `LOG`: `182.4 lb · Protein 85 / 160 g`. Opens the Log window.
    - `LEARN`: `45 min today · Guitar, Coding`, or "Timer running" while a timer is on. Opens the Learn window.
    - `NOTES`: `2 waiting for the vault`. Opens the Notes window.
-6. **RECENT drop-down** (header `RECENT · 8 ENTRIES`, closed by default): the 4 newest entries as rows `11-17 <label>` with a `WAITING` or `EXPORTED` tag, then `Edit or delete entries in History`. Empty state: "No entries yet." plus `LOAD DEMO DATA`.
-7. **Storage note** (conditional): one line under the header when storage is unprotected, with the Add to Home Screen hint.
-8. **Quick add FAB:** round peach `+`, bottom right, above the tab bar.
+7. **RECENT drop-down** (header `RECENT · 8 ENTRIES`, closed by default): the 4 newest entries as rows `11-17 <label>` with a `WAITING` or `EXPORTED` tag, then `Edit or delete entries in History`. Empty state: "No entries yet." plus `LOAD DEMO DATA`.
+8. **Storage note** (conditional): one line under the header when storage is unprotected, with the Add to Home Screen hint.
+9. **Quick add FAB:** round peach `+`, bottom right, above the tab bar.
 
 ## Quick add sheet (bottom sheet)
 
@@ -52,7 +55,7 @@ Title `Log`. Body and food only.
 
 Title `Learn`. Anything you practise, study or build, tracked by **area**.
 
-- **Timer card** (soft peach, only while running): `TIMER RUNNING · <AREA>`, large clock, "Practising: <focus>. Stopping logs N min.", `STOP AND LOG` and `DISCARD`. The timer survives closing the app. When idle the card is absent; `START TIMER` is in the log panel.
+- **Timer card** (soft peach, only while running): `TIMER RUNNING · <AREA>`, large clock, "Practising: <focus>. Stopping logs N min.", `STOP AND LOG` and `DISCARD`. The timer survives closing the app. When idle the card is absent; `START TIMER` is in the log panel and starts straight away for the selected area and the Focus field (no separate timer window). The card has an optional metric field (the area's metric label, "Best BPM" for Guitar). Stopping saves a `session`; a refused save keeps the timer running. A timer stored by an older version (no area) stops as Guitar practice.
 - **TODAY panel:** total minutes today and one chip per area (`Guitar 30`, `Coding 15`).
 - **LOG A SESSION panel:**
   - **Area** drop-down (your areas).
@@ -70,15 +73,15 @@ Title `Notes`. Optional title (max 80), note body (max 5000, textarea), `SAVE NO
 
 ## Manage habits sheet (new)
 
-Opened from the Habits drop-down. A row per habit with a `Remove` button (secondary, no red), a "New habit" field (max 40) and `ADD HABIT`. Removing a habit asks for no confirmation in v1 and is unchanged in v2; consider an undo toast later.
+Opened from the Habits drop-down. A row per habit with a `Remove` button (secondary, no red), a "New habit" field (max 40) and `ADD HABIT`. Removing a habit asks "Remove X from the list? Past check-ins stay in your log." (the same confirm as v1); consider an undo toast later. The sheet stays open after adding or removing.
 
 ## Data written from this tab
 
 `habit_check`, `weigh_in`, `meal`, `note`, and the new **`session`** entry (see `src/logic/entries.js`). Areas live in localStorage (replaces the study subjects list).
 
-`session` shape: `{ kind: "session", date, area, type: "practice" | "study" | "project" | "review", minutes, metric?, focus?, notes? }`.
+`session` shape: entry `type: "session"` with `data: { area, type: "practice" | "study" | "project" | "review", minutes (1 to 600), metric (number or null), metricLabel (a snapshot of the area's label, so the export needs no lookup), focus, notes }` (see `src/logic/sessions.js`). Sessions are not editable; delete and log again.
 
-**Migration (read side, no data rewrite):** existing `guitar` entries read as `session` with area `Guitar`, type `practice`, `bpm` as metric. Existing `study` entries read as `session` with area = their topic and type `study` (`prep` also maps to `study`). The export keeps one section per area, named after the area (as F41 did for subjects), so the vault format does not change for old data.
+**Migration (read side, no data rewrite):** existing `guitar` entries read as `session` with area `Guitar`, type `practice`, `bpm` as metric. Existing `study` entries read as `session` with area = their topic and type `study` (`prep` also maps to `study`). Export: a Guitar-area session joins the legacy `## Guitar` section in the same line format (`20 min, focus: Scales, best BPM: 96`), so streaks, records and the vault format do not change. Other areas get a `## <Area>` section with lines like `- project (30 min), focus: api, PRs: 3 - notes`. Legacy guitar and study entries export exactly as before (`## Guitar`, `## Kumio`); a golden test (`tests/exportGolden.test.js`) locks this. The weekly review counts Guitar-area sessions as guitar and adds an `## Other sessions` block when there are any.
 
 ## Design style
 
@@ -100,18 +103,20 @@ Unchanged from v1 except where noted.
 - **Status tags:** 12 px weight 700 pills, ink text on both: `WAITING` on peach `#F4A28C`, `EXPORTED` on soft peach `#FDE8E0`.
 - **Motion:** press feedback and chevron turn only; respects reduced motion.
 
-## Code changes to plan
+## Where the code lives
 
-| Change | Files |
+| Part | Files |
 |---|---|
-| Collapsible helper reused for Habits, Recent, More details | `src/ui/todayActions.js` |
-| New Today layout, sync chip, rows | `src/ui/todayView.js` |
-| Log window trimmed to weigh-in and meals | `src/ui/todayWindows.js`, `mealView.js` |
-| Learn window replaces Study and Practice | new `src/ui/learnView.js`; retire `studyView.js`, `practiceView.js` |
-| Notes window | `src/ui/notesView.js` (promote to its own window) |
-| Manage habits sheet | `src/ui/todayView.js`, `src/logic/habits.js` |
-| `session` entry, area list, weekly totals, migration read | `src/logic/entries.js`, `src/logic/quickAdd.js`, new `src/logic/areas.js` |
-| Export section per area | export code (F41 path) |
+| Accordion (Habits, Recent), Quick add actions | `src/ui/todayActions.js` (`toggleSection`, `quickArea`, `quickMin`, `quickType`, `quickMore`) |
+| Today layout, hero, session card, rows | `src/ui/todayView.js`, `src/ui/todayWindows.js` |
+| Sync chip, Sync row, SYNC NOW | `src/logic/syncStatus.js`, `src/ui/syncChip.js`, `src/ui/autoSync.js` |
+| Log window | `src/ui/logWindow.js`, `src/ui/mealView.js`, `src/logic/logWin.js` |
+| Learn window and its actions | `src/ui/learnView.js`, `src/ui/learnActions.js`, `src/logic/areas.js` |
+| Practice timer | `src/logic/practiceTimer.js`, `src/ui/practiceActions.js` |
+| Notes window | `src/ui/notesWindow.js`, `src/ui/notesView.js` |
+| Manage habits sheet | `src/ui/manageHabitsView.js`, `src/ui/manageHabitsActions.js` |
+| `session` entry, area list, weekly totals, read-side migration | `src/logic/sessions.js`, `src/logic/areas.js` |
+| Export and consumers of sessions | `src/logic/exportBuilder.js`, `streaks.js`, `retainedStats.js`, `records.js`, `weeklyReview.js` |
 
 ## Reference
 
@@ -122,6 +127,6 @@ Unchanged from v1 except where noted.
 | Quick add sheet, collapsible helper | `src/ui/quickAddView.js`, `src/logic/quickAdd.js`, `src/ui/todayActions.js` |
 | Habits, streaks, rest day | `src/logic/habits.js`, `src/logic/retainedStats.js`, `src/logic/streaks.js` |
 | Entry shapes and validation | `src/logic/entries.js` |
-| Actions (`data-action`) | `toggleHabit`, `addHabit`, `deleteHabit`, `toggleRestDay`, `toggleSection`, `openTodayWin`, `closeTodayWin`, `logWeighIn`, `logMeal`, `logSession`, `saveArea`, `deleteArea`, `logNote`, `exportNotes`, `timerStart`, `timerStop`, `timerDiscard`, `openQuick`, `closeQuick`, `quickKind`, `saveQuick`, `demo` |
+| Actions (`data-action`) | `toggleHabit`, `addHabit`, `deleteHabit`, `toggleRestDay`, `toggleSection`, `openManageHabits`, `closeManageHabits`, `syncNow`, `openTodayWin`, `closeTodayWin`, `logWeighIn`, `logMeal`, `logNote`, `exportNotes`, `pickArea`, `pickType`, `learnMin`, `logSession`, `toggleLearn`, `openAreaEdit`, `closeAreaEdit`, `saveArea`, `deleteArea`, `addStarterArea`, `practiceStart`, `practiceStop`, `practiceDiscard`, `openQuick`, `closeQuick`, `quickKind`, `quickArea`, `quickMin`, `quickType`, `quickMore`, `saveQuick`, `demo` |
 | Styles | `src/styles/forma.css` (loaded last), `main.css`, `today.css` |
-| Backlog items | F1 to F4, F9, F12, F13, F16, F17, F36, F41, F43, F49 in `docs/BACKLOG.md`; add a new item for Today v2 |
+| Backlog items | F1 to F4, F9, F12, F13, F16, F17, F36, F41, F43, F49, F60, F61 in `docs/BACKLOG.md` |

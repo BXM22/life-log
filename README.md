@@ -6,12 +6,12 @@ A phone-friendly web app (PWA) for fast daily logging: habits and food, workouts
 
 ## Features
 
-- **Today:** habit checklist with streaks, quick weigh-in, guitar log (minutes, focus, best BPM), a practice timer that saves a guitar entry, a Kumio prep and study log, a progress summary, and a weekly export reminder banner.
+- **Today:** a short summary screen: habit checklist with streaks (drop-down), today's session, a sync chip and SYNC NOW, and rows for Log (weigh-in, meals), Learn (your own areas: guitar, coding, anything you practise, with a timer and weekly goals) and Notes. Quick add for weight, meal, session and note.
 - **Workout:** Upper/Lower plan with a 3-day or 4-day schedule. Logs warm-up and working sets, and timed, per-side and bodyweight sets, pre-filling the last weight with a TRY TODAY progression prompt. Each exercise has an OPTIONS menu to edit, delete or trim a set. Also: warm-up checklists, back-training cues, Monday and Wednesday calisthenics blocks with a BJJ done check, your own custom sessions, and a rest timer with a wheel for a custom time.
 - **Meals:** breakfast, lunch, dinner and snack, with optional protein against a 160 g daily target and a progress bar.
 - **Notes:** a brainstorm box. Each note goes to the vault as its own Markdown file.
 - **History:** past entries and past workout days (edit or delete anything), a week view with a habit grid and a weight trend against 170 lb, streaks per habit and for guitar, and personal records (top 5 per lift, bodyweight, guitar BPM) that survive a wipe.
-- **Sync:** daily Markdown export to Dropbox (or the share sheet), JSON backup and restore, and a warned wipe of exported logs that keeps the last 7 days.
+- **Sync:** daily Markdown export to Dropbox (or the share sheet), automatic upload of finished days when the app opens, JSON backup and restore, and a warned wipe of exported logs that keeps the last 7 days.
 - **Settings:** schedule (3 or 4 days), keep-days, day-start hour and the export reminder toggle.
 - **Look:** the Signalbox style (warm black background, orange accent, grouped cards).
 
