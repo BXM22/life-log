@@ -3,6 +3,7 @@
 // It is sent to the vault as one Markdown file under <vault folder>/reviews/.
 
 import { addDays } from './dates.js';
+import { guitarView } from './sessions.js';
 import { weekday } from './workout.js';
 
 export const REVIEW_FOLDER = 'reviews';
@@ -37,7 +38,8 @@ export function buildReview(entries, habits, date) {
   const first = weigh.length ? weigh[0].data.weight_lb : null;
   const last = weigh.length ? weigh[weigh.length - 1].data.weight_lb : null;
 
-  const guitar = inWeek.filter((e) => e.type === 'guitar');
+  const guitar = inWeek.filter((e) => guitarView(e));
+  const others = inWeek.filter((e) => e.type === 'session' && !guitarView(e));
   const sets = inWeek.filter((e) => e.type === 'lift_set' && e.data?.kind === 'working');
   const protein = days.map((d) => inWeek.filter((e) => e.type === 'meal' && e.date === d).reduce((s, e) => s + (e.data.protein_g ?? 0), 0));
   const proteinDays = protein.filter((p) => p > 0).length;
@@ -46,7 +48,8 @@ export function buildReview(entries, habits, date) {
     start, end,
     habits: habitRows,
     weight: { first, last, change: first != null && last != null ? round1(last - first) : null, count: weigh.length },
-    guitar: { sessions: guitar.length, minutes: guitar.reduce((s, e) => s + (Number(e.data.minutes) || 0), 0), days: new Set(guitar.map((e) => e.date)).size },
+    guitar: { sessions: guitar.length, minutes: guitar.reduce((s, e) => s + (Number(guitarView(e).minutes) || 0), 0), days: new Set(guitar.map((e) => e.date)).size },
+    other: { sessions: others.length, minutes: others.reduce((s, e) => s + (Number(e.data.minutes) || 0), 0), areas: [...new Set(others.map((e) => e.data.area))] },
     workout: { sets: sets.length, days: new Set(sets.map((e) => e.date)).size },
     protein: { days: proteinDays, avg: proteinDays ? Math.round(protein.reduce((a, b) => a + b, 0) / proteinDays) : 0 },
   };
@@ -64,6 +67,7 @@ export function reviewMarkdown(r) {
     w.count ? `- ${w.first} lb to ${w.last} lb (${w.change > 0 ? '+' : ''}${w.change} lb), ${w.count} weigh-in${w.count === 1 ? '' : 's'}` : '- No weigh-ins', '',
     '## Guitar',
     `- ${r.guitar.minutes} min over ${r.guitar.days} day${r.guitar.days === 1 ? '' : 's'} (${r.guitar.sessions} session${r.guitar.sessions === 1 ? '' : 's'})`, '',
+    ...(r.other?.sessions ? ['## Other sessions', `- ${r.other.minutes} min across ${r.other.areas.join(', ')} (${r.other.sessions} session${r.other.sessions === 1 ? '' : 's'})`, ''] : []),
     '## Workout',
     `- ${r.workout.sets} working sets over ${r.workout.days} day${r.workout.days === 1 ? '' : 's'}`, '',
     '## Protein',

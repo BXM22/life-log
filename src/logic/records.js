@@ -8,6 +8,7 @@
 // A record is a snapshot: editing or deleting the original entry does not remove it.
 
 import { setText } from './workout.js';
+import { guitarView } from './sessions.js';
 
 export const TOP_N = 5;
 
@@ -98,9 +99,10 @@ export function mergeRecords(prev, entries) {
     } else if (e.type === 'weigh_in') {
       const cur = perDay.get(e.date);
       if (!cur || e.updatedAt >= cur.at) perDay.set(e.date, { at: e.updatedAt, weight: d.weight_lb });
-    } else if (e.type === 'guitar') {
-      if (d.best_bpm != null) (guitar[d.focus || 'practice'] ||= []).push({ value: d.best_bpm, unit: 'bpm', text: `${d.best_bpm} bpm`, date: e.date });
-      if (d.minutes != null) session.push({ value: d.minutes, unit: 'min', text: `${d.minutes} min`, date: e.date });
+    } else if (guitarView(e)) {
+      const g = guitarView(e);
+      if (g.best_bpm != null) (guitar[g.focus || 'practice'] ||= []).push({ value: g.best_bpm, unit: 'bpm', text: `${g.best_bpm} bpm`, date: e.date });
+      if (g.minutes != null) session.push({ value: g.minutes, unit: 'min', text: `${g.minutes} min`, date: e.date });
     }
   }
   for (const [date, w] of perDay) bodyweight.push({ value: w.weight, unit: 'lb', text: `${w.weight} lb`, date });

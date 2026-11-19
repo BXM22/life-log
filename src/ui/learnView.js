@@ -1,8 +1,9 @@
 // Learn window (Today v2): log a session by area, weekly area progress, edit areas, recent sessions.
 //   html:    learnView(state, day)
-//   actions: closeTodayWin, pickArea, pickType, quickMin, logSession, openTimer, toggleLearn,
+//   actions: closeTodayWin, pickArea, pickType, learnMin, logSession, openTimer, toggleLearn,
 //            openAreaEdit, addStarterArea, saveArea, deleteArea, closeAreaEdit
 import { esc } from './format.js';
+import { sessionOf } from '../logic/sessions.js';
 import { practicePanel } from './practiceView.js';
 import { todayByArea, minutesToday, weekMinutes, areaOfEntry, AREA_TYPES } from '../logic/areas.js';
 
@@ -41,7 +42,7 @@ function editPanel(areas, name) {
 
 function areaRows(state, areas, day) {
   const rows = areas.map((a) => {
-    const min = weekMinutes(state.entries || [], a.name, day);
+    const min = weekMinutes(state.entries, a.name, day);
     const text = a.weeklyGoal ? `${min} of ${a.weeklyGoal} min` : `${min} min`;
     const pct = a.weeklyGoal ? Math.min(100, Math.round((min / a.weeklyGoal) * 100)) : 0;
     return `<div class="row"><span>${esc(a.name)}</span><span>${text}</span></div>
@@ -60,9 +61,9 @@ function areaRows(state, areas, day) {
 }
 
 function recentList(entries) {
-  const rows = (entries || []).filter((e) => !e.deletedAt && (e.type === 'guitar' || e.type === 'study'))
+  const rows = (entries || []).filter((e) => !e.deletedAt && sessionOf(e))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0)).slice(0, 5)
-    .map((e) => `<div class="row"><span>${esc(e.date)} ${esc(areaOfEntry(e))}</span><span>${esc(e.data.minutes)} min</span></div>`).join('');
+    .map((e) => `<div class="row"><span>${esc(e.date)} ${esc(sessionOf(e).area ?? areaOfEntry(e))}</span><span>${esc(sessionOf(e).minutes)} min</span></div>`).join('');
   return rows || '<p class="note">No sessions yet.</p>';
 }
 
@@ -74,12 +75,12 @@ export function learnView(state, day) {
   const area = areas.find((a) => a.name === l.area) || areas[0] || null;
   const type = AREA_TYPES.includes(l.type) ? l.type : 'practice';
   const d = l.draft || {};
-  const total = minutesToday(state.entries || [], day);
-  const chips = todayByArea(state.entries || [], day)
+  const total = minutesToday(state.entries, day);
+  const chips = todayByArea(state.entries, day)
     .map((r) => `<span class="qa-chip">${esc(r.area)} ${esc(r.minutes)}</span>`).join('');
   const options = areas.map((a) => `<option value="${esc(a.name)}"${area && a.name === area.name ? ' selected' : ''}>${esc(a.name)}</option>`).join('');
   const typeChips = AREA_TYPES.map((t) => `<button class="qa-chip${t === type ? ' on' : ''}" data-action="pickType" data-type="${t}" aria-pressed="${t === type}">${TYPE_LABEL[t]}</button>`).join('');
-  const minChips = [15, 30, 45, 60].map((m) => `<button class="qa-chip" data-action="quickMin" data-min="${m}">${m}</button>`).join('');
+  const minChips = [15, 30, 45, 60].map((m) => `<button class="qa-chip" data-action="learnMin" data-min="${m}">${m}</button>`).join('');
   const metric = area && area.metricLabel
     ? `<input id="learn-metric" class="field" type="number" inputmode="decimal" step="any" value="${esc(d.metric ?? '')}" placeholder="${esc(area.metricLabel)} (optional)" aria-label="${esc(area.metricLabel)}, optional">` : '';
   const more = `${metric}

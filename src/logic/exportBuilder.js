@@ -2,14 +2,18 @@
 //
 // Entry shape (all collections share it):
 //   { id, type, date, data, updatedAt, exportedAt, exportId, deletedAt }
-//   type: 'habit_check' | 'weigh_in' | 'guitar' | 'lift_set' | 'meal'   ('note' is excluded, see notesExport.js)
+//   type: 'habit_check' | 'weigh_in' | 'guitar' | 'lift_set' | 'meal' | 'study' | 'session'   ('note' is excluded, see notesExport.js)
 //   data: habit_check { habit, done } | weigh_in { weight_lb } | guitar { minutes, focus, best_bpm }
 //         | lift_set { session, exercise, kind, weight, reps, seconds, side }   (see logic/workout.js)
+//         | session { area, type, minutes, metric, metricLabel, focus, notes }   (see logic/sessions.js)
+// Day section order: Habits, Weight, Guitar (legacy guitar entries and Guitar-area sessions, one section),
+// Workout, Meals, Kumio (legacy study), then one "## <Area>" section per other session area.
 //   updatedAt/exportedAt: ms timestamps; exportedAt and exportId are null until confirmed.
 
 import { toDateString } from './dates.js';
 import { workoutMarkdown } from './workout.js';
 import { studyMarkdown } from './study.js';
+import { guitarView, sessionsMarkdown } from './sessions.js';
 
 /** An entry needs exporting if it was never exported or was edited after export. */
 export function isDirty(entry) {
@@ -44,13 +48,13 @@ function dayMarkdown(date, entries) {
     lines.push('## Weight', `Bodyweight: ${latest.data.weight_lb} lb`, '');
   }
 
-  const guitar = entries.filter((e) => e.type === 'guitar');
+  const guitar = entries.map(guitarView).filter(Boolean);
   if (guitar.length) {
     lines.push('## Guitar');
     for (const g of guitar) {
-      const parts = [`${g.data.minutes} min`];
-      if (g.data.focus) parts.push(`focus: ${g.data.focus}`);
-      if (g.data.best_bpm != null) parts.push(`best BPM: ${g.data.best_bpm}`);
+      const parts = [`${g.minutes} min`];
+      if (g.focus) parts.push(`focus: ${g.focus}`);
+      if (g.best_bpm != null) parts.push(`best BPM: ${g.best_bpm}`);
       lines.push(parts.join(', '));
     }
     lines.push('');
@@ -66,6 +70,7 @@ function dayMarkdown(date, entries) {
   }
 
   lines.push(...studyMarkdown(entries));
+  lines.push(...sessionsMarkdown(entries));
 
   return lines.join('\n');
 }

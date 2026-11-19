@@ -15,6 +15,8 @@ export function subjectsOf(state) {
 
 export function createTodayActions({ state, saveEntries, saveFail, inputValue, today }) {
   const readQuick = (kind) => Object.fromEntries(QUICK_FIELDS[kind].map((f) => [f.key, inputValue(`qa-${f.key}`)]));
+  // Values of the fields currently on screen, merged over the saved draft (closed sections keep theirs).
+  const keepQuick = (q) => ({ ...(q.draft || {}), ...Object.fromEntries(QUICK_FIELDS[q.kind].filter((f) => document.getElementById(`qa-${f.key}`)).map((f) => [f.key, inputValue(`qa-${f.key}`)])) });
   const persist = (list) => {
     state.studySubjects = list;
     try { if (!saveSubjects(localStorage, list)) state.msg = 'Could not keep the subject list on this phone.'; } catch { state.msg = 'Could not keep the subject list on this phone.'; }
@@ -33,6 +35,11 @@ export function createTodayActions({ state, saveEntries, saveFail, inputValue, t
     openQuick: () => { state.quick = { kind: 'weight', draft: {} }; state.msg = ''; },
     closeQuick: () => { state.quick = null; },
     quickKind: (el) => { state.quick = { kind: el.dataset.kind, draft: {} }; },
+    // Session form helpers: keep what is typed, then change one thing and re-render.
+    quickArea: (el) => { const q = state.quick; if (q) { q.draft = { ...keepQuick(q), area: el.value, metric: '' }; } },
+    quickMin: (el) => { const q = state.quick; if (q) q.draft = { ...keepQuick(q), minutes: el.dataset.min }; },
+    quickType: (el) => { const q = state.quick; if (q) q.draft = { ...keepQuick(q), type: el.dataset.type }; },
+    quickMore: () => { const q = state.quick; if (q) { q.draft = keepQuick(q); q.more = !q.more; } },
     saveQuick: async () => {
       const q = state.quick;
       if (!q) return;

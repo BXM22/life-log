@@ -93,7 +93,7 @@ test('deleteArea fixes selection and keeps entries', () => {
   assert.equal(t.persisted, 1);
 });
 
-test('toggleLearn, pickArea, pickType, quickMin, starter, lazy init', () => {
+test('toggleLearn, pickArea, pickType, learnMin, starter, lazy init', () => {
   const t = setup();
   t.a.toggleLearn({ dataset: { section: 'more' } });
   assert.equal(t.state.learn.more, true);
@@ -105,7 +105,7 @@ test('toggleLearn, pickArea, pickType, quickMin, starter, lazy init', () => {
   t.a.pickType({ dataset: { type: 'study' } });
   t.a.pickType({ dataset: { type: 'nope' } });
   assert.equal(t.state.learn.type, 'study');
-  t.a.quickMin({ dataset: { min: '45' } });
+  t.a.learnMin({ dataset: { min: '45' } });
   assert.equal(t.state.learn.draft.minutes, '45');
   t.a.addStarterArea({ dataset: { area: 'Reading' } });
   assert.equal(t.state.areas.at(-1).name, 'Reading');

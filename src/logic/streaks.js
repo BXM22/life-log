@@ -2,6 +2,7 @@
 // A streak is consecutive days. If today is not done yet it does not break the streak: counting starts yesterday.
 
 import { addDays } from './dates.js';
+import { guitarView } from './sessions.js';
 
 /** Set of dates a habit was done, from live habit_check entries. */
 export function habitDays(entries, habit) {
@@ -10,9 +11,9 @@ export function habitDays(entries, habit) {
     .map((e) => e.date));
 }
 
-/** Set of dates with at least one live guitar session. */
+/** Set of dates with at least one live guitar session (legacy guitar entry or Guitar-area session). */
 export function guitarDays(entries) {
-  return new Set(entries.filter((e) => e.type === 'guitar' && !e.deletedAt).map((e) => e.date));
+  return new Set(entries.filter((e) => !e.deletedAt && guitarView(e)).map((e) => e.date));
 }
 
 /** { current, best } for a set of done dates. */

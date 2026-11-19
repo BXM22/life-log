@@ -58,3 +58,11 @@ test('studySummary shows study minutes today and the note count', () => {
   assert.equal(studySummary([s, n], '2026-11-15'), '45 min today · 1 note');
   assert.equal(studySummary([], '2026-11-15'), '0 min today · 0 notes');
 });
+
+test('sessions count by their area in the Learn, Guitar and Study rows', () => {
+  const s = (area, minutes) => newEntry('session', '2026-11-15', { area, type: 'practice', minutes, metric: null, metricLabel: '', focus: '', notes: '' }, 1);
+  const entries = [s('Guitar', 30), s('Coding', 15)];
+  assert.equal(learnSummary(entries, '2026-11-15'), '45 min today · Guitar, Coding');
+  assert.equal(guitarSummary(entries, '2026-11-15'), '30 min today');
+  assert.equal(studySummary(entries, '2026-11-15'), '15 min today · 0 notes');
+});

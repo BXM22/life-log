@@ -63,3 +63,12 @@ test('last backup storage round-trips and never throws', () => {
   assert.equal(loadLastBackup({ getItem() { throw new Error('x'); } }), null);
   assert.equal(saveLastBackup({ setItem() { throw new Error('x'); } }, 1), false);
 });
+
+test('buildReview counts Guitar-area sessions as guitar and totals other-area sessions separately', () => {
+  const ses = (area, date, minutes) => e('session', date, { area, type: 'practice', minutes, metric: null, metricLabel: '', focus: '', notes: '' });
+  const entries = [e('guitar', '2026-11-11', { minutes: 20 }), ses('Guitar', '2026-11-12', 15), ses('Coding', '2026-11-12', 40), ses('Coding', '2026-11-20', 99)];
+  const r = buildReview(entries, [], '2026-11-15');
+  assert.deepEqual(r.guitar, { sessions: 2, minutes: 35, days: 2 });
+  assert.deepEqual(r.other, { sessions: 1, minutes: 40, areas: ['Coding'] });
+  assert.match(reviewMarkdown(r), /## Other sessions\n- 40 min across Coding \(1 session\)/);
+});

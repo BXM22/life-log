@@ -10,6 +10,7 @@
 // "name" is a habit name, or GUITAR for guitar practice days.
 
 import { addDays } from './dates.js';
+import { guitarView } from './sessions.js';
 import { currentStreak } from './habits.js';
 import { emptyRecords, mergeRecords } from './records.js';
 
@@ -27,7 +28,7 @@ function doneDates(entries) {
   for (const e of entries) {
     if (!alive(e)) continue;
     if (e.type === 'habit_check' && e.data?.done) add(e.data.habit, e.date);
-    else if (e.type === 'guitar') add(GUITAR, e.date);
+    else if (guitarView(e)) add(GUITAR, e.date);
   }
   return out;
 }
@@ -71,11 +72,12 @@ export function computeStats(entries, prev = emptyStats(), now = 0) {
 
   const lastSets = { ...base.lastSets };
   for (const e of entries) {
-    if (!alive(e) || e.type !== 'guitar') continue;
-    const focus = e.data.focus || 'practice';
+    const g = alive(e) ? guitarView(e) : null;
+    if (!g) continue;
+    const focus = g.focus || 'practice';
     const cur = lastSets[focus];
     if (!cur || e.date >= cur.date) {
-      lastSets[focus] = { date: e.date, minutes: e.data.minutes, best_bpm: e.data.best_bpm ?? null };
+      lastSets[focus] = { date: e.date, minutes: g.minutes, best_bpm: g.best_bpm ?? null };
     }
   }
 
@@ -115,7 +117,7 @@ export function computeStats(entries, prev = emptyStats(), now = 0) {
 export function streakWithStats(entries, name, today, stats) {
   const habit = { name };
   const list = name === GUITAR
-    ? entries.filter((e) => e.type === 'guitar').map((e) => ({ type: 'habit_check', date: e.date, deletedAt: e.deletedAt, data: { habit: name, done: true } }))
+    ? entries.filter((e) => guitarView(e)).map((e) => ({ type: 'habit_check', date: e.date, deletedAt: e.deletedAt, data: { habit: name, done: true } }))
     : entries;
   const n = currentStreak(list, habit, today);
   const anchor = stats?.anchors?.[name];

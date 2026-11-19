@@ -81,3 +81,17 @@ test('inputs are not mutated', () => {
   computeStats(days(10, 3).map((d) => habit(d)), prev, 2);
   assert.equal(JSON.stringify(prev), snapshot);
 });
+
+test('Guitar-area sessions feed the guitar streak and last set per focus like legacy guitar entries', () => {
+  const session = (date, area, minutes, focus, metric) => ({
+    id: `s-${date}`, type: 'session', date, data: { area, type: 'practice', minutes, metric, metricLabel: 'Best BPM', focus, notes: '' },
+    updatedAt: 1, exportedAt: null, exportId: null, deletedAt: null,
+  });
+  const entries = [session('2026-11-01', 'Guitar', 20, 'scales', 90), session('2026-11-02', 'guitar', 30, '', 95), session('2026-11-03', 'Coding', 40, 'x', null)];
+  const stats = computeStats(entries, emptyStats(), 100);
+  assert.equal(stats.best[GUITAR], 2);
+  assert.deepEqual(stats.lastSets.scales, { date: '2026-11-01', minutes: 20, best_bpm: 90 });
+  assert.deepEqual(stats.lastSets.practice, { date: '2026-11-02', minutes: 30, best_bpm: 95 });
+  assert.equal(stats.lastSets.x, undefined);
+  assert.equal(streakWithStats(entries, GUITAR, '2026-11-03', null), 2);
+});

@@ -60,3 +60,10 @@ test('panels render grid, goal line and streaks', () => {
   assert.match(streaksPanel(state, '2026-11-13'), /Guitar practice/);
   assert.match(weekPanel({ ...state, entries: [], habits: [] }, '2026-11-13'), /No habits yet/);
 });
+
+test('a Guitar-area session counts toward the guitar streak; other areas do not', () => {
+  const s = (date, area) => newEntry('session', date, { area, type: 'practice', minutes: 20, metric: null, metricLabel: '', focus: '', notes: '' }, 1);
+  const entries = [s('2026-11-12', 'guitar'), s('2026-11-13', 'Guitar'), s('2026-11-11', 'Coding')];
+  assert.deepEqual([...guitarDays(entries)].sort(), ['2026-11-12', '2026-11-13']);
+  assert.deepEqual(allStreaks(entries, [], '2026-11-13').map((r) => [r.name, r.current, r.best]), [['Guitar practice', 2, 2]]);
+});

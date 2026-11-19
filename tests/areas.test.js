@@ -99,20 +99,33 @@ test('weekMinutes window edges', () => {
   assert.equal(A.weekMinutes(es, 'Guitar', '2026-01-07'), 5);
 });
 
+test('new session entries count alongside legacy ones', () => {
+  const es = [
+    E('session', '2026-01-02', { area: 'Guitar', type: 'practice', minutes: 10, metric: null, metricLabel: 'Best BPM', focus: '', notes: '' }),
+    E('guitar', '2026-01-02', { minutes: 30 }),
+    E('session', '2026-01-02', { area: 'math', type: 'study', minutes: 5, metric: null, metricLabel: '', focus: '', notes: '' }),
+    E('study', '2026-01-02', { kind: 'prep', topic: 'Math', minutes: 20 }),
+    E('session', '2026-01-02', { area: 'Gone', type: 'study', minutes: 9, metric: null, metricLabel: '', focus: '', notes: '' }, { deletedAt: 3 }),
+  ];
+  assert.deepEqual(A.todayByArea(es, '2026-01-02'), [{ area: 'Guitar', minutes: 40 }, { area: 'math', minutes: 25 }]);
+  assert.equal(A.weekMinutes(es, 'GUITAR', '2026-01-02'), 40);
+  assert.equal(A.areaOfEntry(es[0]), 'Guitar');
+});
+
 test('buildLearnEntry: guitar', () => {
-  const r = A.buildLearnEntry({ name: 'Guitar' }, { minutes: '30', focus: 'scales', metric: '120' }, '2026-01-02', 1000);
-  assert.equal(r.entry.type, 'guitar');
-  assert.deepEqual(r.entry.data, { minutes: 30, focus: 'scales', best_bpm: 120 });
+  const r = A.buildLearnEntry({ name: 'Guitar', metricLabel: 'Best BPM' }, { type: 'practice', minutes: '30', focus: 'scales', metric: '120' }, '2026-01-02', 1000);
+  assert.equal(r.entry.type, 'session');
+  assert.deepEqual(r.entry.data, { area: 'Guitar', type: 'practice', minutes: 30, metric: 120, metricLabel: 'Best BPM', focus: 'scales', notes: '' });
   assert.equal(r.entry.date, '2026-01-02');
   assert.equal(r.entry.updatedAt, 1000);
   assert.equal(r.message, 'Saved 30 min of Guitar.');
-  assert.ok(A.buildLearnEntry({ name: 'guitar' }, { minutes: '0' }, 'd', 1).error);
+  assert.ok(A.buildLearnEntry({ name: 'guitar' }, { type: 'practice', minutes: '0' }, 'd', 1).error);
 });
 
 test('buildLearnEntry: non-guitar', () => {
   const r = A.buildLearnEntry({ name: 'Coding' }, { type: 'project', minutes: 45, notes: 'api' }, '2026-01-02', 1000);
-  assert.equal(r.entry.type, 'study');
-  assert.deepEqual(r.entry.data, { kind: 'project', topic: 'Coding', minutes: 45, notes: 'api' });
+  assert.equal(r.entry.type, 'session');
+  assert.deepEqual(r.entry.data, { area: 'Coding', type: 'project', minutes: 45, metric: null, metricLabel: '', focus: '', notes: 'api' });
   assert.equal(r.message, 'Saved 45 min of Coding.');
   assert.ok(A.buildLearnEntry({ name: 'Coding' }, { type: 'bogus', minutes: 5 }, 'd', 1).error);
 });

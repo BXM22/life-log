@@ -13,7 +13,7 @@ export function createLearnActions({ state, saveEntries, saveFail, inputValue, t
   return {
     pickArea: (el) => { learn().area = el.value; },
     pickType: (el) => { if (AREA_TYPES.includes(el.dataset.type)) learn().type = el.dataset.type; },
-    quickMin: (el) => { const l = learn(); l.draft = { ...(l.draft || {}), minutes: el.dataset.min }; },
+    learnMin: (el) => { const l = learn(); l.draft = { ...(l.draft || {}), minutes: el.dataset.min }; },
 
     logSession: async () => {
       const l = learn();

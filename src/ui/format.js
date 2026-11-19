@@ -12,6 +12,12 @@ export function label(e) {
       .filter(Boolean).join(', ');
     return `Guitar ${e.data.minutes} min${extra ? ` (${extra})` : ''}`;
   }
+  if (e.type === 'session') {
+    const d = e.data || {};
+    const kind = { practice: 'practice', study: 'study', project: 'project', review: 'review' }[d.type] || 'practice';
+    const extra = [d.focus, d.metric != null ? `${d.metricLabel ? `${d.metricLabel} ` : ''}${d.metric}` : ''].filter(Boolean).join(', ');
+    return `${d.area} ${kind}, ${d.minutes} min${extra ? ` (${extra})` : ''}`;
+  }
   if (e.type === 'meal') return `${e.data.mealType}: ${e.data.name}${e.data.protein_g != null ? ` (${e.data.protein_g} g protein)` : ''}`;
   if (e.type === 'study') return `Kumio ${e.data.kind}: ${e.data.topic} (${e.data.minutes} min)`;
   if (e.type === 'note') return `Note: ${(e.data.title || String(e.data.body).split('\n')[0]).slice(0, 40)}`;

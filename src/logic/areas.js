@@ -1,8 +1,7 @@
 // Learn areas: user-defined things you work on (step 3). Pure: the caller passes the storage.
 // An area logs through existing entry types: Guitar -> guitar entry, everything else -> study entry.
 import { loadSubjects } from './studySubjects.js';
-import { parseGuitar, newEntry } from './entries.js';
-import { parseStudy } from './study.js';
+import { sessionOf, buildSession } from './sessions.js';
 import { addDays } from './dates.js';
 
 export const AREAS_KEY = 'lifelog.areas';
@@ -93,15 +92,10 @@ export function updateArea(list, oldName, fields) {
 
 export const removeArea = (list, name) => list.filter((o) => o.name !== name);
 
-/** 'Guitar' for guitar entries, the topic for study entries, else null. */
-export function areaOfEntry(entry) {
-  if (!entry) return null;
-  if (entry.type === 'guitar') return 'Guitar';
-  if (entry.type === 'study') return entry.data?.topic ?? null;
-  return null;
-}
+/** The area of a session, guitar or study entry, else null. */
+export const areaOfEntry = (entry) => sessionOf(entry)?.area || null;
 
-const minutesOf = (e) => Number(e.data?.minutes) || 0;
+const minutesOf = (e) => sessionOf(e)?.minutes || 0;
 
 /** [{ area, minutes }] for the day, biggest first. Areas group case-insensitively. */
 export function todayByArea(entries, day) {
@@ -133,14 +127,7 @@ export function weekMinutes(entries, areaName, today) {
   return total;
 }
 
-/** Returns { entry, message } or { error }. */
+/** Returns { entry, message } or { error }. Always a session entry. */
 export function buildLearnEntry(area, { type, minutes, metric, focus, notes } = {}, day, now) {
-  if (isGuitar(area.name)) {
-    const r = parseGuitar({ minutes, focus, bpm: metric });
-    if (r.error) return r;
-    return { entry: newEntry('guitar', day, r.data, now), message: `Saved ${r.data.minutes} min of ${area.name}.` };
-  }
-  const r = parseStudy({ kind: type, topic: area.name, minutes, notes });
-  if (r.error) return r;
-  return { entry: newEntry('study', day, r.data, now), message: `Saved ${r.data.minutes} min of ${area.name}.` };
+  return buildSession({ area: area.name, type, minutes, metric, metricLabel: area.metricLabel, focus, notes }, day, now);
 }

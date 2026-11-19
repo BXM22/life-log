@@ -90,3 +90,13 @@ test('escapes user text and has no legacy ids', () => {
 test('missing state.learn and areas are tolerated', () => {
   assert.doesNotThrow(() => learnView({ entries: [] }, day));
 });
+
+test('session entries count in Today, week progress and recent sessions', () => {
+  const entries = [mk('session', day, { area: 'Guitar', type: 'practice', minutes: 30, metric: null, metricLabel: '', focus: '', notes: '' }),
+    mk('session', '2026-11-15', { area: 'Coding', type: 'project', minutes: 50, metric: null, metricLabel: '', focus: '', notes: '' })];
+  const h = learnView({ ...base, entries, learn: { recent: true } }, day);
+  assert.match(h, /30 of 150 min/);
+  assert.match(h, /Guitar 30/);
+  assert.match(h, /30 min today/);
+  assert.match(h, /2026-11-15 Coding<\/span><span>50 min/);
+});

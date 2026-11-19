@@ -109,3 +109,16 @@ test('recentBest: ignores warm-ups and deleted sets, handles reps-only and holds
   const dips = newEntry('lift_set', '2026-11-01', { session: 'x', exercise: 'Dips', kind: 'working', weight: null, reps: 12, seconds: null, side: null }, 1);
   assert.equal(recentBest([dips], 'Dips', '2026-11-17')[0].est1rm, null);
 });
+
+test('Guitar-area sessions rank like guitar entries (BPM by focus, longest practice); other areas do not', () => {
+  const s = (area, date, minutes, focus, metric) => newEntry('session', date, { area, type: 'practice', minutes, metric, metricLabel: 'Best BPM', focus, notes: '' }, 1);
+  const rec = mergeRecords(null, [
+    newEntry('guitar', '2026-11-01', { minutes: 30, focus: 'Scales', best_bpm: 90 }, 1),
+    s('Guitar', '2026-11-02', 50, 'Scales', 105),
+    s('Guitar', '2026-11-03', 10, '', 70),
+    s('Coding', '2026-11-04', 120, 'Scales', 999),
+  ]);
+  assert.deepEqual(rec.guitar.Scales.map((r) => r.value), [105, 90]);
+  assert.deepEqual(rec.guitar.practice.map((r) => r.value), [70]);
+  assert.equal(rec.session[0].value, 50);
+});

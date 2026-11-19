@@ -46,9 +46,11 @@ export function editForm(e) {
 function entryRow(e) {
   // A habit check is changed by toggling it, never deleted here: the Dropbox copy would stay "done".
   const del = e.type === 'habit_check' ? '' : `<button class="btn secondary small" data-action="deleteEntry" data-id="${esc(e.id)}">DEL</button>`;
+  // A session is not editable (entries.js refuses it): delete and log it again.
+  const edit = e.type === 'session' ? '' : `<button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}">EDIT</button>`;
   return `<div class="entry"><div class="row"><span>${esc(e.date.slice(5))} ${esc(label(e))}</span>
     <span class="tag ${isDirty(e) ? 'waiting' : 'done'}">${isDirty(e) ? 'WAITING' : 'EXPORTED'}</span></div>
-    <div class="actions"><button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}">EDIT</button>${del}</div></div>`;
+    <div class="actions">${edit}${del}</div></div>`;
 }
 
 export function historyView(state) {

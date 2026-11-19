@@ -3,6 +3,7 @@
 import { liveEntries, dayProtein, PROTEIN_TARGET } from './entries.js';
 import { isDirty } from './exportBuilder.js';
 import { dayStudyMinutes } from './study.js';
+import { sessionOf, guitarView } from './sessions.js';
 
 export const TODAY_WINDOWS = ['log', 'learn', 'notes', 'timer'];
 
@@ -14,14 +15,16 @@ export const parentWin = (win) => (win === 'timer' ? 'learn' : null);
 
 /** Row summary for Today's Guitar log row. */
 export function guitarSummary(entries, date) {
-  const mins = liveEntries(entries).filter((e) => e.type === 'guitar' && e.date === date)
-    .reduce((n, e) => n + (Number(e.data?.minutes) || 0), 0);
+  const mins = liveEntries(entries).filter((e) => e.date === date && guitarView(e))
+    .reduce((n, e) => n + (Number(guitarView(e).minutes) || 0), 0);
   return mins ? `${mins} min today` : 'Nothing logged yet';
 }
 
 /** Row summary for Today's Study row. */
 export function studySummary(entries, date) {
-  const mins = dayStudyMinutes(entries, date);
+  const sessionMins = liveEntries(entries).filter((e) => e.type === 'session' && e.date === date && !guitarView(e))
+    .reduce((n, e) => n + (Number(e.data?.minutes) || 0), 0);
+  const mins = dayStudyMinutes(entries, date) + sessionMins;
   const notes = liveEntries(entries).filter((e) => e.type === 'note').length;
   return `${mins} min today · ${notes} note${notes === 1 ? '' : 's'}`;
 }
@@ -47,11 +50,10 @@ export function learnSummary(entries, date, running = false) {
   let mins = 0;
   for (const e of liveEntries(entries)) {
     if (e.date !== date) continue;
-    let area = null;
-    if (e.type === 'guitar') area = 'Guitar';
-    else if (e.type === 'study') area = e.data?.topic || 'Study';
-    if (!area) continue;
-    mins += Number(e.data?.minutes) || 0;
+    const s = sessionOf(e);
+    if (!s) continue;
+    const area = s.area || (e.type === 'study' ? 'Study' : 'Session');
+    mins += Number(s.minutes) || 0;
     if (!areas.includes(area)) areas.push(area);
   }
   return mins ? `${mins} min today · ${areas.join(', ')}` : 'Nothing logged yet';
