@@ -55,7 +55,9 @@ function dayMarkdown(date, entries) {
       const parts = [`${g.minutes} min`];
       if (g.focus) parts.push(`focus: ${g.focus}`);
       if (g.best_bpm != null) parts.push(`best BPM: ${g.best_bpm}`);
-      lines.push(parts.join(', '));
+      // Only Guitar-area sessions can carry these; legacy guitar entries have neither, so their lines are unchanged.
+      if (g.type && g.type !== 'practice') parts.push(`type: ${g.type}`);
+      lines.push(g.notes ? `${parts.join(', ')} - ${String(g.notes).replace(/[\r\n]+/g, ' ')}` : parts.join(', '));
     }
     lines.push('');
   }

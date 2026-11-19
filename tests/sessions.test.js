@@ -49,9 +49,9 @@ test('sessionOf for all three types', () => {
 });
 
 test('guitarView', () => {
-  assert.deepEqual(guitarView(E('guitar', { minutes: 20, focus: 'scales', best_bpm: 100 })), { minutes: 20, focus: 'scales', best_bpm: 100 });
+  assert.deepEqual(guitarView(E('guitar', { minutes: 20, focus: 'scales', best_bpm: 100 })), { minutes: 20, focus: 'scales', best_bpm: 100, type: 'practice', notes: '' });
   const s = E('session', { area: 'guitar', type: 'practice', minutes: 10, metric: 90, metricLabel: 'Best BPM', focus: '', notes: '' });
-  assert.deepEqual(guitarView(s), { minutes: 10, focus: '', best_bpm: 90 });
+  assert.deepEqual(guitarView(s), { minutes: 10, focus: '', best_bpm: 90, type: 'practice', notes: '' });
   assert.equal(guitarView(E('session', { area: 'Coding', type: 'study', minutes: 1 })), null);
   assert.equal(guitarView(E('study', { kind: 'study', topic: 'Guitar', minutes: 1 })), null);
 });
@@ -73,9 +73,27 @@ test('sessionLine and sessionsMarkdown golden', () => {
   assert.deepEqual(sessionsMarkdown([g]), []);
 });
 
-test('session entries are not editable and survive a backup round trip', () => {
-  const s = E('session', { area: 'Coding', type: 'study', minutes: 5, metric: null, metricLabel: '', focus: '', notes: '' });
-  assert.equal(parseEdit(s, {}).error, 'Delete this entry and log it again to change it.');
+test('session entries are editable (area fixed) and survive a backup round trip', () => {
+  const s = E('session', { area: 'Coding', type: 'study', minutes: 5, metric: null, metricLabel: 'PRs', focus: '', notes: '' });
+  const r = parseEdit(s, { sessionType: 'project', sessionMinutes: '30', metric: '2', sessionFocus: ' api ', notes: 'n' });
+  assert.deepEqual(r.data, { area: 'Coding', type: 'project', minutes: 30, metric: 2, metricLabel: 'PRs', focus: 'api', notes: 'n' });
+  assert.ok(parseEdit(s, { sessionType: 'project', sessionMinutes: '0' }).error);
+  assert.ok(parseEdit(s, { sessionType: 'bogus', sessionMinutes: '5' }).error);
+  const g = E('session', { area: 'Guitar', type: 'practice', minutes: 5, metric: null, metricLabel: '', focus: '', notes: '' });
+  assert.ok(parseEdit(g, { sessionType: 'practice', sessionMinutes: '5', metric: '10' }).error);
+  assert.ok(parseEdit(E('study', { topic: 'x', kind: 'prep', minutes: 5 }), {}).error);
   const back = parseBackup(JSON.stringify(buildBackup({ entries: [s] }, 9)));
   assert.deepEqual(back.entries[0], s);
+});
+
+test('Guitar-area session notes and a non-practice type reach the export; legacy lines are unchanged', async () => {
+  const { buildExport } = await import('../src/logic/exportBuilder.js');
+  const mk = (type, data, id) => ({ id, type, date: '2026-11-18', data, updatedAt: 1, exportedAt: null, exportId: null, deletedAt: null });
+  const legacy = mk('guitar', { minutes: 15, focus: 'scales', best_bpm: 90 }, 'a');
+  const plain = mk('session', { area: 'Guitar', type: 'practice', minutes: 10, metric: null, metricLabel: 'Best BPM', focus: '', notes: '' }, 'b');
+  const rich = mk('session', { area: 'Guitar', type: 'review', minutes: 35, metric: 104, metricLabel: 'Best BPM', focus: 'Scales', notes: 'tempo\nwork' }, 'c');
+  const md = buildExport([legacy, plain, rich], { now: 0 }).markdown;
+  assert.match(md, /^15 min, focus: scales, best BPM: 90$/m);
+  assert.match(md, /^10 min$/m);
+  assert.match(md, /^35 min, focus: Scales, best BPM: 104, type: review - tempo work$/m);
 });

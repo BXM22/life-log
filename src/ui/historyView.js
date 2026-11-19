@@ -4,6 +4,7 @@
 
 import { isDirty } from '../logic/exportBuilder.js';
 import { liveEntries, weightHistory, MEAL_TYPES } from '../logic/entries.js';
+import { SESSION_TYPES, isGuitarArea } from '../logic/sessions.js';
 import { esc, label } from './format.js';
 import { liftWindow, windowBack } from './historyWindows.js';
 import { weekPanel, streaksPanel } from './weekPanel.js';
@@ -35,6 +36,15 @@ export function editForm(e) {
       ${d.seconds != null
     ? `<input id="ed-s" class="field" type="number" inputmode="numeric" step="1" value="${esc(d.seconds)}" aria-label="Seconds">`
     : `<input id="ed-r" class="field" type="number" inputmode="numeric" step="1" value="${esc(d.reps ?? '')}" aria-label="Reps">`}`;
+  } else if (e.type === 'session') {
+    const d = e.data;
+    const metricLabel = isGuitarArea(d.area) ? 'Best BPM' : (d.metricLabel || '');
+    fields = `<p>${esc(d.area)}</p>
+      <select id="ed-st" class="field" aria-label="Session type">${SESSION_TYPES.map((t) => `<option ${t === d.type ? 'selected' : ''}>${t}</option>`).join('')}</select>
+      <input id="ed-sm" class="field" type="number" inputmode="numeric" step="1" value="${esc(d.minutes)}" aria-label="Minutes">
+      ${metricLabel ? `<input id="ed-sx" class="field" type="number" inputmode="decimal" step="any" value="${esc(d.metric ?? '')}" placeholder="${esc(metricLabel)}" aria-label="${esc(metricLabel)}">` : ''}
+      <input id="ed-sf" class="field" maxlength="40" value="${esc(d.focus || '')}" placeholder="Focus" aria-label="Focus" autocomplete="off">
+      <input id="ed-sn" class="field" maxlength="500" value="${esc(d.notes || '')}" placeholder="Notes" aria-label="Notes" autocomplete="off">`;
   } else {
     fields = `<label class="check"><input id="ed-d" type="checkbox" ${e.data.done ? 'checked' : ''}><span>${esc(e.data.habit)} done</span></label>`;
   }
@@ -46,8 +56,8 @@ export function editForm(e) {
 function entryRow(e) {
   // A habit check is changed by toggling it, never deleted here: the Dropbox copy would stay "done".
   const del = e.type === 'habit_check' ? '' : `<button class="btn secondary small" data-action="deleteEntry" data-id="${esc(e.id)}">DEL</button>`;
-  // A session is not editable (entries.js refuses it): delete and log it again.
-  const edit = e.type === 'session' ? '' : `<button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}">EDIT</button>`;
+  // Study entries are not editable (entries.js refuses them): delete and log them again.
+  const edit = e.type === 'study' ? '' : `<button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}">EDIT</button>`;
   return `<div class="entry"><div class="row"><span>${esc(e.date.slice(5))} ${esc(label(e))}</span>
     <span class="tag ${isDirty(e) ? 'waiting' : 'done'}">${isDirty(e) ? 'WAITING' : 'EXPORTED'}</span></div>
     <div class="actions">${edit}${del}</div></div>`;

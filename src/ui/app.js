@@ -126,6 +126,7 @@ function download(file) {
 
 // ---- actions ----
 const rest = createRestActions({ state, onChange: () => render() });
+const persistAreas = () => { try { saveAreas(localStorage, state.areas); } catch { /* storage blocked */ } };
 const practice = createPracticeActions({ state, saveEntries, saveFail, inputValue, today });
 const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
@@ -139,9 +140,9 @@ const actions = {
   ...rest.actions,
   ...createSyncActions({ state, onChange: () => render() }),
   ...practice.actions,
-  ...createTodayActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createTodayActions({ state, saveEntries, saveFail, inputValue, today, persistAreas }),
   ...createManageHabitsActions({ state }),
-  ...createLearnActions({ state, saveEntries, saveFail, inputValue, today, persistAreas: () => { try { saveAreas(localStorage, state.areas); } catch { /* storage blocked */ } } }),
+  ...createLearnActions({ state, saveEntries, saveFail, inputValue, today, persistAreas }),
   syncNow: () => syncNow(),
   ...createTodayWinActions({ state }),
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
@@ -222,6 +223,7 @@ const actions = {
       weight: inputValue('ed-w'), minutes: inputValue('ed-m'), focus: inputValue('ed-f'), bpm: inputValue('ed-b'),
       reps: inputValue('ed-r'), seconds: inputValue('ed-s'),
       mealType: inputValue('ed-mt'), name: inputValue('ed-mn'), protein: inputValue('ed-mp'), title: inputValue('ed-nt'), body: inputValue('ed-nb'),
+      sessionType: inputValue('ed-st'), sessionMinutes: inputValue('ed-sm'), metric: inputValue('ed-sx'), sessionFocus: inputValue('ed-sf'), notes: inputValue('ed-sn'),
       done: document.getElementById('ed-d')?.checked,
     });
     if (r.error) { state.msg = r.error; return; }

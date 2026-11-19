@@ -26,6 +26,8 @@ export const QUICK_FIELDS = {
 
 export const QUICK_MINUTES = [15, 30, 45, 60];
 export { SESSION_TYPES };
+/** Select value for the "+ New area..." option of the Session form. Never an area name. */
+export const NEW_AREA = '__new__';
 export const DEFAULT_QUICK_AREAS = [{ name: 'Guitar' }, { name: 'Coding' }];
 
 /** The user's areas ordered last used first (by newest session date, then creation time); unused keep their order. */

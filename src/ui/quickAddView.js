@@ -2,7 +2,7 @@
 //   html:    quickAddButton(), quickAddSheet(state), collapsible(state, key, title, summary, bodyHtml)
 //   actions: openQuick, closeQuick, quickKind, saveQuick, quickArea, quickMin, quickType, quickMore, toggleSection (see todayActions.js)
 
-import { QUICK_KINDS, QUICK_FIELDS, QUICK_MINUTES, SESSION_TYPES, quickAreas } from '../logic/quickAdd.js';
+import { QUICK_KINDS, QUICK_FIELDS, QUICK_MINUTES, SESSION_TYPES, NEW_AREA, quickAreas } from '../logic/quickAdd.js';
 import { esc } from './format.js';
 
 export const quickAddButton = () =>
@@ -20,9 +20,11 @@ const TYPE_TEXT = { practice: 'Practice', study: 'Study', project: 'Project', re
 
 function sessionHtml(state, draft, q) {
   const areas = quickAreas(state.areas, state.entries);
-  const area = areas.find((a) => a.name === draft.area) || areas[0];
+  const isNew = draft.area === NEW_AREA;
+  const area = isNew ? { name: NEW_AREA, metricLabel: '' } : (areas.find((a) => a.name === draft.area) || areas[0]);
   const type = SESSION_TYPES.includes(draft.type) ? draft.type : 'practice';
-  const options = areas.map((a) => `<option value="${esc(a.name)}"${a.name === area.name ? ' selected' : ''}>${esc(a.name)}</option>`).join('');
+  const options = areas.map((a) => `<option value="${esc(a.name)}"${a.name === area.name ? ' selected' : ''}>${esc(a.name)}</option>`).join('')
+    + `<option value="${NEW_AREA}"${isNew ? ' selected' : ''}>+ New area...</option>`;
   const minChips = QUICK_MINUTES.map((m) => `<button class="qa-chip" data-action="quickMin" data-min="${m}" aria-pressed="${String(draft.minutes) === String(m)}">${m}</button>`).join('');
   const typeChips = SESSION_TYPES.map((t) => `<button class="qa-chip${t === type ? ' on' : ''}" data-action="quickType" data-type="${t}" aria-pressed="${t === type}">${TYPE_TEXT[t]}</button>`).join('');
   const label = area.metricLabel || '';
@@ -32,6 +34,7 @@ function sessionHtml(state, draft, q) {
   const bar = `<button class="rowbtn qa-fold" data-action="quickMore" aria-expanded="${open}" aria-controls="qa-more"><span>More details</span><span class="chev" aria-hidden="true">${open ? 'v' : '&gt;'}</span></button>`;
   return `<label class="lbl" for="qa-area">Area</label>
       <select id="qa-area" class="field" data-action="quickArea">${options}</select>
+      ${isNew ? `<label class="lbl" for="qa-newarea">Area name</label><input id="qa-newarea" class="field" type="text" maxlength="60" autocomplete="off" placeholder="Reading" value="${esc(draft.newarea ?? '')}">` : ''}
       <label class="lbl" for="qa-minutes">Minutes</label>
       <input id="qa-minutes" class="field" type="number" inputmode="numeric" step="1" placeholder="30" value="${esc(draft.minutes ?? '')}">
       <div class="qa-chips">${minChips}</div>

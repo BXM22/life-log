@@ -2,7 +2,7 @@
 
 Status: **built** (backlog F60, all five steps, 2026-11-19). Mock-ups are on the Design canvas "Life Log Today v2". The v1 layout is in git history (last v1 edit 2026-11-17).
 
-Not built from the original design: the Learn window's *Type* chips apply to non-Guitar areas only (a Guitar session ignores the type); sessions cannot be edited in History (delete and log again, like study entries); the Quick add Area drop-down has no "New area" option; Log window's "Guitar timer moved to Learn" row is still there (remove it after one release).
+Not built from the original design: the Learn window's *Type* chips apply to non-Guitar areas only (a Guitar session ignores the type); Log window's "Guitar timer moved to Learn" row is still there (remove it after one release).
 
 Quick daily logging and a glance at how today is going. Source: `src/ui/todayView.js`, `todayWindows.js`, `logWindow.js`, `learnView.js`, `notesWindow.js`, `quickAddView.js`, `mealView.js`, `notesView.js`, `manageHabitsView.js`, `syncChip.js` (see "Where the code lives"). The old `studyView.js` and `practiceView.js` are gone.
 
@@ -79,7 +79,7 @@ Opened from the Habits drop-down. A row per habit with a `Remove` button (second
 
 `habit_check`, `weigh_in`, `meal`, `note`, and the new **`session`** entry (see `src/logic/entries.js`). Areas live in localStorage (replaces the study subjects list).
 
-`session` shape: entry `type: "session"` with `data: { area, type: "practice" | "study" | "project" | "review", minutes (1 to 600), metric (number or null), metricLabel (a snapshot of the area's label, so the export needs no lookup), focus, notes }` (see `src/logic/sessions.js`). Sessions are not editable; delete and log again.
+`session` shape: entry `type: "session"` with `data: { area, type: "practice" | "study" | "project" | "review", minutes (1 to 600), metric (number or null), metricLabel (a snapshot of the area's label, so the export needs no lookup), focus, notes }` (see `src/logic/sessions.js`). Sessions are editable in History (type, minutes, metric, focus, notes; the area is fixed, delete and log again to change it). Legacy study entries are not editable. A Guitar-area session's non-practice type and notes also show on its `## Guitar` line (`35 min, focus: Scales, best BPM: 104, type: review - notes`).
 
 **Migration (read side, no data rewrite):** existing `guitar` entries read as `session` with area `Guitar`, type `practice`, `bpm` as metric. Existing `study` entries read as `session` with area = their topic and type `study` (`prep` also maps to `study`). Export: a Guitar-area session joins the legacy `## Guitar` section in the same line format (`20 min, focus: Scales, best BPM: 96`), so streaks, records and the vault format do not change. Other areas get a `## <Area>` section with lines like `- project (30 min), focus: api, PRs: 3 - notes`. Legacy guitar and study entries export exactly as before (`## Guitar`, `## Kumio`); a golden test (`tests/exportGolden.test.js`) locks this. The weekly review counts Guitar-area sessions as guitar and adds an `## Other sessions` block when there are any.
 

@@ -68,7 +68,7 @@ export function guitarView(entry) {
   const isG = entry?.type === 'guitar' || (entry?.type === 'session' && isGuitarArea(entry.data?.area));
   if (!isG) return null;
   const s = sessionOf(entry);
-  return { minutes: s.minutes, focus: s.focus, best_bpm: s.metric };
+  return { minutes: s.minutes, focus: s.focus, best_bpm: s.metric, type: s.type, notes: s.notes || '' };
 }
 
 /** "Guitar practice (30 min)" */

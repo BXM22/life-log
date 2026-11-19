@@ -10,6 +10,7 @@
 
 import { findExercise } from './template.js';
 import { parseSet } from './workout.js';
+import { parseSession } from './sessions.js';
 
 export const MAX_FOCUS = 40;
 export const DEFAULT_FOCUS = 'practice';
@@ -95,7 +96,10 @@ export function parseEdit(entry, fields) {
   if (entry.type === 'meal') return parseMeal(fields);
   if (entry.type === 'note') return parseNote(fields);
   if (entry.type === 'study') return { error: 'Delete this Kumio entry and log it again to change it.' };
-  if (entry.type === 'session') return { error: 'Delete this entry and log it again to change it.' };
+  if (entry.type === 'session') {
+    const d = entry.data;
+    return parseSession({ area: d.area, metricLabel: d.metricLabel, type: fields.sessionType, minutes: fields.sessionMinutes, metric: fields.metric, focus: fields.sessionFocus, notes: fields.notes });
+  }
   if (entry.type === 'weigh_in') {
     const r = parseWeight(fields.weight);
     return r.error ? r : { data: { weight_lb: r.value } };
