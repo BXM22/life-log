@@ -47,5 +47,3 @@ export function setActive(sessions, id) {
   return { sessions: sessions.map((s) => ({ ...s, active: s.id === id })) };
 }
 
-/** The explicitly active session, or null when none was ever set (older plans). */
-export const activeTemplate = (sessions) => sessions.find((s) => s.active === true) ?? null;

@@ -9,9 +9,6 @@ import { notesWindow } from './notesWindow.js';
 import { learnView } from './learnView.js';
 import { logSummary, learnSummary, notesSummary } from '../logic/todayWin.js';
 
-const backButton = (action, label) =>
-  `<button class="back-link" data-action="${action}" aria-label="${label}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>`;
-
 /** The three summary rows on Today (LOG, LEARN, NOTES). */
 export function todayRows(state, day) {
   const running = Boolean(state.practice && state.practice.startAt != null);

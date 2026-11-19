@@ -6,8 +6,6 @@
 
 import { scheduleFor, sessionById, getSessions } from './template.js';
 
-export const KINDS = ['warmup', 'working'];
-
 /** Weekday of a YYYY-MM-DD date, 0 = Sunday. */
 export function weekday(date) {
   const [y, m, d] = date.split('-').map(Number);
@@ -30,9 +28,6 @@ export function activeSessionId(picked, date, days = 4) {
 const blank = (v) => String(v ?? '').trim() === '';
 
 /** Validate the set form for an exercise. Returns { data: { weight, reps, seconds, side } } or { error }. */
-/** Calisthenics sets may carry weight: 'assisted' (band or machine takes load off) or 'resistance' (weight added). */
-export const LOADS = ['assisted', 'resistance'];
-
 export function parseSet(exercise, { weight, reps, seconds, side, load }) {
   const mode = exercise.mode;
   const cali = exercise.equipment === 'calisthenics';

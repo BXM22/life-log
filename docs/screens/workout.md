@@ -77,7 +77,7 @@ Back arrow; title `Edit template`. Panels: **EDIT TEMPLATE** (name, tag chips, "
 | Rest timer | `src/ui/restView.js`, `restActions.js`, `src/logic/rest.js` |
 | Plate calculator | `src/ui/platesView.js`, `platesActions.js`, `src/logic/plates.js` |
 | Spontaneous exercises | `src/logic/extras.js`, `workoutActions.js` (`addExtraOpen`, `addExtraSave`, `removeExtra`), `templateActions.js` (`keepExtra`) |
-| Set logic, equipment, calisthenics weight types | `src/logic/workout.js` (`parseSet`, `setText`, `LOADS`), `src/logic/templateEdit.js` (`EQUIPMENT`) |
+| Set logic, equipment, calisthenics weight types | `src/logic/workout.js` (`parseSet`, `setText`), `src/logic/templateEdit.js` (`EQUIPMENT`) |
 | Templates and tags | `src/logic/template.js`, `templateEdit.js`, `templateTags.js` |
 | History mode | `src/ui/workoutHistoryView.js`, `src/logic/workoutHistory.js` |
 | Progress and PR check | `src/logic/progress.js`, `src/ui/progressView.js` |

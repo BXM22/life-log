@@ -109,15 +109,6 @@ export async function putEntries(entries) {
   await finished(tx);
 }
 
-/** Delete entries by id in a single transaction. All or nothing. */
-export async function deleteEntries(ids) {
-  const db = await openDb();
-  const tx = db.transaction('entries', 'readwrite');
-  const store = tx.objectStore('entries');
-  for (const id of ids) store.delete(id);
-  await finished(tx);
-}
-
 /**
  * Mark an export confirmed: save the stamped entries and the export record together,
  * so an entry is never marked exported without its export being recorded.
