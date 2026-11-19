@@ -1,7 +1,7 @@
 // SETTINGS tab, laid out like the Forma settings screen: one grouped card per section, label left, value right.
 // Settings live on this device (see logic/settings.js).
 //   html:    settingsView(state)
-//   actions: data-action="setKeep" | "setPlanDays" | "setDayStart" | "setExportReminder" | "install" | "disconnect" (handled in app.js)
+//   actions: data-action="setKeep" | "setPlanDays" | "setDayStart" | "setExportReminder" | "setAutoSync" | "install" | "disconnect" (handled in app.js)
 
 import { KEEP_OPTIONS, DAY_START_OPTIONS, PLAN_DAYS_OPTIONS } from '../logic/settings.js';
 import { reminderNotifySupported } from '../logic/exportReminder.js';
@@ -27,8 +27,10 @@ export function settingsView(state) {
     <p class="setnote">${plan} Logs made before the start hour count toward the previous day.</p>
     <h2 class="setlabel">EXPORT</h2>
     <div class="setgroup">
+      <label class="check setrow"><span>Auto-sync finished days to Dropbox</span><input type="checkbox" role="switch" data-action="setAutoSync" ${state.autoSync === false ? '' : 'checked'}></label>
       <label class="check setrow"><span>Remind me to export weekly</span><input type="checkbox" role="switch" data-action="setExportReminder" ${state.exportReminder === false ? '' : 'checked'}></label>
     </div>
+    <p class="setnote">Auto-sync uploads the days before today when you open the app, if Dropbox is connected. It cannot run while the app is closed. Notes still send from the Today tab.</p>
     <p class="setnote">Shows a banner on Today when your last export is 7 or more days old${reminderNotifySupported() ? ', and a notification if you allow them' : ''}.</p>
     <h2 class="setlabel">STORAGE AND DROPBOX</h2>
     <div class="setgroup">

@@ -6,6 +6,8 @@ import { addHabit, toggleCheck, toggleRestDay, starterHabits } from '../logic/ha
 import { computeStats, emptyStats } from '../logic/retainedStats.js';
 import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry } from '../logic/entries.js';
 import { demoEntries } from '../logic/demo.js';
+import { loadAutoSync, saveAutoSync } from '../logic/autoSync.js';
+import { createAutoSync } from './autoSync.js';
 import { loadSettings, saveSettings, normalizeSettings, isSeeded, markSeeded } from '../logic/settings.js';
 import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
@@ -74,6 +76,7 @@ const state = {
   storageLine: '',
   exportedNames: [],
   exportReminder: (() => { try { return loadReminderEnabled(localStorage); } catch { return true; } })(), // F33
+  autoSync: (() => { try { return loadAutoSync(localStorage); } catch { return true; } })(), // upload finished days to Dropbox on open
   lastExportAt: null, // newest confirmed export, null if never
   // flow.step: idle | built | shared | confirmed
   flow: { step: 'idle', result: null, viaDownload: false },
@@ -94,13 +97,16 @@ const SAVE_FAIL = 'Could not save to this phone. Nothing changed.';
 const saveFail = (e) => `${SAVE_FAIL} (${e && e.name}: ${e && e.message})`;
 
 // Mark an export confirmed and record it. Used by both the upload and the manual YES path.
-async function confirmExport(result, how) {
+async function stampExport(result) {
   const stamped = markExported(state.entries, result.manifest, Date.now());
   const record = { filename: result.filename, exportId: result.manifest.exportId, confirmedAt: Date.now() };
   if (state.storageOk) await confirmExportRecord(stamped, record);
   state.entries = stamped;
   state.exportedNames.push(result.filename);
   state.lastExportAt = record.confirmedAt;
+}
+async function confirmExport(result, how) {
+  await stampExport(result);
   state.flow.step = 'confirmed';
   state.msg = how;
 }
@@ -167,6 +173,12 @@ const actions = {
     state.exportReminder = el.checked;
     try { saveReminderEnabled(localStorage, el.checked); } catch { /* storage blocked */ }
     if (el.checked) await requestNotifyPermission();
+  },
+
+  setAutoSync: (el) => {
+    state.autoSync = el.checked;
+    try { saveAutoSync(localStorage, el.checked); } catch { /* storage blocked */ }
+    if (el.checked) autoSync.run();
   },
 
   toggleEx: (el) => { const n = el.dataset.name; state.exOpen[n] = !(state.exOpen[n] === true); },
@@ -487,6 +499,9 @@ async function seedStarterHabits() {
   try { markSeeded(localStorage); } catch { /* storage blocked */ }
 }
 
+const autoSync = createAutoSync({ state, render, today, stamp: stampExport });
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') autoSync.run(); });
+
 // ---- boot ----
 async function boot() {
   try {
@@ -510,6 +525,7 @@ async function boot() {
   render();
   rest.resume();
   practice.resume();
+  autoSync.run();
 
   // Back from the Dropbox sign-in page: finish connecting and open the Export tab.
   try {
