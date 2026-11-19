@@ -1,5 +1,8 @@
 // Recent updates shown in Settings > WHAT'S NEW. Newest first. Add a line here when you ship something you'd notice.
 export const UPDATES = [
+  { date: '2026-11-19', text: 'Auto sync: when you open the app, finished days upload to Dropbox on their own (switch in Settings, needs Dropbox connected). Today also has a SYNC NOW button and a status chip at the top.' },
+  { date: '2026-11-19', text: 'Learn: practise or study anything, not just guitar. Make your own areas (Coding, Spanish, Reading), log sessions with a type, set weekly goals, and run the timer right inside Learn. Quick add has a Session chip too.' },
+  { date: '2026-11-19', text: 'Today is shorter: Habits and Recent fold open, and Log (weigh-in, meals), Learn and Notes each open in their own window. Remove habits from Manage habits.' },
   { date: '2026-11-17', text: 'Exercise library: save an exercise from its options menu, then type its name when adding an exercise and the equipment, type and target fill in. Manage the list from the Workout three-dot menu.' },
   { date: '2026-11-17', text: 'Workout: a new Activities card, separate from Before you lift. BJJ and Calisthenics are in it, and you can add your own (run, bike, yoga) with chosen days, a done check, distance and sets.' },
   { date: '2026-11-17', text: 'Exercises have equipment (barbell, dumbbell, calisthenics, machine). Calisthenics sets log added or assisted weight with reps.' },
