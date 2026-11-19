@@ -22,6 +22,11 @@ export function createTodayActions({ state, saveEntries, saveFail, inputValue, t
   return {
     toggleSection: (el) => {
       const k = el.dataset.section;
+      if (k === 'habits' || k === 'recent') { // Today v2 drop-downs, session only
+        const cur = state.todaySections || { habits: true, recent: false };
+        state.todaySections = { ...cur, [k]: !cur[k] };
+        return;
+      }
       state.sections = { ...(state.sections || {}), [k]: !(state.sections || {})[k] };
     },
 

@@ -7,7 +7,9 @@ import { computeStats, emptyStats } from '../logic/retainedStats.js';
 import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry } from '../logic/entries.js';
 import { demoEntries } from '../logic/demo.js';
 import { loadAutoSync, saveAutoSync } from '../logic/autoSync.js';
-import { createAutoSync } from './autoSync.js';
+import { createAutoSync, createSyncNow } from './autoSync.js';
+import { syncChipHtml } from './syncChip.js';
+import { createManageHabitsActions } from './manageHabitsActions.js';
 import { loadSettings, saveSettings, normalizeSettings, isSeeded, markSeeded } from '../logic/settings.js';
 import { installKind } from '../logic/install.js';
 import { esc, label } from './format.js';
@@ -137,6 +139,8 @@ const actions = {
   ...practice.actions,
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createTodayActions({ state, saveEntries, saveFail, inputValue, today }),
+  ...createManageHabitsActions({ state }),
+  syncNow: () => syncNow(),
   ...createTodayWinActions({ state }),
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createNotesActions({ state, saveEntries, saveFail, inputValue, today, download, onChange: () => render() }),
@@ -146,7 +150,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
+  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.manageHabits = false; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
 
@@ -429,7 +433,7 @@ const refreshInstall = () => {
 
 function header() {
   const d = new Date(`${today()}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  return `<header class="top"><span class="kicker">LIFE LOG &middot; ${esc(d.toUpperCase())}</span><h1>${TITLES[state.tab]}</h1></header>`;
+  return `<header class="top"><span class="kicker">LIFE LOG &middot; ${esc(d.toUpperCase())}</span><h1>${TITLES[state.tab]}</h1>${state.tab === 'today' ? syncChipHtml(state) : ''}</header>`;
 }
 
 function segmented() {
@@ -500,6 +504,7 @@ async function seedStarterHabits() {
 }
 
 const autoSync = createAutoSync({ state, render, today, stamp: stampExport });
+const { syncNow } = createSyncNow({ state, render, stamp: stampExport });
 document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') autoSync.run(); });
 
 // ---- boot ----

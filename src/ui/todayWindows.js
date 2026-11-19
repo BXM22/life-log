@@ -8,20 +8,21 @@ import { mealPanel } from './mealView.js';
 import { notesPanel } from './notesView.js';
 import { practicePanel } from './practiceView.js';
 import { studyPanel } from './studyView.js';
-import { guitarSummary, studySummary } from '../logic/todayWin.js';
+import { logSummary, learnSummary, notesSummary } from '../logic/todayWin.js';
 
 const backButton = (action, label) =>
   `<button class="back-link" data-action="${action}" aria-label="${label}"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>`;
 
 const FOCUSES = '<datalist id="focuses"><option value="technique"><option value="songs"><option value="theory"><option value="improvisation"></datalist>';
 
-/** The two rows on Today that open a window. */
+/** The three summary rows on Today (LOG, LEARN, NOTES). LEARN and NOTES open the Study window until Learn exists. */
 export function todayRows(state, day) {
   const running = state.practice && state.practice.startAt != null;
   const row = (win, title, text) => `<button class="rowbtn winrow" data-action="openTodayWin" data-win="${win}">
     <span><small class="winrow-k">${title}</small><span class="winrow-v">${esc(text)}</span></span><span class="chev" aria-hidden="true">&gt;</span></button>`;
-  return row('log', 'LOG', running ? 'Practice timer running' : `Guitar: ${guitarSummary(state.entries, day)}`)
-    + row('study', 'STUDY', studySummary(state.entries, day));
+  return row('log', 'LOG', logSummary(state.entries, day))
+    + row(running ? 'timer' : 'study', 'LEARN', learnSummary(state.entries, day, running))
+    + row('study', 'NOTES', notesSummary(state.entries));
 }
 
 function logWindow(state, day) {

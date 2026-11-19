@@ -28,3 +28,32 @@ button.btn.qa-close { width: 44px; min-height: 44px; margin: 0; padding: 0; }
 .qa-sheet .btn { margin-top: 12px; }
 .qa-fold { margin-bottom: 12px; }
 .qa-fold small { color: var(--dim); margin-left: 6px; }
+
+/* Today v2 drop-downs (Habits, Recent) */
+.acc { padding: 0 20px; }
+.acc.open { padding-bottom: 12px; }
+.acc-head {
+  display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 56px;
+  padding: 0; background: transparent; border: 0; color: inherit; text-align: left; cursor: pointer;
+}
+.acc-head h2 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: #5A5A5F; }
+.acc-chev { flex: none; transition: transform 150ms ease-out; }
+.acc.open .acc-chev { transform: rotate(180deg); }
+.acc-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 12px; }
+.acc-body .habit { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.acc-body .habit label.check { flex: 1; }
+.acc-body .rowbtn.acc-manage { margin: 8px 0 0; background: #FFFFFF; border: 1px solid var(--line); }
+.acc-body .rowbtn.acc-manage:active { background: var(--peach-soft); }
+.acc-body .btn { margin-bottom: 8px; }
+@media (prefers-reduced-motion: reduce) { .acc-chev { transition: none; } }
+
+/* Today v2: header sync chip and Sync row */
+.top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+.top .kicker { flex: 1 0 100%; }
+.syncchip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--peach-soft); color: var(--ink); font: inherit; font-size: 13px; font-weight: 700; }
+.syncchip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.syncchip .dot.due { box-shadow: 0 0 0 3px var(--peach-mid); }
+.syncrow { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 12px 0; border-radius: 16px; background: var(--peach-soft); color: var(--ink); }
+.syncrow .cap { font-size: 12px; font-weight: 700; letter-spacing: .04em; }
+.syncrow .txt { flex: 1; font-size: 15px; font-weight: 600; }
+.syncrow .btn { width: auto; min-height: 44px; padding: 0 16px; margin: 0; }

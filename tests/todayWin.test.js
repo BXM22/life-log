@@ -22,6 +22,35 @@ test('guitarSummary adds up today only and ignores deleted entries', () => {
   assert.equal(guitarSummary([], '2026-11-15'), 'Nothing logged yet');
 });
 
+import { habitsHeader, recentHeader, logSummary, learnSummary, notesSummary } from '../src/logic/todayWin.js';
+
+test('habitsHeader and recentHeader build the drop-down titles', () => {
+  assert.equal(habitsHeader(2, 3), 'HABITS · 2 OF 3');
+  assert.equal(recentHeader(8), 'RECENT · 8 ENTRIES');
+  assert.equal(recentHeader(1), 'RECENT · 1 ENTRY');
+});
+
+test('logSummary shows the latest weight and today protein', () => {
+  const w = (d, lb, t) => newEntry('weigh_in', d, { weight_lb: lb }, t);
+  const m = newEntry('meal', '2026-11-15', { mealType: 'Lunch', name: 'x', protein_g: 85 }, 3);
+  assert.equal(logSummary([w('2026-11-14', 183, 1), w('2026-11-15', 182.4, 2), m], '2026-11-15'), '182.4 lb · Protein 85 / 160 g');
+  assert.equal(logSummary([], '2026-11-15'), 'No weight yet · Protein 0 / 160 g');
+});
+
+test('learnSummary lists minutes and areas, or the running timer', () => {
+  const g = newEntry('guitar', '2026-11-15', { minutes: 30, focus: 'x' }, 1);
+  const s = newEntry('study', '2026-11-15', { kind: 'study', topic: 'RAG', minutes: 15, notes: '' }, 2);
+  assert.equal(learnSummary([g, s], '2026-11-15'), '45 min today · Guitar, RAG');
+  assert.equal(learnSummary([], '2026-11-15'), 'Nothing logged yet');
+  assert.equal(learnSummary([g], '2026-11-15', true), 'Timer running');
+});
+
+test('notesSummary counts notes waiting for the vault', () => {
+  const n = newEntry('note', '2026-11-10', { title: 'a', body: 'b' }, 1);
+  assert.equal(notesSummary([n]), '1 waiting for the vault');
+  assert.equal(notesSummary([]), 'No notes waiting');
+});
+
 test('studySummary shows study minutes today and the note count', () => {
   const s = newEntry('study', '2026-11-15', { kind: 'study', topic: 'RAG', minutes: 45, notes: '' }, 1);
   const n = newEntry('note', '2026-11-10', { title: 'a', body: 'b' }, 1);
