@@ -1,7 +1,7 @@
 // Kumio prep and study log (F16). Pure: no storage, no clock.
 //   study { kind: 'prep' | 'study', topic, minutes, notes }
 
-export const STUDY_KINDS = ['prep', 'study'];
+export const STUDY_KINDS = ['prep', 'study', 'practice', 'project', 'review'];
 export const MAX_TOPIC = 60;
 export const MAX_STUDY_NOTES = 500;
 export const MAX_STUDY_MINUTES = 600;

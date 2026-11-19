@@ -1,4 +1,4 @@
-// TODAY tab windows (F49): Log (weigh-in, meals), Learn (interim: guitar, study, timer), Notes, and the practice timer.
+// TODAY tab windows (F49): Log (weigh-in, meals), Learn (areas), Notes, and the practice timer.
 // Views over existing state and actions; saving is done by logWeighIn, logGuitar, logMeal, logStudy and logNote.
 //   html:    todayRows(state, day), todayWindow(state, day)
 //   actions: openTodayWin | closeTodayWin | openTimer (see todayWinActions.js)
@@ -7,7 +7,7 @@ import { esc } from './format.js';
 import { practicePanel } from './practiceView.js';
 import { logWindow } from './logWindow.js';
 import { notesWindow } from './notesWindow.js';
-import { learnWindow } from './learnWindow.js';
+import { learnView } from './learnView.js';
 import { logSummary, learnSummary, notesSummary } from '../logic/todayWin.js';
 
 const backButton = (action, label) =>
@@ -34,7 +34,7 @@ function timerWindow(state) {
 export function todayWindow(state, day) {
   if (state.todayWin === 'log') return logWindow(state, day);
   if (state.todayWin === 'timer') return timerWindow(state);
-  if (state.todayWin === 'learn') return learnWindow(state, day);
+  if (state.todayWin === 'learn') return learnView(state, day);
   if (state.todayWin === 'notes') return notesWindow(state);
   return '';
 }

@@ -7,6 +7,8 @@ import { computeStats, emptyStats } from '../logic/retainedStats.js';
 import { newEntry as makeEntry, parseWeight, parseGuitar, parseEdit, editEntry, deleteEntry } from '../logic/entries.js';
 import { demoEntries } from '../logic/demo.js';
 import { loadAutoSync, saveAutoSync } from '../logic/autoSync.js';
+import { loadAreas, saveAreas } from '../logic/areas.js';
+import { createLearnActions } from './learnActions.js';
 import { createAutoSync, createSyncNow } from './autoSync.js';
 import { syncChipHtml } from './syncChip.js';
 import { createManageHabitsActions } from './manageHabitsActions.js';
@@ -79,6 +81,7 @@ const state = {
   exportedNames: [],
   exportReminder: (() => { try { return loadReminderEnabled(localStorage); } catch { return true; } })(), // F33
   autoSync: (() => { try { return loadAutoSync(localStorage); } catch { return true; } })(), // upload finished days to Dropbox on open
+  areas: (() => { try { return loadAreas(localStorage); } catch { return loadAreas({ getItem: () => null }); } })(), // Learn areas, see logic/areas.js
   lastExportAt: null, // newest confirmed export, null if never
   // flow.step: idle | built | shared | confirmed
   flow: { step: 'idle', result: null, viaDownload: false },
@@ -140,6 +143,7 @@ const actions = {
   ...createStudyActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createTodayActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createManageHabitsActions({ state }),
+  ...createLearnActions({ state, saveEntries, saveFail, inputValue, today, persistAreas: () => { try { saveAreas(localStorage, state.areas); } catch { /* storage blocked */ } } }),
   syncNow: () => syncNow(),
   ...createTodayWinActions({ state }),
   ...createMealActions({ state, saveEntries, saveFail, inputValue, today }),
