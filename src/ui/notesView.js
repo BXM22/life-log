@@ -11,7 +11,7 @@ import { esc } from './format.js';
 export function notesPanel(state) {
   const draft = state.noteDraft || { title: '', body: '' };
   const notes = liveEntries(state.entries).filter((e) => e.type === 'note')
-    .sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 5);
+    .sort((a, b) => b.date.localeCompare(a.date) || b.updatedAt - a.updatedAt).slice(0, 3);
   const rows = notes.map((e) =>
     `<div class="row"><span>${esc(e.date.slice(5))} ${esc(noteTitle(e))}</span>` +
     `<span class="tag ${isDirty(e) ? 'waiting' : 'done'}">${isDirty(e) ? 'WAITING' : 'IN VAULT'}</span></div>`).join('');

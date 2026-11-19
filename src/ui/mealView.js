@@ -16,9 +16,11 @@ export function mealPanel(state, day) {
   const got = dayProtein(state.entries, day);
   return `<div class="panel">
     <h2>MEALS</h2>
-    <p>Protein <b>${got}</b> / ${PROTEIN_TARGET} g${got >= PROTEIN_TARGET ? ' (target reached)' : ` (${PROTEIN_TARGET - got} to go)`}</p>
+    <p>Protein <b>${got}</b> / ${PROTEIN_TARGET} g</p>
     <progress value="${Math.min(got, PROTEIN_TARGET)}" max="${PROTEIN_TARGET}" aria-label="Protein today"></progress>
+    <p class="note">${got >= PROTEIN_TARGET ? 'Target reached' : `${PROTEIN_TARGET - got} g to go`}</p>
     ${rows || '<p class="note">No meals logged yet today.</p>'}
+    <h3 class="subtitle">ADD A MEAL</h3>
     <label class="lbl" for="meal-type">Meal</label>
     <select id="meal-type" class="field" aria-label="Meal type">${options}</select>
     <label class="lbl" for="meal-name">What you ate</label>
