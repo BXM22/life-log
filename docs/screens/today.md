@@ -4,6 +4,77 @@ Status: **built** (backlog F60, all five steps, 2026-11-19). Mock-ups are on the
 
 Not built from the original design: the Learn window's *Type* chips apply to non-Guitar areas only (a Guitar session ignores the type); Log window's "Guitar timer moved to Learn" row is still there (remove it after one release).
 
+## Planned: Today polish, direction A (F65)
+
+Status: **planned, not built.** Chosen 2026-11-21 from three mock-ups (A Tidy, B Day list, C Next up) on the Design canvas "Life Log Today v2", board "A Tidy: same parts, clearer". When it ships, fold this section into "Main screen" and "Design style" below and delete it.
+
+### Why
+
+Review of the live screen (2026-11-21, 390 x 844):
+
+- Habits, the most frequent action, start below the fold; the first screen is status and the workout card.
+- The habit count shows twice (hero `2/3` and `HABITS · 2 OF 3`).
+- Sync shows three times (chip, Sync row, storage note) and the chip and row can disagree (`Export due` next to `Everything exported`).
+- Six peach elements on the first screen, with two peach buttons (`SYNC NOW`, `START WORKOUT`) competing.
+- Eight all-caps 12 px labels in two patterns (caption above vs inline `SYNC`).
+- 18 font sizes across the CSS, down to 9 and 10 px; the workout name (17 px) is smaller than its button text.
+- Empty rows are dead ends ("Nothing logged yet"); row chevrons are a typed `>` while drop-downs use an icon; the `+` button covers the first habit's streak badge.
+
+### Main screen, top to bottom (planned)
+
+1. **Header:** date line `Saturday, November 21` (13/18, weight 500, muted; no `LIFE LOG ·` prefix, no caps) over the title `Today` (28/34, weight 800, -0.02em). Sync chip on the right, same states as now: `2 to export`, `Synced`, `Export due`.
+2. **Habits hero (peach):** heading `2 of 3 habits done` (22/28, weight 800), then the habit checklist inside the card. This replaces both the big `2/3` with pips and the Habits drop-down, so habits are on the first screen and counted once.
+   - Each habit is a white 52 px row: a 26 px round check (ink fill with a white tick when done, 2 px `#8C817A` ring when not), name (15, weight 700), streak as text on the right (`14 days`, 13, weight 600, muted) instead of the `4d` pill.
+   - The Workout habit reads `After your workout` while it is undone and a workout is scheduled.
+   - `Manage habits` link row with a chevron icon at the bottom opens the Manage habits sheet.
+   - Empty state: "No habits yet." and the `Manage habits` row.
+3. **Workout card (cream):** `Today's workout` (13, weight 600, muted), session name (22/28, weight 800), focus line (15, weight 500, muted).
+   - **Switch** button at the top right (secondary 44 px pill, swap icon, label `Switch`). It opens the existing **Switch template** sheet from the Workout tab (`wSheetOpen` with `data-sheet="switch"`, rows pick with `tplPick`), so Today and Workout share one override (`state.wSession`). After a switch the card shows `Switched from Upper B` with an `Undo` text button that clears the override.
+   - Sheet tweaks for this use: title `Switch today's workout`, a `Planned` tag on the scheduled session, each row's focus line under the name, and one muted line "Only today changes. The rest of your week stays as planned."
+   - Buttons on one row: primary `Start workout` (fills the row) and secondary `Rest day` (becomes `Undo rest day`; hidden once a real workout is checked).
+   - Free day: "No lifting scheduled. BJJ, rest or a walk." with primary `Pick a workout`, which opens the same sheet.
+4. **Sync notice** (only when entries are waiting or storage is unprotected): a hairline-bordered row with no fill. First line `2 entries waiting to export` (15, weight 700); second line the storage hint ("Storage isn't protected. Add the app to your Home Screen.") or `Last export 8 days ago` (13, muted); secondary `Sync now` button on the right. Replaces the Sync row and the separate storage note. Hidden when nothing is waiting and storage is protected; the chip still shows status.
+5. **Log, Learn and Notes:** one cream panel with three 64 px rows split by hairlines (instead of three separate cards). Each row: title (17, weight 700) over a summary (13, weight 500, muted) and a chevron icon.
+   - Empty summaries say what to do: `Add today's weight and meals`, `Start a practice or study session`, `Write down an idea`.
+   - With data: `182.4 lb, 85 of 160 g protein`, `45 min today: Guitar, Coding`, `2 notes waiting for the vault`; while a timer runs, `Timer running: Guitar 12:41`.
+6. **Recent entries:** a plain row, no panel: `Recent entries` (17, weight 700), the count (15, weight 500, muted) and a chevron; opens as now. When there are no entries at all, it shows "No entries yet." and a secondary `Load demo data` button instead.
+7. **Quick add `+`:** unchanged, but the page gets 72 px of bottom padding so the button never covers a row.
+
+### Type scale (start on Today, then roll out app-wide)
+
+One family, Plus Jakarta Sans (already loaded). Nothing under 13 px.
+
+| Token | Size / line | Weight | Used for |
+|---|---|---|---|
+| `--fs-meta` | 13 / 18 | 500 (600 for small labels) | Dates, streaks, summaries, notes, tab labels, status tags |
+| `--fs-body` | 15 / 20 to 22 | 500 to 700 | Row titles, habit names, buttons |
+| `--fs-head` | 17 / 22 | 700 | Section and row headings (Log, Recent entries) |
+| `--fs-card` | 22 / 28 | 800, -0.01em | Card titles (habits heading, workout name, sheet titles) |
+| `--fs-title` | 28 / 34 | 800, -0.02em | Page title |
+| `--fs-num` | 48 / 52 | 800, -0.02em, tabular figures | Timer clock and other big numbers |
+
+Rules: sentence case for headings, labels and buttons (`Start workout`, `Sync now`, `Rest day`); no all-caps overlines; no meta joined with `·`. Put the tokens in `forma.css` `:root` and replace the 18 current sizes; the 9, 10, 11 and 12 px uses move up to 13.
+
+### Design changes (planned)
+
+- **Peach** only on the habits hero, `Start workout` and the `+` button. The sync chip stays soft peach; the sync notice and `Sync now` are neutral.
+- **Fewer boxes:** hero, workout card and one Log/Learn/Notes panel; the sync notice is outlined, Recent has no panel.
+- **Chevrons:** the SVG chevron everywhere, never a typed `>`.
+- **Unticked check ring:** `#8C817A`, which passes 3:1 against white.
+- **Status tags** go from 12 to 13 px.
+
+### Code touchpoints
+
+| Change | Files |
+|---|---|
+| New layout, habits inside hero, one rows panel, Recent row | `src/ui/todayView.js`, `src/styles/today.css` |
+| Type tokens, sentence-case headings (drop the caps `h2` overline rule) | `src/styles/forma.css`, `main.css` |
+| Sync notice visibility, chip copy | `src/logic/syncStatus.js`, `src/ui/syncChip.js` |
+| Switch button and free-day `Pick a workout` open the Switch sheet on Today; `Planned` tag, focus line, title | `src/ui/workoutSheets.js`, `src/ui/workoutSheetActions.js`, `src/ui/todayView.js` |
+| Streak text (`14 days`), summaries without `·` | `src/ui/format.js`, `src/logic/todayWin.js` |
+
+Open questions: does `state.wSession` reset on the next day (needed for "Only today changes")? Does the Switch sheet render over the Today tab as-is, or only inside Workout?
+
 Quick daily logging and a glance at how today is going. Source: `src/ui/todayView.js`, `todayWindows.js`, `logWindow.js`, `learnView.js`, `notesWindow.js`, `quickAddView.js`, `mealView.js`, `notesView.js`, `manageHabitsView.js`, `syncChip.js` (see "Where the code lives"). The old `studyView.js` and `practiceView.js` are gone.
 
 ## What changed from v1, and why
@@ -129,4 +200,4 @@ Unchanged from v1 except where noted.
 | Entry shapes and validation | `src/logic/entries.js` |
 | Actions (`data-action`) | `toggleHabit`, `addHabit`, `deleteHabit`, `toggleRestDay`, `toggleSection`, `openManageHabits`, `closeManageHabits`, `syncNow`, `openTodayWin`, `closeTodayWin`, `logWeighIn`, `logMeal`, `logNote`, `exportNotes`, `pickArea`, `pickType`, `learnMin`, `logSession`, `toggleLearn`, `openAreaEdit`, `closeAreaEdit`, `saveArea`, `deleteArea`, `addStarterArea`, `practiceStart`, `practiceStop`, `practiceDiscard`, `openQuick`, `closeQuick`, `quickKind`, `quickArea`, `quickMin`, `quickType`, `quickMore`, `saveQuick`, `demo` |
 | Styles | `src/styles/forma.css` (loaded last), `main.css`, `today.css` |
-| Backlog items | F1 to F4, F9, F12, F13, F16, F17, F36, F41, F43, F49, F60, F61 in `docs/BACKLOG.md` |
+| Backlog items | F1 to F4, F9, F12, F13, F16, F17, F36, F41, F43, F49, F60, F61, F65 in `docs/BACKLOG.md` |

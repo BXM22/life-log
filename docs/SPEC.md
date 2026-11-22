@@ -417,6 +417,82 @@ There are 17 must-have features: 11 Must-M1 (v1) and 6 Must-M2. Everything else 
 | F31 | 3-day and 4-day schedule switch | Workouts | Should | M2 |
 | F32 | Calisthenics blocks and BJJ done check | Workouts | Should | M2 |
 | F33 | Weekly export reminder (banner on Today, plus a notification where supported) | Core | Should | M2 |
+| F66 | My schedules and templates: own weekly schedule for any area, save as template (proposed, see F66 section) | Core | Should | M5 |
+
+### F66 My schedules and templates (proposed)
+
+Status: not built. Features F34 to F65 are tracked in docs/BACKLOG.md; F66 gets a section here because it adds a data concept.
+
+**Why.** The weekly workout schedule is hardcoded (SCHEDULE and SCHEDULE_3 in src/logic/template.js) and study areas have no schedule. Anyone should be able to plan their own week for workouts, study topics or any area, and reuse a plan as a template.
+
+**Terms.**
+
+- Area: a thing you track (Workout, Guitar, Coding, Reading). Already exists.
+- Schedule: for one area, the planned items on each weekday. A planned item has a title, an optional target (minutes, sets or a workout session) and optional notes.
+- Template: a saved reusable copy of a schedule, not tied to dates. Starting from a template copies it; editing the copy never edits the template.
+
+**Flows.** Make a schedule from blank, a starter or one of my templates; Save as template from any schedule; manage templates (rename, copy, delete); Today shows each area's planned items for today. Ticking one logs the planned amount (with Undo); Adjust opens the log form pre-filled.
+
+**Starters (built in, copied on use).** Workout: Upper/Lower 4-day, Full body 3-day, Push/Pull/Legs. Study: Daily 30 minutes, Weekdays with weekend review, Exam week. Guitar: 5 practice days and one jam day. Blank.
+
+**Build order.** (1) Workouts: user-editable weekday map replaces the hardcoded schedule, plus Save as template. (2) Any area: per-area schedules, template library, starters, Today items. (3) Backup and sharing: schedules and templates in the JSON backup, export and import of one template as a file.
+
+**Data (design intent).** Schedules and templates are configuration, stored like the workout template in retained_stats so Wipe never removes them. Step 3 adds them to the JSON backup with merge by id and newest updatedAt winning. Logging a planned item writes a normal session entry, so History and Markdown export are unchanged.
+
+**History.** A past planned item with nothing logged shows as Not logged (the UI avoids the word Missed). It offers Log it (opens the log form with that day filled in, for days you forgot to log) and Skip (a chosen rest, stored so it stops showing as not logged; Undo skip reverses it). Skipping or not logging never touches habit streaks.
+
+**Rules.** Max 20 areas (existing); suggested limits of 10 items per day and 30 templates; one active schedule per area; template names unique, up to 60 characters; deleting a template never changes schedules made from it.
+
+**Layouts (F63).** Independent. A goal layout changes only what Today shows; it may highlight starters as suggestions and never applies one silently.
+
+**Out of scope.** Reminders and notifications, calendar sync, server-based sharing, AI-generated plans, one-off per-date scheduling, streak penalties for missed days.
+
+**Mock-ups.** Design canvas "Life Log Today v2", page "F66 Schedules", boards 1 to 9. Revised 2026-11-21 for user-centred design; the boards link to each other in Play.
+
+**Words in the UI.** The screens say "plan" or "weekly plan" for a schedule (Weekly plans, Workout plan, Start a plan). "Template" stays, explained once on the home screen: "A template is a plan you saved to reuse. Changing a plan never changes its template." Starters show as "Ready-made". Template actions read Make a copy and Share as a file. Code and stored data keep the names schedule and template.
+
+**Screens.**
+
+1. **Weekly plans (home).** Back to Settings. A week strip (Mon to Sun with dates and a count of planned items; today outlined in peach) above a panel listing the picked day's items across all areas (area, title, target). Then Plans by area: one row per area with a short summary ("Tue, Thu, Sat, Sun"), opening that area's plan; an area with no plan shows "Nothing planned yet" and a Plan it button. Then Saved templates with the one-line explainer, a row per template, and Import a template file (step 3).
+2. **Plan editor** (one area, for example Workout plan). A note at the top: "Changes start today. Past days in History keep what was planned then." and which template it started from. One section per weekday: days with items list them (title, target, Edit), empty days are a single line "Nothing planned" with a + button. Below: Save as template, Replace with a template, and Clear plan, which asks first ("Clear all 4 items from your Workout plan?", Keep plan or Clear plan) and then shows a toast "Workout plan cleared" with Undo.
+3. **Start a plan (sheet).** Groups Ready-made, Your templates and Your own (Start empty). Each option has a one-line description and a 7-bar week preview; one ready-made option per area carries a Suggested tag. The button names the choice ("Use Daily 30 minutes"). Footnote: starting from a template copies it.
+4. **Add a planned item (sheet).** Opened from a day's + button, titled "Add to Monday" with that day pre-selected. What to do (up to 60 characters) with recent focuses for the area as quick picks. How long: No target, 15, 30, 45, 60 min, with a hint from the area's weekly goal ("about 25 min a day"). Only targets that fit the area show: minutes for Learn areas, a workout session picker for Workout, sets where an area uses them. Repeat on: Mon to Sun buttons plus Weekdays and Every day shortcuts and a sentence ("Every Monday, Wednesday."). Add a note is collapsed. The button counts days ("Add to 3 days"). Editing an existing item shows Save changes and Remove item instead.
+5. **Save as template (sheet).** Name pre-filled ("Workout plan, November"), with a live line saying whether another template already has it. A day-by-day preview with full item names. Note: only the plan is saved, not logs, and later changes to the plan don't change the template.
+6. **Template.** The week day by day, which plans started from it, Use for an area (primary), then Edit template, Rename, Make a copy, Share as a file (step 3) and Delete template. Delete asks first and says the plans made from it keep working.
+7. **Use a template (sheet).** Pick an area (or A new area). Each area says No plan yet or Has a plan, will be replaced. When it replaces a plan: "This replaces it from today on. Days already logged don't change." and a checkbox, on by default, "Save the old plan first" (saved as "<Area> plan, before <date>"). The button says what happens ("Replace Coding plan", "Start Reading plan").
+8. **Today: Planned today.** A section after the workout card (Today polish direction A, F65): heading with a done count and an Edit plans link; one row per item with a round check like a habit, title, area and target, and an Adjust link. Ticking logs the planned amount and shows a toast ("Logged Guitar, 45 min") with Undo; unticking removes that entry. Adjust opens Learn pre-filled. The workout card says "Today's workout, from your plan". When nothing is planned the section shows a Plan your week link instead.
+9. **History: Planned this week.** A grid of areas by weekday with Done, Not logged (dashed outline), Skipped (filled with a dash), Today (peach outline) and planned future days (dotted), each cell with a spoken label, and a "9 of 12 done so far" count. Below: Not logged yet, one row per item with Log it and Skip, and skipped items with Undo skip.
+
+**How it's wired.**
+
+| | Screen | Connection |
+|---|---|---|
+| Way in | Settings | New Weekly plans row opens the home screen |
+| Way in | Learn > My areas > Edit area | New Weekly plan row opens that area's plan editor |
+| Way in | Workout > Templates and tags | New Weekly plan row opens the Workout plan editor |
+| Way in | Today > Planned today | Edit plans, or Plan your week when nothing is planned |
+| Feeds | Today workout card, Switch sheet | Today's session and the Planned tag come from the Workout plan, replacing `SCHEDULE` and `SCHEDULE_3` in `src/logic/template.js` |
+| Feeds | Settings > Lifting days per week | Becomes redundant; replace it with a link to the Workout plan editor |
+| Feeds | Today > Planned today | Tick logs a session with the planned amount; Adjust opens Learn pre-filled (Learn needs a pre-fill entry point) |
+| Feeds | History | Planned this week grid and the Not logged list |
+| Feeds | Sync and backup | Step 3: plans and templates in the JSON backup; one template as a file |
+| Optional | First-run picker (F63, F64) | May suggest a ready-made plan, never applies one silently |
+
+**User-centred rules.**
+
+- Edits start today. Each day's plan is kept as it was (a snapshot per date, or plan versions with a start date), so editing a plan never rewrites past Not logged or Skipped results.
+- Nothing is lost by accident: replacing a plan saves the old one as a template unless the user unticks it; Clear plan and Delete template ask first; Clear plan and ticking items have Undo.
+- One-tap logging for the common case: ticking a planned item logs exactly what was planned; Adjust covers the rest.
+- Forgiving language: Not logged instead of Missed; Log it covers forgotten logging, Skip covers rest days; streaks are never affected.
+- Less typing: a day's + pre-selects the day; recent focuses and minute chips; Weekdays and Every day shortcuts; names are pre-filled.
+- Readable and reachable: full day names (Mon to Sun) instead of single letters, 44 px minimum targets, text 13 px or larger, states told apart by shape as well as color.
+
+**Decisions still open.**
+
+1. How a planned item counts as done: any session in that area on that day, or a link from the session to the planned item (exact, but adds a field such as `planItemId` to the session entry).
+2. Snapshot per date or versioned plans with a start date, for "edits start today".
+3. Whether auto-saved old plans count toward the 30-template limit (they could go in a separate "Earlier plans" group instead).
+4. Whether ticking a planned item with No target logs a session with no minutes, or asks for minutes.
 
 **Out of scope:** multi-user accounts, social sharing, calorie database or barcode scanning, wearable integrations, push reminders (revisit after M2).
 
