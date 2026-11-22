@@ -234,6 +234,28 @@ Polishes the shipped v2 (F53) without changing its structure. Mock-ups are on th
 
 **Goals (from the user's answers):** log a set quickly; find the next exercise; the app is mostly used after the workout, so every number should be pre-filled and one tap should be enough.
 
+### Color palette (test, on boards 14 to 21)
+
+Four base colors: lavender `#EEDEF6`, mint `#CCE5E3`, butter `#FEE1B6`, charcoal `#2F2F2F`. Strongest-contrast version, cream background.
+
+| Role | Color | Used for | Replaces (peach) |
+|---|---|---|---|
+| Background | cream `#FFF6E3` (tint of butter) | screen, tab bar, pinned bars, sheet panel | `#FFFFFF` |
+| Card and row surface | white `#FFFFFF` with a `#B9A3CA` border | list rows, cards, logged sets | panel `#FBF3EC` |
+| Accent card | lavender `#EEDEF6` with a `#8E78A6` border | one per screen: template card (Today), Last time strip (Exercise), finished card (Exercise done) | panel `#FBF3EC` |
+| Soft highlight | mint `#CCE5E3` | rest pill, active tab pill, NEW PR banner | soft `#FDE8E0` |
+| Primary button and selected state | charcoal `#2F2F2F` fill, butter `#FEE1B6` text and icons | Next up, Log set, Save changes, Use button, chosen chips, set dots, progress bar, rest ring, radio dot | accent `#F4A28C` |
+| Text and icons | charcoal `#2F2F2F` | all text, icons | ink `#1C1B1F` |
+| Muted text | `#46424D` | labels, last results | dim `#6B6B70` |
+| Line | `#A58FBB` | steppers, chip outlines | `#E3D6CB` |
+| Divider | `#CDB8DC` | tab bar top, pinned bar top | hairline `#EADFD5` |
+| Dashed outline | `#8E78A6` | Add exercise, New blank | `#C9B8AB` |
+| Danger | `#B3261E` (unchanged) | Delete | same |
+
+Muted text, line, divider, dashed outline and the two card borders are derived from lavender, since the palette gives no border or muted color. Contrast notes: butter on white is faint, so butter is only used as text on charcoal or with a charcoal outline; check `#46424D` on cream before shipping.
+
+**Applying it to the app (when approved):** change the tokens in `forma.css` rather than editing each `.w2-` rule (`--panel`, `--line`, `--accent`, `--on-accent`, `--peach-soft`, `--ink`, `--dim`, `--bg`, `--hairline`, plus a new `--card` for white rows), then re-check the dark theme variables. Primary buttons switch from `background: var(--accent)` to a charcoal fill, so `--on-accent` becomes butter.
+
 ### Board index (Polish row)
 
 | Board | Screen | Replaces v2 page |
@@ -253,7 +275,7 @@ Not redone, so the v2 boards stay current: Today menu (2), Warm-up and BJJ sheet
 
 - Tab bar: 76 px, drawn on every page, Workout tab highlighted. Content stops 76 px above the bottom; the pinned Log set bar (15) and Save bar (20) sit directly above the tab bar.
 - Rest timer is always reachable. Today and the rest page show it as a pill, Exercise shows it as a chip in the logging card (the pill would sit on the set buttons). Idle = peach, running = dark, both show `REST` plus the time.
-- Hit targets 44 px or more, sentence case, no emoji, real buttons and links, tokens from `forma.css` (panel `#FBF3EC`, line `#E3D6CB`, accent `#F4A28C`, soft `#FDE8E0`, ink `#1C1B1F`, dim `#6B6B70`).
+- Hit targets 44 px or more, sentence case, no emoji, real buttons and links. Colors: the test palette below (boards 14 to 21 use it). The shipped app still uses the `forma.css` peach tokens (panel `#FBF3EC`, line `#E3D6CB`, accent `#F4A28C`, soft `#FDE8E0`, ink `#1C1B1F`, dim `#6B6B70`) until the palette is approved.
 
 ### What changed per screen
 
