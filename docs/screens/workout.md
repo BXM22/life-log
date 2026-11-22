@@ -227,3 +227,99 @@ All "back" arrows return to the page that opened them, not always Today. Today i
 - Whether pages (Exercise, Rest timer, Templates, Edit, History) keep the tab bar visible is assumed yes; the mockups reserve the space on every page.
 - Exact tab bar height is assumed 72 px. Change the number everywhere if the real bar differs.
 - Trim a set is shown as a one-line dropdown item with a hint of the resulting target; the label flips to Put back once trimmed.
+
+## v3 polish pass (planned, not built)
+
+Polishes the shipped v2 (F53) without changing its structure. Mock-ups are on the Design canvas "Workout tab redesign", Page 1, Polish row, boards 14 to 21. Backlog item: F67 in docs/BACKLOG.md. Nothing here is in the code yet.
+
+**Goals (from the user's answers):** log a set quickly; find the next exercise; the app is mostly used after the workout, so every number should be pre-filled and one tap should be enough.
+
+### Board index (Polish row)
+
+| Board | Screen | Replaces v2 page |
+|---|---|---|
+| 14 Polish: Today list | Today | 1 Today (main) |
+| 15 Polish: log a set | Exercise page | 5 Exercise |
+| 16 Polish: exercise done | Exercise page after the last set | 5 Exercise (finished state) |
+| 17 Polish: rest timer | Rest timer page | 8 Rest timer |
+| 18 Polish: switch template sheet | Switch template (sheet) | 3 Switch template |
+| 19 Polish: templates | Templates page | 9 Templates |
+| 20 Polish: edit template | Edit template page, More actions open | 10 Edit template |
+| 21 Polish: history | History page | 11 History |
+
+Not redone, so the v2 boards stay current: Today menu (2), Warm-up and BJJ sheet (4), Exercise options (6), Add for today (7), BJJ day (12), Calisthenics day (13). They must adopt the polish tokens below when built.
+
+### Shared rules (all eight boards)
+
+- Tab bar: 76 px, drawn on every page, Workout tab highlighted. Content stops 76 px above the bottom; the pinned Log set bar (15) and Save bar (20) sit directly above the tab bar.
+- Rest timer is always reachable. Today and the rest page show it as a pill, Exercise shows it as a chip in the logging card (the pill would sit on the set buttons). Idle = peach, running = dark, both show `REST` plus the time.
+- Hit targets 44 px or more, sentence case, no emoji, real buttons and links, tokens from `forma.css` (panel `#FBF3EC`, line `#E3D6CB`, accent `#F4A28C`, soft `#FDE8E0`, ink `#1C1B1F`, dim `#6B6B70`).
+
+### What changed per screen
+
+- **Today (14).** Header holds the rest pill and the three-dot menu, so the pill never covers a list row. One template card (Switch + progress). A peach Next up button jumps to the first unfinished exercise. Warm-up and Activities share one card. The list is titled Up next with set dots; the alternative exercise sits on the muted line after "or". Finished exercises fold into Done. Dashed Add exercise for today at the end.
+- **Exercise (15).** Last time strip with a Use chip that fills weight and reps. Logging card with Set n of N, rest chip, steppers, rep chips. Warm-up set and Fill all as buttons. Pinned `Log set n` bar. Logged today with Edit and Delete. Plate calculator accordion.
+- **Exercise done (16).** NEW PR banner when it applies, a finished card with a Next up button, Add a set and Back to list.
+- **Rest timer (17).** Ring with time left, a Next card (what set comes next) with Back to log, preset chips, custom time, Start after each set switch, Stop rest.
+- **Switch template (18).** Filter chips, radio rows with last-done date, Manage templates link, Use button.
+- **Templates (19).** Active template pinned on top, groups by tag, Set active on each row, New blank and Copy of the active one.
+- **Edit template (20).** Name, tags, exercise list with drag handles, More actions menu (Set as active, Reset all to the built-in plan, Delete template), pinned Cancel and Save changes.
+- **History (21).** Search, filter chips, this week open, older sessions folded.
+
+### Wiring (existing actions)
+
+These polished controls reuse actions that already exist, so no new routing is needed.
+
+| Board | Control | Action and effect |
+|---|---|---|
+| 14 | Rest pill | `restOpen` sets `state.restOpen` and shows the rest page |
+| 14 | Three-dot menu | `wMenuToggle` with `data-menu="today"` |
+| 14 | Switch | `wSheetOpen` with `data-sheet="switch"` |
+| 14 | Upper warm-up row | `wSheetOpen` with `data-sheet="warm"` |
+| 14 | Add exercise for today | `wSheetOpen` with `data-sheet="add"` |
+| 14 | any exercise row | `wOpenEx` with `data-i` sets `state.wEx` |
+| 15, 16 | Back arrow, Back to list | `wCloseEx` |
+| 15, 16 | previous and next arrows, Next up | `wExPrev` and `wExNext` with `data-delta` |
+| 15 | Steppers | `wStep` with `data-field` and `data-delta` |
+| 15 | Rest chip | `restOpen` |
+| 15 | Exercise three-dot | `wMenuToggle` with `data-menu="exercise"` |
+| 17 | Back arrow, Back to log | `restClose`, which returns to the page underneath (`state.wEx` is unchanged, so the same exercise shows) |
+| 17 | Preset chips | `restPreset` with `data-s` |
+| 17 | Start after each set | `restAuto` |
+| 17 | Start rest, Stop rest | `restStart`, `restStop` |
+| 18 | Filter chips, row | `tplFilter`, `tplPick` |
+| 18 | Manage templates | `wOpenTemplates` |
+| 18 | Close | `wSheetClose` |
+| 19 | Row, Set active | `tplOpen`, `tplSetActive` |
+| 19 | New blank, Copy | `tplNewBlank`, `tplNewCopy` |
+| 20 | exercise Edit, Add exercise | `tEditStart` with `data-i`, `tAdd` |
+| 20 | Set as active, Reset all, Delete | `tplSetActive`, `tReset` (with confirm), `tplDelete` |
+| 20 | Cancel, Save changes | `tplBack`, `tplSave` |
+
+### Wiring (new, must be built)
+
+Each needs a small action in `workoutNavActions.js` or `workoutSheetActions.js` plus a test in `tests/`.
+
+| Board | Control | Behaviour |
+|---|---|---|
+| 14 | Next up button | `wOpenEx` on the first exercise with unfinished sets |
+| 14 | Done fold | toggles a `state.wDoneOpen` flag; collapsed by default |
+| 15 | Use chip (Last time) | fills the logging card with the last working set's weight and reps |
+| 15 | Fill all as | logs every remaining working set at the shown weight and reps in one go, then behaves like the last set (F57) |
+| 15 | Pinned Log set bar | same as the existing Working set button; auto-starts rest when the switch is on |
+| 17 | Next card | reads the next set from `state.wEx` and the logged count; hidden when no exercise is open |
+| 18 | Use button | confirms the selected radio row and closes the sheet; row tap alone only selects |
+| 21 | Search and filter chips | filter the history list client-side; no storage change |
+
+### Rest timer wiring in detail
+
+1. Logging a working set calls the existing log action, then starts the timer when `state.rest.auto` is true, with the saved length.
+2. The pill, the chip and the rest page all show `fmt(remaining)` through the element id `rest-row-time`, so the existing timer painter updates whichever is on screen.
+3. Opening the rest page does not clear `state.wEx` or the sheet state. `restClose` only clears `state.restOpen`, so Back to log lands on the same exercise.
+
+### Build notes
+
+- Views and CSS only, plus the small actions above. Data stays: `lift_set` entries, template in `retained_stats`, extras in `lifelog.wExtras`, rest state as today.
+- Run `npm test` before and after; add tests for each new action.
+- Keep all new selectors under `.w2-`.
+- Check each board against the live app at 390 px wide before ticking it off.
