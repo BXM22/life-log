@@ -29,9 +29,9 @@ Overline with the count (`240 entries`), title `All entries`. A list of the newe
 
 **Edit form** (replaces the row in place): the date in bold, fields by type: weigh-in (weight), guitar (minutes, focus, best BPM), meal (type, name, protein), note (title, body), lift set (exercise name, weight, reps or seconds; a calisthenics set keeps its added or assisted type), habit (done checkbox); `SAVE` and `CANCEL`. An edit makes the entry `WAITING` again so it re-exports.
 
-## Workout redesign impact (planned, not built)
+## Workout redesign impact (partly built)
 
-Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66).
+Status 2026-11-22: **partly built.** Done: History v2 (F71) is the cross-habit view, with a Lifts chip on All entries; lift chips and Personal records still read `lift_set`; the edit form is unchanged. Still open: a `See all entries` link from Workout's History page that opens All entries on the Lifts chip (not built; needs `hvFilter = 'lifts'` set by `openHistWin`); past sessions keeping their template and the planned-versus-done grid (both F66). Bullets below are the original plan. From Workout v2/v3 (`workout.md`) and weekly plans (F66).
 
 - **Two history views overlap.** Workout has its own History page (v2) with search and filter chips (v3, board 21). This tab already has `All entries` and `Lift progress`. Keep this tab as the cross-habit view. Workout's page is the per-session view, with a `See all entries` link back to `All entries` filtered to lift sets. Do not add a third list.
 - **Past sessions keep their template.** Editing a template or plan later must not rewrite old sessions. Store the template name and exercise list with each session, or have edits apply from today forward (already on the F66 Decide-first list). This tab and Workout history both read it.

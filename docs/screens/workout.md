@@ -214,7 +214,10 @@ All "back" arrows return to the page that opened them, not always Today. Today i
 | Old edit mode `SESSIONS` panel | Removed. New and Copy live in Templates; Rename and Delete live in Edit template |
 | `RESET ALL TO THE BUILT-IN PLAN` | More actions on Edit template (page 10), with a confirm |
 
-### Build notes (proposed, not done)
+### Build notes (done in F53 and F67)
+
+Status 2026-11-22: all built. The view split, page stack, sheets and dropdowns shipped; the old EDIT TEMPLATES mode is retired.
+
 
 - The logic layer does not change. Data stays: `lift_set` entries, template in `retained_stats`, today's extras in `lifelog.wExtras`, rest state as today. Only the views and routing change.
 - Suggested view split: keep `workoutView.js` as the Today list; add an exercise page view, sheet views for switch, prep and add-for-today, and a small shared dropdown helper. Reuse `restView.js`, `platesView.js`, `templateTagsView.js`, `workoutHistoryView.js` content inside the new containers.
@@ -318,7 +321,9 @@ These polished controls reuse actions that already exist, so no new routing is n
 | 20 | Set as active, Reset all, Delete | `tplSetActive`, `tReset` (with confirm), `tplDelete` |
 | 20 | Cancel, Save changes | `tplBack`, `tplSave` |
 
-### Wiring (new, must be built)
+### Wiring (new, built in F67)
+
+Status 2026-11-22: every row below is built (`wOpenEx` from Next up, `wDoneToggle`, `wUseLast`, Fill all as, pinned Log set bar, Next card, Use button, history search and chips).
 
 Each needs a small action in `workoutNavActions.js` or `workoutSheetActions.js` plus a test in `tests/`.
 

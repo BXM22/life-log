@@ -4,6 +4,12 @@
 
 Status: **plan, not built.** Backlog items F62 (themes), F63 (goal layouts), F64 (first-run picker). Written 2026-11-19.
 
+**Status 2026-11-22 (needs a re-plan before F62 starts):**
+- Mode is partly built: Settings > Theme has System, Light and Dark (`setTheme`, stored in `lifelog.settings`), so F62 only adds the theme presets on top.
+- The token cleanup is mostly done: F69 moved the app onto the tokens in `forma.css`; a few fixed colors remain on purpose (Today hero lavender, tone tiles in `w3-templates.css`, `w3-library.css`, `w3-history.css`).
+- The default theme is now the F69 palette (lavender, mint, butter, charcoal on cream), not Peach. Add it as a sixth preset named Default, or replace the Lavender row with it; Peach becomes an optional theme.
+- The theme list and token tables below still use the 2026-11-19 values and need re-checking for contrast against the new surfaces.
+
 ## Decisions
 
 | Question | Answer |

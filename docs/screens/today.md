@@ -87,9 +87,9 @@ Answered 2026-11-22: `state.wSession` now resets at the day start (`wSessionDay`
 
 Quick daily logging and a glance at how today is going. Source: `src/ui/todayView.js`, `todayWindows.js`, `logWindow.js`, `learnView.js`, `notesWindow.js`, `quickAddView.js`, `mealView.js`, `notesView.js`, `manageHabitsView.js`, `syncChip.js` (see "Where the code lives"). The old `studyView.js` and `practiceView.js` are gone.
 
-## Workout redesign impact (planned, not built)
+## Workout redesign impact (mostly built)
 
-Status: **planned.** Comes from the Workout v2 redesign (F53) and v3 polish (F67); see `workout.md`. Today stays the front door to the workout, so these links must keep working when Workout changes.
+Status 2026-11-22: **mostly built** (F65, F67). Done: Switch and Pick a workout open the Switch sheet over Today (`wSessionPick`, `sheetLayer`); `Start workout` opens the first unfinished exercise (`startWorkout` sets `wEx`); the card and Workout read the same template and day-scoped `wSession`. Still open: the `Planned today` section and plan-driven card (F66), and the rest day / free day question below. The table is the original plan, kept for reference. Comes from the Workout v2 redesign (F53) and v3 polish (F67); see `workout.md`. Today stays the front door to the workout, so these links must keep working when Workout changes.
 
 | Today control | Workout v2/v3 target | What must change |
 |---|---|---|

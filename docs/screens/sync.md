@@ -26,9 +26,9 @@ Title `SYNC`, then a two-button segmented control `EXPORT | WIPE`.
 - **CONFIRM WIPE modal:** a red-ringed warning box: "Wipe permanently deletes N entries (11-01 to 11-10) from this phone. Open the file in Dropbox first and confirm it is there. This cannot be undone."; a checkbox "I opened the file in Dropbox and it is complete"; red `WIPE N !!` (disabled until ticked); `CLOSE`.
 - Wipe removes only exported entries older than the keep window and keeps statistics, records and templates.
 
-## Workout redesign impact (planned, not built)
+## Workout redesign impact (partly built)
 
-Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66 step 3).
+Status 2026-11-22: **partly built.** Done: the Wipe page lists "Workout plans and templates stay as they are" under What stays (F71). Still open: plans, templates, active template and rest defaults in the JSON backup (the Backup page says they are not included yet), the template share and import pointer, and the export-after-reset check (F66 step 3). Bullets below are the original plan. From Workout v2/v3 (`workout.md`) and weekly plans (F66 step 3).
 
 - **Backup and restore must carry plans and templates.** Add plans, template edits, the active template and the rest timer defaults to the JSON backup. Bump `SCHEMA_VERSION`, merge by id, and the newest `updatedAt` wins, so `RESTORE FROM FILE` still never deletes.
 - **Today's extras** (`lifelog.wExtras`) and today's template override (`state.wSession`) are per-day. Decide whether they are backed up (probably not).

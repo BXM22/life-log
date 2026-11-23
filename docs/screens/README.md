@@ -10,7 +10,9 @@ One document per tab, describing what is on each screen, in order, with the data
 | Sync | [sync.md](sync.md) | Export, wipe, weekly review, backup and restore, Dropbox. v2 shipped (F71) |
 | Settings | [settings.md](settings.md) | Plan days, keep days, day start, export reminder, Dropbox, What's New. v2 shipped (F71) |
 
-## Cross-screen impact of the Workout redesign (planned)
+## Cross-screen impact of the Workout redesign (mostly built)
+
+Status 2026-11-22: Today's Switch sheet and Start workout, Settings' rest timer defaults and History's single cross-habit list are built. What is left all waits on F66: the plan-driven Today card, Settings losing `Lifting days per week`, the History planned grid and sessions keeping their template, and plans in the backup.
 
 Today, Settings, History and Sync each have a "Workout redesign impact" section. Short version: Today opens the Switch sheet and `Next up`; Settings drops `Lifting days per week` and gains rest timer defaults; History avoids a duplicate list and keeps each session's template; Sync backs up plans and templates.
 

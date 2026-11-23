@@ -26,9 +26,9 @@ Each section is an H2 overline, a grouped cream card of 56 px rows (label left, 
    - `ADD TO HOME SCREEN`: peach button, shown only when the browser offers an install prompt.
 5. **WHAT'S NEW**: the newest five update lines, each row a sentence on the left and a date (`11-17`) on the right. Edit the list in `src/logic/updates.js`.
 
-## Workout redesign impact (planned, not built)
+## Workout redesign impact (partly built)
 
-Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66).
+Status 2026-11-22: **partly built.** Done in F71: a Rest timer page (default length chips, Custom, Start rest after each set); the plan note keeps only the day-start sentence and the lifting plan moved into the Lifting days row; page padding clears the tab bar. Still open: replacing `Lifting days per week` with the Workout plan editor and migrating the stored 3 or 4 (F66 step 1). Bullets below are the original plan. From Workout v2/v3 (`workout.md`) and weekly plans (F66).
 
 - **`Lifting days per week` (3 or 4) goes away.** It picks a hard-coded plan (`Tue Upper A, Thu Lower, Sat Upper B`, plus `Sun Upper C`). F66 step 1 replaces it with an editable weekday plan inside Workout. Remove the select and the plan note, and keep `setPlanDays` only as a one-time migration that seeds the new plan from the old value.
 - **Rest timer defaults need a home.** Workout v3 reads `state.rest.auto` (auto-start after a set) and the saved rest length. Today they live only on the rest page. Either add a `Rest timer` group here (`Start rest after each set` switch, default length select) or document that they stay on the rest page. Pick one before building board 17.
