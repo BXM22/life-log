@@ -178,7 +178,7 @@ To-do list for the window restyle approved 2026-11-22. Plan: F68 section of docs
 
 - [x] Tests pass (338); each window opened and checked at 390 px in light and dark
 - [ ] Click through every action by hand on a phone (save weight, save meal, start and stop timer, edit and remove an area, save note, send to vault)
-- [ ] Fold the F68 section into the window sections of docs/screens/today.md, add a What's new line, update the CHANGELOG
+- [x] Fold the F68 section into the window sections of docs/screens/today.md, add a What's new line and a CHANGELOG entry
 
 ## Open questions
 

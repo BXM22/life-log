@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat: Log, Learn and Notes windows restyled in the screen A style (F68): shared `winParts.js` helpers and `windows.css` spacing tokens, saved weigh-in row, meal-type buttons, area and minute chips, More details fold, live note count; new actions `pickMeal`, `changeWeigh`, `learnFocus`; service worker cache v46; tests 338 (2026-11-22)
+- feat: Today polish (F65): habits inside the peach hero, workout card with a today-only Switch and Undo, Start workout opens the next unfinished exercise, one sync notice shown only when needed, one Log/Learn/Notes panel, type scale tokens; `wSession` now resets at the day start (2026-11-22)
 - feat: Undo after logging a set (tap the toast), finish summary card with a Tick Workout habit button, TRY TODAY tip on every exercise, and a Recent row with the last three sessions and 1RM trend; the rest timer is a chip in the logging card on the Exercise page; 5 new tests (2026-11-17)
 - feat: workout tab cleanup: Start/Continue button for the next unfinished exercise, compact info strip with a SET N OF M label, slim Activities row when none are scheduled, rest timer is now a small pill (dark while counting down) and Set saved messages sit at the top so nothing covers the set buttons (2026-11-17)
 - feat: plate calculator redone (F56): plates owned counted in pairs with steppers, barbell picture, closest loadable weights with USE buttons, old settings migrated; 9 plates tests (2026-11-17)

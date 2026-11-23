@@ -104,11 +104,28 @@ After F66 (weekly plans), the card also reads from the plan for the weekday, not
 
 Open question: does `Start workout` on a rest day or free day open the Switch sheet or the last template? (`wSession` day reset is answered, see F65 built notes.)
 
-## Log, Learn and Notes windows, screen A style (F68)
+## What changed from v1, and why
 
-Status: **built 2026-11-22** (approved the same day; checked by eye at 390 px in light and dark, not on a phone). Mock-ups on the Design canvas "Life Log Today v2", Today page, row "Log, Learn and Notes windows (screen A style)": boards `win3/Log`, `win3/Learn` (try Start timer, More details, Edit) and `win3/Notes`. When it ships, replace the three window sections below with this one.
+- **Today is a summary, not a form.** v1 stacked ten blocks on one screen. v2 keeps four things visible (header, hero, session, windows) and puts the rest in drop-downs or their own windows.
+- **Habits live in the hero (F65).** Recent is a plain row; the v2 drop-downs are gone.
+- **Windows:** Log, Learn and Notes each open a full window with a back arrow. Today only shows a one-line summary row for each.
+- **Study became Learn.** v1 had a KUMIO panel tied to one job. v2 has user-defined **areas** (Guitar, Coding, Spanish, Reading, exam prep...), so it works for anything you practise or study. Guitar and the practice timer moved into Learn because they are the same kind of thing.
+- **Sync is a chip plus a button.** The header chip shows status at a glance (and replaces the export banner); a Sync notice (only when entries wait or storage is unprotected) has a `Sync now` button.
+- **Habit removal moved** out of the checklist (no `X` next to every row) into a Manage habits sheet.
 
-Goal: give the three windows the F65 look (type scale, sentence case, one peach button) and one even spacing system, and keep every current function.
+## Quick add sheet (bottom sheet)
+
+Opened by the `+` button. Title `QUICK ADD`, close `X`, four kind chips: **Weight, Meal, Session, Note**. (v1 had Guitar and Study chips; both are now **Session**.)
+
+- **Session fields:** Area (drop-down of your areas, last used first, plus "New area"), Minutes (field plus 15 / 30 / 45 / 60 chips), and a collapsed `More details` row (type, metric, notes).
+- Other kinds keep their v1 fields (declared in `src/logic/quickAdd.js`).
+- `SAVE` stores the entry for today and closes. The scrim closes the sheet.
+
+## Log, Learn and Notes windows (screen A style, F68)
+
+Status: **built 2026-11-22** (checked by eye at 390 px in light and dark, not on a phone). Mock-ups are on the Design canvas "Life Log Today v2", Today page, boards `win3/Log`, `win3/Learn` and `win3/Notes`. This replaces the v2 window descriptions; the v2 layouts are in git history (before 2026-11-22).
+
+All three windows open from the Log, Learn and Notes rows on Today and close with the back button. They share one look (the F65 type scale, one peach button each) and one spacing system, and every function from v2 is kept: all data, actions and input ids are unchanged except the three actions added under "Built notes".
 
 ### Spacing and shared parts (all three windows)
 
@@ -159,7 +176,7 @@ Goal: give the three windows the F65 look (type scale, sentence case, one peach 
 
 Data, actions and rules do not change: `logWeighIn`, `logMeal`, `pickArea`, `pickType`, `learnMin`, `logSession`, `toggleLearn`, `practiceStart`, `practiceStop`, `practiceDiscard`, `openAreaEdit`, `addStarterArea`, `saveArea`, `deleteArea`, `closeAreaEdit`, `logNote`, `exportNotes`, `closeTodayWin`. New UI-only state: the weigh-in saved row, meal type chosen by button, and the selected minute chip.
 
-### Code touchpoints
+### Where the window code lives
 
 | Change | Files |
 |---|---|
@@ -170,51 +187,6 @@ Data, actions and rules do not change: `logWeighIn`, `logMeal`, `pickArea`, `pic
 | Notes window | `src/ui/notesView.js`, `src/ui/notesWindow.js` |
 
 Built notes (2026-11-22): new UI-only state `state.mealType` and `state.weighEdit` (cleared in `logWeighIn`), new actions `pickMeal`, `changeWeigh` and `learnFocus`; `pickArea` also reads `data-area` from the area chips. The Notes count updates through `updateNoteCount()` from one delegated `input` listener in `app.js` (textarea `#note-body`, count `#note-count`). Window markup uses `win-*` classes; the old v2 window classes remain for other screens.
-
-## What changed from v1, and why
-
-- **Today is a summary, not a form.** v1 stacked ten blocks on one screen. v2 keeps four things visible (header, hero, session, windows) and puts the rest in drop-downs or their own windows.
-- **Habits live in the hero (F65).** Recent is a plain row; the v2 drop-downs are gone.
-- **Windows:** Log, Learn and Notes each open a full window with a back arrow. Today only shows a one-line summary row for each.
-- **Study became Learn.** v1 had a KUMIO panel tied to one job. v2 has user-defined **areas** (Guitar, Coding, Spanish, Reading, exam prep...), so it works for anything you practise or study. Guitar and the practice timer moved into Learn because they are the same kind of thing.
-- **Sync is a chip plus a button.** The header chip shows status at a glance (and replaces the export banner); a Sync notice (only when entries wait or storage is unprotected) has a `Sync now` button.
-- **Habit removal moved** out of the checklist (no `X` next to every row) into a Manage habits sheet.
-
-## Quick add sheet (bottom sheet)
-
-Opened by the `+` button. Title `QUICK ADD`, close `X`, four kind chips: **Weight, Meal, Session, Note**. (v1 had Guitar and Study chips; both are now **Session**.)
-
-- **Session fields:** Area (drop-down of your areas, last used first, plus "New area"), Minutes (field plus 15 / 30 / 45 / 60 chips), and a collapsed `More details` row (type, metric, notes).
-- Other kinds keep their v1 fields (declared in `src/logic/quickAdd.js`).
-- `SAVE` stores the entry for today and closes. The scrim closes the sheet.
-
-## Log window (back arrow returns to Today)
-
-Title `Log`. Body and food only.
-
-- **WEIGH-IN:** weight (lb, step 0.1, accepts 50 to 600), `SAVE`, and a "Last: 182.8 lb, Mon" hint.
-- **MEALS:** protein line `Protein 85 / 160 g` with progress bar and "75 g to go"; today's meals as rows (type left, name and grams right); an **ADD A MEAL** group with a Meal type drop-down (Breakfast, Lunch, Dinner, Snack; defaults by time of day), "What you ate" (max 60), "Protein in grams (optional)", `SAVE MEAL`. Empty state: "No meals logged yet today."
-- A row at the bottom points to Learn: "Guitar timer moved to Learn". Remove it after one release.
-
-## Learn window (new; replaces Study window, Guitar panel and Practice timer window)
-
-Title `Learn`. Anything you practise, study or build, tracked by **area**.
-
-- **Timer card** (soft peach, only while running): `TIMER RUNNING · <AREA>`, large clock, "Practising: <focus>. Stopping logs N min.", `STOP AND LOG` and `DISCARD`. The timer survives closing the app. When idle the card is absent; `START TIMER` is in the log panel and starts straight away for the selected area and the Focus field (no separate timer window). The card has an optional metric field (the area's metric label, "Best BPM" for Guitar). Stopping saves a `session`; a refused save keeps the timer running. A timer stored by an older version (no area) stops as Guitar practice.
-- **TODAY panel:** total minutes today and one chip per area (`Guitar 30`, `Coding 15`).
-- **LOG A SESSION panel:**
-  - **Area** drop-down (your areas).
-  - **Type** chips: Practice, Study, Project, Review.
-  - **Minutes** field plus 15 / 30 / 45 / 60 chips.
-  - **More details** drop-down (closed): *Metric* (optional number; its label is set per area, e.g. "Best BPM" for Guitar, "Pages" for Reading), *Focus* (optional, with suggestions you have used before), *Notes* (optional).
-  - `SAVE SESSION` and `START TIMER`.
-- **MY AREAS · THIS WEEK panel:** one row per area with name, minutes against the weekly goal (`90 of 150 min`) and a progress bar. `Edit` opens Edit area: name, metric label (optional), weekly goal in minutes (optional), remove. "Add an area" chips offer starters (Language, Reading, Exam prep) and "Your own".
-- **RECENT SESSIONS drop-down** (closed): the 5 newest sessions.
-- Starter areas on a fresh install: **Guitar** and **Coding**. No work-specific areas ship by default; the old Kumio subject becomes a normal area on migration.
-
-## Notes window (new; was the NOTES panel inside Study)
-
-Title `Notes`. Optional title (max 80), note body (max 5000, textarea), `SAVE NOTE`; the 3 newest notes with a `WAITING` or `IN VAULT` tag; `SEND N NOTES TO VAULT` (disabled when none are waiting). A refused save keeps what you typed.
 
 ## Manage habits sheet (new)
 
