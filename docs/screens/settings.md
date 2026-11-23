@@ -26,6 +26,51 @@ Each section is an H2 overline, a grouped cream card of 56 px rows (label left, 
    - `ADD TO HOME SCREEN`: peach button, shown only when the browser offers an install prompt.
 5. **WHAT'S NEW**: the newest five update lines, each row a sentence on the left and a date (`11-17`) on the right. Edit the list in `src/logic/updates.js`.
 
+## Workout redesign impact (planned, not built)
+
+Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66).
+
+- **`Lifting days per week` (3 or 4) goes away.** It picks a hard-coded plan (`Tue Upper A, Thu Lower, Sat Upper B`, plus `Sun Upper C`). F66 step 1 replaces it with an editable weekday plan inside Workout. Remove the select and the plan note, and keep `setPlanDays` only as a one-time migration that seeds the new plan from the old value.
+- **Rest timer defaults need a home.** Workout v3 reads `state.rest.auto` (auto-start after a set) and the saved rest length. Today they live only on the rest page. Either add a `Rest timer` group here (`Start rest after each set` switch, default length select) or document that they stay on the rest page. Pick one before building board 17.
+- **Plan note under `New day starts at`:** keep the "Logs made before the start hour count toward the previous day" sentence; drop the lifting-plan sentence.
+- **Reset to built-in plan:** the new Edit template screen has `Reset all to the built-in plan` (with a confirmation). Settings gets no copy of it.
+- **Tab bar space:** if the 72 px reserved strip becomes a global rule, this screen's scroll container needs the same `padding-bottom: calc(72px + 16px + env(safe-area-inset-bottom))`.
+
+## v2 update (redesign, planned, not built)
+
+Mock-ups: Design canvas "Life Log Settings, History and Sync v2" (https://claude.ai/artifact/Uwig18H7bxcS54s1u1W4zC), Settings row, 6 phone boards, 390 wide, playable. Same rules as Workout v2 and Today F65: one calm root screen, pages for work you stay in, sheets for quick choices, switches and segmented controls inline for two to four options. Sentence case, nothing under 13 px, no all-caps overlines, no `·` joins. Reserve the 72 px tab bar strip on every page.
+
+### Screens
+
+1. **Settings (root):** title; Theme segmented control (System, Light, Dark); `Your day` group: `New day starts at` row (opens sheet) and `Keep after a wipe` segmented (0, 3, 7, 14 days); `Training` group: `Weekly plan` (opens the plan in Workout), `Rest timer` (page); `Backup` group: `Dropbox` (page), `Remind me to export weekly` switch; one note that data stays on this phone. The old `Lifting days per week` select and its plan sentence are removed.
+2. **Rest timer (page):** `Start rest after each set` switch (`state.rest.auto`), `Default length` chips 0:45, 1:00, 1:30, 2:00, 3:00, Custom (the saved rest length). Note that the rest page can still change it during a workout.
+3. **New day starts at (sheet):** radio rows Midnight to 6:00 AM, `Use 4:00 AM` confirms, `Cancel` closes. Row tap only selects.
+4. **Dropbox, connected (page):** status and last export, `Upload finished days` switch (`lifelog.autoSync`), a `Go to Sync` row, `Disconnect Dropbox`. Auto-sync moves here from the Export group because it does nothing until connected.
+5. **Dropbox, not connected (page):** explanation, `Connect Dropbox`, the same switch turned off.
+6. **Connect Dropbox (sheet):** app key field, `Connect`, `Cancel`.
+
+### Wiring
+
+| From | Tap | Goes to |
+|---|---|---|
+| Settings | New day starts at | New day starts at (sheet) |
+| Settings | Rest timer | Rest timer (page) |
+| Settings | Dropbox | Dropbox page (connected or not, by state) |
+| Settings | Weekly plan | Workout tab, plan page (F66 step 1; not on this canvas) |
+| New day starts at | Use, Cancel | Settings; Use saves `dayStart` via `setDayStart` |
+| Rest timer | back arrow | Settings; both controls save immediately |
+| Dropbox (connected) | Go to Sync | Sync tab |
+| Dropbox (connected) | Disconnect Dropbox | Dropbox (not connected); keeps files in Dropbox, turns exports and wipe off |
+| Dropbox (not connected) | Connect Dropbox | Connect Dropbox (sheet) |
+| Connect Dropbox | Connect, Cancel | Dropbox (connected); Dropbox (not connected) |
+| Any tab icon | tap | that tab's root |
+
+### Build notes
+
+- `setPlanDays` stays only as a one-time migration that seeds the weekly plan from the old 3 or 4 value, then the control is removed. `setKeep`, `setDayStart`, `setExportReminder`, `setAutoSync`, `openDropbox`, `disconnect` keep their current behaviour; the views change.
+- Add a rest settings store (`state.rest.auto`, saved length) read by the Workout rest bar, Rest timer page and Log set.
+- Open question: the mock-up writes the Settings copy fresh. Check it before building. `What's new` is unchanged and not drawn.
+
 ## Design style
 
 - **Layout:** Forma settings screen: grouped cream cards, label left, value right, hairline dividers between rows (`var(--hairline)` / `#EADFD5` in light), 56 px minimum row height, 15 px weight 600 labels.

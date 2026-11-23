@@ -5,15 +5,20 @@ One document per tab, describing what is on each screen, in order, with the data
 | Tab | Doc | Purpose |
 |---|---|---|
 | Today | [today.md](today.md) | Habits, today's session, quick logging (guitar, weigh-in, meals, study, notes) |
-| Workout | [workout.md](workout.md) | Active template, exercise logging, rest timer, templates, history |
+| Workout | [workout.md](workout.md) | Active template, exercise logging, rest timer, templates, history. v2 redesign and v3 polish are documented there (planned, not built) |
 | History | [history.md](history.md) | Week grid, weight trend, streaks, heatmap, records, all entries |
 | Sync | [sync.md](sync.md) | Export, wipe, weekly review, backup and restore, Dropbox |
 | Settings | [settings.md](settings.md) | Plan days, keep days, day start, export reminder, Dropbox, What's New |
+
+## Cross-screen impact of the Workout redesign (planned)
+
+Today, Settings, History and Sync each have a "Workout redesign impact" section. Short version: Today opens the Switch sheet and `Next up`; Settings drops `Lifting days per week` and gains rest timer defaults; History avoids a duplicate list and keeps each session's template; Sync backs up plans and templates.
 
 ## Shared shell
 
 - **Page header** (every tab except History's own windows): small overline `LIFE LOG · TUE, NOV 17` over the tab title as an H1 (`TODAY`, `WORKOUT`, `HISTORY`, `SYNC`, `SETTINGS`). Source: `header()` in `src/ui/app.js`.
 - **Bottom tab bar:** five tabs, in order Today, Workout, History, Sync, Settings. Icon above a lowercase 11 px label. The active tab's icon sits in a peach pill (56 x 32, 16 px radius). Sync stays highlighted while its Export and Wipe sub-tabs are shown.
+- **Reserved tab bar strip (planned, from Workout v2):** every scroll container ends with `padding-bottom: calc(72px + 16px + env(safe-area-inset-bottom))`, and pinned bars sit above the 72 px strip. Apply to all tabs, not only Workout.
 - **Toast:** one dark pill above the tab bar for confirmations and errors (`state.msg`). Short messages clear after 4.5 s; tap to dismiss.
 - **Windows:** several features open as a full screen with a back control instead of a modal (Today's Log and Study, Workout's Templates and rest timer, History's Personal records and All entries). Confirmations (wipe, Dropbox setup) are centered modals. The quick-add sheet is a bottom sheet.
 - **Persistence rule:** everything is stored on the device (IndexedDB for entries and templates, localStorage for small settings). Nothing leaves the phone unless exported.

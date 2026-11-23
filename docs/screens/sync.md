@@ -26,6 +26,57 @@ Title `SYNC`, then a two-button segmented control `EXPORT | WIPE`.
 - **CONFIRM WIPE modal:** a red-ringed warning box: "Wipe permanently deletes N entries (11-01 to 11-10) from this phone. Open the file in Dropbox first and confirm it is there. This cannot be undone."; a checkbox "I opened the file in Dropbox and it is complete"; red `WIPE N !!` (disabled until ticked); `CLOSE`.
 - Wipe removes only exported entries older than the keep window and keeps statistics, records and templates.
 
+## Workout redesign impact (planned, not built)
+
+Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66 step 3).
+
+- **Backup and restore must carry plans and templates.** Add plans, template edits, the active template and the rest timer defaults to the JSON backup. Bump `SCHEMA_VERSION`, merge by id, and the newest `updatedAt` wins, so `RESTORE FROM FILE` still never deletes.
+- **Today's extras** (`lifelog.wExtras`) and today's template override (`state.wSession`) are per-day. Decide whether they are backed up (probably not).
+- **Share a template as a file** and **import a template file** (F66 step 3) live in Workout's Templates page. Add a one-line pointer here under `BACKUP` so people find them.
+- **`Reset all to the built-in plan`** (Workout, Edit template) changes data that Sync exports. Confirm the export after a reset marks the changed templates as `WAITING`.
+- **Wipe** keeps templates and statistics. Add plans to that list.
+
+## v2 update (redesign, planned, not built)
+
+Mock-ups: Design canvas "Life Log Settings, History and Sync v2" (https://claude.ai/artifact/Uwig18H7bxcS54s1u1W4zC), Sync row, 8 phone boards, playable. The Export and Wipe sub-tabs go away. Freeing space is one ordered flow, which is the one place on these screens where numbers are a real sequence: export, confirm, wipe.
+
+### Screens
+
+1. **Sync, wipe locked (root):** `Copies` card with two meters (Dropbox export, backup file; red `Overdue` when due); `Free up space` card with three steps: 1 `Export entries` (primary button), 2 `Confirm the file is in Dropbox`, 3 `Wipe old entries` (lock icon, "Opens after you confirm the file"); `More` rows: `Weekly review`, `Backup and restore` (Overdue tag), `Dropbox` (opens Settings).
+2. **Export entries (page):** file name, entry count and date range; `Upload to Dropbox`, `Save with the share sheet`; note that notes are sent from Today; Markdown preview; `Cancel`. When Dropbox is not connected, the first button becomes `Set up Dropbox` and opens the Connect sheet in Settings.
+3. **Is the file in Dropbox? (sheet):** `Yes, it is there` or `Not yet`.
+4. **Sync, wipe ready (root):** steps 1 and 2 show a check; step 3 is active with `Wipe 12 entries` (outlined red).
+5. **Wipe old entries (page):** how many entries and their dates, `What stays` rows (`Last 7 days` with a `Change` link to Settings, records, plans and templates), red `Wipe N entries`, `Not now`.
+6. **Wipe N entries? (sheet):** red-ringed warning, checkbox "I opened the file in Dropbox and it is complete", red button disabled until ticked, `Cancel`.
+7. **Weekly review (page):** week range, Markdown review, `Send to vault`.
+8. **Backup and restore (page):** card listing what the backup holds (entries, Workout plans and templates, rest timer settings), `Back up now`; `Restore` card ("adds back anything missing, keeps the newest version, never deletes") with `Choose a backup file`.
+
+### Wiring
+
+| From | Tap | Goes to |
+|---|---|---|
+| Sync (locked) | Export entries | Export entries (page) |
+| Export entries | Upload to Dropbox, Save with the share sheet | Is the file in Dropbox? (sheet) |
+| Export entries | Cancel, back arrow | Sync (locked) |
+| Is the file in Dropbox? | Yes, it is there | Sync (wipe ready); sets the confirmed flag |
+| Is the file in Dropbox? | Not yet | Export entries |
+| Sync (ready) | Wipe N entries | Wipe old entries (page) |
+| Wipe old entries | Wipe N entries | Wipe N entries? (sheet) |
+| Wipe old entries | Change (last 7 days) | Settings |
+| Wipe old entries | Not now | Sync (ready) |
+| Wipe N entries? | Wipe (after ticking) | Sync, with 0 entries waiting; runs `wipe` |
+| Wipe N entries? | Cancel | Wipe old entries |
+| Sync | Weekly review, Backup and restore | the matching page |
+| Sync | Dropbox | Settings, Dropbox page |
+| Any tab icon | tap | that tab's root |
+
+### Build notes
+
+- Reuse `build`, `upload`, `share`, `confirmYes`, `confirmNo`, `sendReview`, `backup`, `restore`, `openDropbox`, `wipe`; the logic is unchanged. Only the sub-tab state (`exportWipe`) is replaced by a page and sheet stack. `confirmYes` sets the flag that unlocks step 3.
+- Wipe stays locked until a confirmed export exists and keeps the existing rules: only exported entries older than the keep window are removed; statistics, records, plans and templates stay.
+- Backup and restore carry plans, templates and rest settings (see the impact section above).
+- Open questions: how the root looks after a wipe finishes (0 waiting, steps reset); whether the confirmed flag expires.
+
 ## Design style
 
 - **Segmented control:** two pill buttons (40 px) in a cream track with 4 px padding and 24 px radius; the current one is solid ink with white text (`aria-current="page"`).
