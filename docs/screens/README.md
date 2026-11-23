@@ -5,7 +5,7 @@ One document per tab, describing what is on each screen, in order, with the data
 | Tab | Doc | Purpose |
 |---|---|---|
 | Today | [today.md](today.md) | Habits, today's session, quick logging (guitar, weigh-in, meals, study, notes) |
-| Workout | [workout.md](workout.md) | Active template, exercise logging, rest timer, templates, history. v2 redesign and v3 polish are documented there (planned, not built) |
+| Workout | [workout.md](workout.md) | Active template, exercise logging, rest timer, templates, history. v2 redesign and v3 polish (F67) are documented there and shipped; the library is a full page |
 | History | [history.md](history.md) | Week grid, weight trend, streaks, heatmap, records, all entries |
 | Sync | [sync.md](sync.md) | Export, wipe, weekly review, backup and restore, Dropbox |
 | Settings | [settings.md](settings.md) | Plan days, keep days, day start, export reminder, Dropbox, What's New |

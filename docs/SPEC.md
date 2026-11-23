@@ -300,6 +300,8 @@ The app keeps the top 5 results for each record, best first, and they survive a 
 
 ## UI design and color palette
 
+> **Current palette (2026-11-22, F69):** lavender, mint, butter and charcoal on a cream background, set in `src/styles/forma.css`. See the Color palette section of `docs/screens/workout.md`. The Signalbox table below is the original design and is kept for history.
+
 The app uses the Signalbox layout (2026-11-10): rounded grouped cards, pill buttons and one orange accent on a warm black ground. It replaces the earlier chunky pixel look (Color Hunt orange and slate) and the lime, teal and indigo trials. Design note: `Claude outputs/Signalbox-design.md` in the vault; canvas: https://claude.ai/artifact/NoayAQ2Y8EWQynerdxB4PN
 
 | Token | Hex | Used for |

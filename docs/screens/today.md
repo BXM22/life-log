@@ -70,7 +70,7 @@ Rules: sentence case for headings, labels and buttons (`Start workout`, `Sync no
 - **Sync notice** comes from `syncNotice({pending, lastExportAt, storageProtected, now})` in `syncStatus.js`; the chip uses the same pending count so the two never disagree. The Sync row (`syncRowHtml`) is deleted.
 - **Header** (`app.js`): Today shows the full date line with no prefix; other tabs still use `LIFE LOG · DATE`.
 - **Dark mode:** the habits hero stays peach in both modes, so its rows use fixed colors (`--hero-ink`, `--hero-dim`, `--hero-row`, `--hero-ring` in `today.css`). Everything else on Today uses the theme tokens.
-- **Colors:** still the peach tokens in `forma.css`. The lavender, mint, butter and charcoal palette in `workout.md` is a test palette for Workout only and is not approved, so it is not applied.
+- **Colors:** the lavender, mint, butter and charcoal palette (F69, see the Color palette section of `workout.md`), applied through `forma.css`. The habits hero is lavender with charcoal text in both light and dark, so its rows use fixed `--hero-*` colors.
 - Line-height tokens `--lh-*` exist but are only used in `today.css`.
 
 ### Code touchpoints

@@ -174,7 +174,7 @@ All "back" arrows return to the page that opened them, not always Today. Today i
 
 **11. History (page).** Grouped by `This week`, `Last week`, `Earlier`. Each day is a fold `Tue 11-17 · Upper A` with `12 sets`. Opening shows per-exercise set chips (warm-ups muted). Footer fold notes the 60-day limit and Dropbox exports.
 
-**Exercise library (added 2026-11-17).** Exercise options menu gains `Save to library` (template and today-only exercises); the Today menu gains `Exercise library` (a sheet listing saved exercises with `REMOVE`). Saving a name that already exists replaces it. The name field in the Add for today sheet and the Edit exercise form suggests saved names; picking one fills equipment, what you log, warm-up, target and the left and right box in place (nothing else re-renders). Stored in `localStorage` key `lifelog.library` (this device only, up to 200). Source: `src/logic/library.js`, `src/ui/libraryActions.js`.
+**Exercise library (page, redone 2026-11-22).** Exercise options menu has `Save to library` (template and today-only exercises). The Workout menu (three dots on Today) has `Exercise library`, a full page: a count pill, a search box (every word must match the name, equipment, what you log or target), equipment chips with counts, a `New exercise` button, and one card per exercise with an Edit pencil and a Delete trash button. Edit opens the form inside the card (name, equipment, what you log, left and right, warm-up, target); renaming is allowed and a name that belongs to another exercise is refused with the typed values kept. Delete asks inside the card (Keep it or Delete) and does not change templates. Saving an existing name from the options menu still replaces it. The name field in the Add for today sheet and the Edit exercise form suggests saved names and fills the rest in place. Stored in `localStorage` key `lifelog.library` (this device only, up to 200, 46 starter exercises seeded once). State: `libWin`, `libQuery`, `libEquip`, `libEdit`, `libDraft`, `libErr`, `libAsk`. Source: `src/logic/library.js`, `src/ui/libraryActions.js`, `src/ui/libraryWindow.js`, `src/styles/w3-library.css`.
 
 **12. Today, BJJ day.** BJJ is now an activity (see Activities), not part of "Before you lift". Its log sheet holds the `BJJ done today` check and the `Post-BJJ warm-up` list.
 
@@ -228,15 +228,15 @@ All "back" arrows return to the page that opened them, not always Today. Today i
 - Exact tab bar height is assumed 72 px. Change the number everywhere if the real bar differs.
 - Trim a set is shown as a one-line dropdown item with a hint of the resulting target; the label flips to Put back once trimmed.
 
-## v3 polish pass (planned, not built)
+## v3 polish pass (shipped 2026-11-22, F67)
 
-Polishes the shipped v2 (F53) without changing its structure. Mock-ups are on the Design canvas "Workout tab redesign", Page 1, Polish row, boards 14 to 21. Backlog item: F67 in docs/BACKLOG.md. Nothing here is in the code yet.
+Polishes the shipped v2 (F53) without changing its structure. Mock-ups are on the Design canvas "Workout tab redesign", Page 1, Polish row, boards 14 to 21. Backlog item: F67 in docs/BACKLOG.md. Built on the palette below, applied app-wide. Differences from the boards: template exercises reorder with up and down buttons (no drag handle), and the dark theme is derived because the boards only had light.
 
 **Goals (from the user's answers):** log a set quickly; find the next exercise; the app is mostly used after the workout, so every number should be pre-filled and one tap should be enough.
 
-### Color palette (test, on boards 14 to 21)
+### Color palette (shipped, whole app, F69)
 
-Four base colors: lavender `#EEDEF6`, mint `#CCE5E3`, butter `#FEE1B6`, charcoal `#2F2F2F`. Strongest-contrast version, cream background.
+Applied through the tokens in `forma.css`. Four base colors: lavender `#EEDEF6`, mint `#CCE5E3`, butter `#FEE1B6`, charcoal `#2F2F2F`. Strongest-contrast version, cream background.
 
 | Role | Color | Used for | Replaces (peach) |
 |---|---|---|---|
@@ -254,7 +254,7 @@ Four base colors: lavender `#EEDEF6`, mint `#CCE5E3`, butter `#FEE1B6`, charcoal
 
 Muted text, line, divider, dashed outline and the two card borders are derived from lavender, since the palette gives no border or muted color. Contrast notes: butter on white is faint, so butter is only used as text on charcoal or with a charcoal outline; check `#46424D` on cream before shipping.
 
-**Applying it to the app (when approved):** change the tokens in `forma.css` rather than editing each `.w2-` rule (`--panel`, `--line`, `--accent`, `--on-accent`, `--peach-soft`, `--ink`, `--dim`, `--bg`, `--hairline`, plus a new `--card` for white rows), then re-check the dark theme variables. Primary buttons switch from `background: var(--accent)` to a charcoal fill, so `--on-accent` becomes butter.
+**Applied.** The tokens in `forma.css` carry it (`--bg`, `--panel`, `--line`, `--accent`, `--on-accent`, `--peach-soft` for mint, `--ink`, `--dim`, `--hairline`, plus `--lav` and `--lav-line` for the accent card). Primary buttons are a charcoal fill with butter text. **Dark theme (derived):** background `#17141C`, panel `#221E2A`, line `#6F6585`, text `#F4EEF7`, muted `#B3AABD`, accent butter `#FEE1B6` with charcoal text, mint `#233A39`, lavender `#332B45`. The Today hero stays lavender with charcoal text in both modes. Rule that bit during the build: `button.btn` is `width: 100%`, so any `.btn` that must be narrower needs a selector as specific (`button.btn.w2-x`).
 
 ### Board index (Polish row)
 
@@ -275,7 +275,7 @@ Not redone, so the v2 boards stay current: Today menu (2), Warm-up and BJJ sheet
 
 - Tab bar: 76 px, drawn on every page, Workout tab highlighted. Content stops 76 px above the bottom; the pinned Log set bar (15) and Save bar (20) sit directly above the tab bar.
 - Rest timer is always reachable. Today and the rest page show it as a pill, Exercise shows it as a chip in the logging card (the pill would sit on the set buttons). Idle = peach, running = dark, both show `REST` plus the time.
-- Hit targets 44 px or more, sentence case, no emoji, real buttons and links. Colors: the test palette below (boards 14 to 21 use it). The shipped app still uses the `forma.css` peach tokens (panel `#FBF3EC`, line `#E3D6CB`, accent `#F4A28C`, soft `#FDE8E0`, ink `#1C1B1F`, dim `#6B6B70`) until the palette is approved.
+- Hit targets 44 px or more, sentence case, no emoji, real buttons and links. Colors: the palette below, now shipped (it replaced the peach tokens).
 
 ### What changed per screen
 

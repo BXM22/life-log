@@ -1,5 +1,7 @@
 # Appearance: color themes and goal layouts (plan)
 
+> **Update 2026-11-22:** the shipped default palette is now lavender, mint, butter and charcoal on cream (F69, `docs/screens/workout.md`, Color palette). The Peach row below describes the previous default; use it as the starting point when F62 themes are built, with the new palette as the default.
+
 Status: **plan, not built.** Backlog items F62 (themes), F63 (goal layouts), F64 (first-run picker). Written 2026-11-19.
 
 ## Decisions
