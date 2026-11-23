@@ -60,3 +60,29 @@ export const removeFromLibrary = (list, name) => (list ?? []).filter((e) => !sam
 
 /** Autofill values for a typed name: the saved exercise when the name matches exactly (ignoring case), else null. */
 export const autofillFor = (list, name) => findInLibrary(list, name);
+
+const MODE_WORDS = { weight: 'weight and reps', bodyweight: 'bodyweight', timed: 'timed' };
+
+/** Filter by a search text (name, equipment, what you log, target; every word must match) and an equipment key ('all' or an equipment). */
+export function searchLibrary(list, query = '', equip = 'all') {
+  const words = String(query).toLowerCase().split(/\s+/).filter(Boolean);
+  return (list ?? []).filter((e) => {
+    if (equip !== 'all' && e.equipment !== equip) return false;
+    const hay = `${e.name} ${e.equipment ?? ''} ${MODE_WORDS[e.mode] ?? ''} ${e.target ?? ''}`.toLowerCase();
+    return words.every((w) => hay.includes(w));
+  });
+}
+
+/** Edit one entry (rename allowed) or add a new one when oldName is null. A name that belongs to a different entry is refused. */
+export function updateLibraryEntry(list, oldName, fields) {
+  const r = parseExerciseFields({ ...fields, warmup: fields.warmup === 'none' ? '' : fields.warmup });
+  if (r.error) return r;
+  const cur = list ?? [];
+  const at = oldName == null ? -1 : cur.findIndex((e) => same(e.name, oldName));
+  if (oldName != null && at < 0) return { error: 'That exercise is no longer in the library.' };
+  const other = cur.findIndex((e, i) => i !== at && same(e.name, r.exercise.name));
+  if (other >= 0) return { error: `${r.exercise.name} is already in the library.` };
+  if (at < 0 && cur.length >= MAX_LIBRARY) return { error: `The library holds up to ${MAX_LIBRARY} exercises.` };
+  const next = at < 0 ? [...cur, r.exercise] : cur.map((e, i) => (i === at ? r.exercise : e));
+  return { list: next.sort((a, b) => a.name.localeCompare(b.name)), added: at < 0 };
+}

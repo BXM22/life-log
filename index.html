@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#FFFFFF">
+  <meta name="theme-color" content="#FFF6E3">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="Life Log">
@@ -19,7 +19,7 @@
         document.documentElement.dataset.theme = effective;
         document.documentElement.style.colorScheme = effective;
         var meta = document.querySelector('meta[name="theme-color"]');
-        if (meta) meta.setAttribute('content', effective === 'dark' ? '#141210' : '#FFFFFF');
+        if (meta) meta.setAttribute('content', effective === 'dark' ? '#17141C' : '#FFF6E3');
         var bar = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
         if (bar) bar.setAttribute('content', effective === 'dark' ? 'black-translucent' : 'default');
       } catch (e) { /* storage blocked or corrupt: stay light */ }
@@ -42,6 +42,9 @@
   <link rel="stylesheet" href="src/styles/workout-today.css">
   <link rel="stylesheet" href="src/styles/workout-sheets.css">
   <link rel="stylesheet" href="src/styles/workout-pages.css">
+  <link rel="stylesheet" href="src/styles/w3-rest.css">
+  <link rel="stylesheet" href="src/styles/w3-templates.css">
+  <link rel="stylesheet" href="src/styles/w3-library.css">
 </head>
 <body>
   <main id="app" aria-live="polite"></main>

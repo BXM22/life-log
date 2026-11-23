@@ -1,5 +1,5 @@
 /* Workout v2: Today list and Exercise page. All selectors prefixed .w2-. Tokens come from forma.css. */
-.w2-page { padding-bottom: calc(var(--tabbar-h, 76px) + 16px + 72px + env(safe-area-inset-bottom)); } /* tab bar, then room for the fixed rest bar */
+.w2-page { padding-bottom: calc(var(--tabbar-h, 76px) + 16px + env(safe-area-inset-bottom)); } /* 76 px tab bar */
 .w2-head { display: flex; align-items: flex-start; justify-content: space-between; margin: 0 0 16px; }
 .w2-head h1, .w2-title { margin: 0; }
 .w2-over { display: block; font-size: 12px; line-height: 16px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--dim); }
@@ -99,3 +99,25 @@
 .pl-own small { color: var(--dim); }
 .pl-steps { display: flex; gap: 8px; }
 .btn.pl-step { width: 48px; min-height: 44px; padding: 0; font-size: 20px; line-height: 1; }
+
+/* Today (F67, board 14): header rest pill, Next up, shared Warm-up card, Done fold */
+.w2-headact { display: flex; align-items: center; gap: 4px; }
+.w2-headact .w2-icon { margin-right: -10px; }
+.w2-restchip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 22px; background: var(--peach-soft); color: var(--ink); font-size: 13px; font-weight: 700; cursor: pointer; }
+.w2-restchip.run { background: var(--ink); color: var(--on-ink); }
+.w2-restchip:focus-visible, .w2-foldbtn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.w2-restbar-label { letter-spacing: 0.04em; }
+.w2-restbar-time { font-variant-numeric: tabular-nums; }
+.w2-next { width: 100%; margin: 0 0 16px; }
+.w2-warmcard .w2-line + .w2-actbare, .w2-warmcard .w2-line + .w2-line { border-top: 1px solid var(--line); }
+.w2-actbare { border-top: 1px solid var(--line); margin-top: 4px; padding-top: 12px; }
+.w2-warmcard .w2-actbare:first-of-type { border-top: 0; margin-top: 0; padding-top: 0; }
+.w2-edit { min-height: 44px; min-width: 44px; }
+.w2-fold { margin: 16px 0 0; }
+.w2-foldbtn { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 0 16px; border: 0; border-radius: 20px; background: var(--panel); color: var(--ink); font-size: 15px; font-weight: 700; text-align: left; cursor: pointer; }
+.w2-foldbtn > span:first-child { flex: 1; }
+.w2-foldchev { transition: transform 0.15s; }
+.w2-foldchev.open { transform: rotate(90deg); }
+.w2-fold .w2-list { margin-top: 8px; }
+.w2-row.done { opacity: 0.7; }
+.editlink.w2-edit { padding-bottom: 0; } /* .w2-edit is also the Edit template page wrapper; links must not inherit its footer padding */

@@ -4,10 +4,11 @@
 // Input ids stay w-i, r-i, s-i, sd-i, ld-i because logSet and the plate calculator read them.
 
 import { logicalDate } from '../logic/dates.js';
-import { lastWorking, progressionPrompt, setText, setsFor, suggestWarmup } from '../logic/workout.js';
+import { lastWorking, progressionPrompt, repCeiling, setText, setsFor, suggestWarmup } from '../logic/workout.js';
 import { backCue, trimmedFor, trimmedTarget } from '../logic/workoutExtras.js';
 import { setDots, setsComplete } from '../logic/workoutPlan.js';
 import { bestSet, recentBest } from '../logic/records.js';
+import { prsOn } from '../logic/progress.js';
 import { restChip } from './restView.js';
 import { esc } from './format.js';
 import { editForm } from './historyView.js';
@@ -81,9 +82,47 @@ export function exercisePage(state) {
     ? `<div class="w2-acc"><button class="w2-accbtn" data-action="${platesOpen ? 'platesClose' : 'platesOpen'}" data-i="${i}" aria-expanded="${platesOpen}"><span>Plate calculator</span>${svg(platesOpen ? '<path d="M5 15l7-7 7 7"/>' : '<path d="M5 9l7 7 7-7"/>', 20)}</button>${platesPanel(state, i)}</div>`
     : '';
 
-  const rows = sets.map((e) => (state.editId === e.id ? editForm(e) : `<div class="entry"><div class="row"><span>${e.data.kind === 'warmup' ? 'Warm-up' : 'Set'} ${esc(setText(e.data))}</span>
-      <span class="actions"><button class="btn secondary small" data-action="startEdit" data-id="${esc(e.id)}" aria-label="Edit this set">EDIT</button>
-      <button class="btn secondary small" data-action="deleteEntry" data-id="${esc(e.id)}" aria-label="Delete this set">DEL</button></span></div></div>`)).join('');
+  const rows = sets.map((e) => (state.editId === e.id ? editForm(e) : `<div class="w2-setrow"><span class="w2-settxt">${e.data.kind === 'warmup' ? 'Warm-up' : 'Set'} ${esc(setText(e.data))}</span>
+      <span class="w2-setbtns"><button class="w2-mini" data-action="startEdit" data-id="${esc(e.id)}" aria-label="Edit this set">Edit</button>
+      <button class="w2-mini w2-minidel" data-action="deleteEntry" data-id="${esc(e.id)}" aria-label="Delete this set">Delete</button></span></div>`)).join('');
+
+  const lastText = last ? esc(setText(last)) : '';
+  const lastStrip = last
+    ? `<section class="w2-last"><div class="w2-lasttxt"><span class="w2-cl">LAST TIME</span><b>${lastText}</b><small>${esc(last.date.slice(5))}</small></div><button class="w2-use" data-action="wUseLast" data-i="${i}" aria-label="Use last time's weight and reps">Use</button></section>`
+    : '<section class="w2-last"><div class="w2-lasttxt"><span class="w2-cl">LAST TIME</span><b>No history</b></div></section>';
+
+  const curReps = String(d.r ?? last?.reps ?? '');
+  const base = Number(curReps) || last?.reps || repCeiling(ex.target) || 0;
+  const repChips = ex.mode === 'timed' || !base
+    ? ''
+    : `<div class="w2-repchips" role="group" aria-label="Rep shortcuts">${[-2, -1, 0, 1, 2].map((k) => base + k).filter((v) => v > 0).map((v) => `<button class="w2-rchip" data-action="wRepChip" data-i="${i}" data-v="${v}" aria-pressed="${String(v) === curReps}">${v}</button>`).join('')}</div>`;
+
+  const prNow = complete ? prsOn(state.entries, state.stats, day).find((p) => p.exercise === ex.name) : null;
+  const prBanner = prNow ? `<p class="w2-pr" role="status"><b>NEW PR</b> ${esc(prNow.value)} ${esc(prNow.unit === '1RM' ? 'est. 1RM' : prNow.unit)}, was ${esc(prNow.previous)}</p>` : '';
+  const hasNext = i < list.length - 1;
+  const total = dots.total;
+  const remaining = total == null ? 0 : Math.max(0, total - dots.done);
+
+  const logCard = complete
+    ? `<section class="w2-card w2-finished">
+        <h2 class="w2-fin-title">Exercise done</h2>
+        <p class="w2-sub"><b>All ${total} sets done.</b> ${sets.length} logged today.</p>
+        ${hasNext ? `<button class="btn w2-big" data-action="wExNext" data-delta="1">Next up</button>` : ''}
+        <div class="pair"><button class="btn secondary" data-action="wMoreSets" data-i="${i}">Add a set</button>
+        <button class="btn secondary" data-action="wCloseEx">Back to list</button></div>
+      </section>`
+    : `<section class="w2-card w2-log">
+      <div class="w2-logtop">${setNum}${restChip(state)}</div>
+      ${stepper('w', 'weight', i, weightLabel, d.w ?? last?.weight ?? '', 'inputmode="decimal" step="0.5"')}
+      ${second}
+      ${repChips}
+      ${loadSel}${sideSel}
+      <div class="pair">
+        <button class="btn secondary" data-action="logSet" data-kind="warmup" data-i="${i}">Warm-up set</button>
+        ${remaining > 1 ? `<button class="btn secondary" data-action="wFillAll" data-i="${i}">Fill all as this</button>` : ''}
+      </div>
+    </section>`;
+  const logBar = complete ? '' : `<div class="w2-logbar"><button class="btn w2-logbtn" data-action="logSet" data-kind="working" data-i="${i}">Log set ${dots.total == null ? '' : Math.min(dots.done + 1, dots.total + (dots.done >= dots.total ? 1 : 0))}</button></div>`;
 
   return `<div class="w2-page">
     <header class="w2-exhead">${BACK}
@@ -92,31 +131,17 @@ export function exercisePage(state) {
         <button class="w2-pg" data-action="wExNext" data-delta="1" aria-label="Next exercise" ${i < list.length - 1 ? '' : 'disabled'}>${svg('<path d="M9 5l7 7-7 7"/>', 20)}</button></div>
       <button class="w2-icon" data-action="wMenuToggle" data-menu="exercise" aria-label="Exercise options" aria-haspopup="menu">${DOTS_ICON}</button></header>
     <div class="w2-titlerow"><h1 class="w2-title">${esc(ex.name)}</h1>${tag ? `<span class="tag w2-tag">${esc(tag)}</span>` : ''}</div>
+    ${prBanner}${lastStrip}
     <div class="w2-strip">
       ${cell('TARGET', target)}
-      ${cell('LAST', last ? esc(setText(last)) : '-', last ? esc(last.date.slice(5)) : 'No history')}
       ${cell('WARM-UP', warm ? `${warm} lb` : '-')}
       ${cell('PR', pr ? esc(pr.text) : '-', pr ? (pr.est1rm ? `est. 1RM ${pr.est1rm}` : esc(pr.date.slice(5))) : 'No history')}
     </div>
     ${recentRow}${tryTip}${cue}
-    <section class="w2-card w2-log">
-      <div class="w2-logtop">${complete ? '<span></span>' : setNum}${restChip(state)}</div>
-      ${stepper('w', 'weight', i, weightLabel, d.w ?? last?.weight ?? '', 'inputmode="decimal" step="0.5"')}
-      ${second}
-      ${loadSel}${sideSel}
-      ${complete
-        ? `<p class="w2-sub"><b>All ${setDots(ex, state.entries, day, state.wTrims).total} sets done.</b></p>
-      <div class="pair">
-        <button class="btn secondary" data-action="wMoreSets" data-i="${i}">ADD EXTRA SET</button>
-        <button class="btn" data-action="${i < list.length - 1 ? 'wExNext' : 'wCloseEx'}" data-delta="1">${i < list.length - 1 ? 'NEXT EXERCISE' : 'BACK TO LIST'}</button>
-      </div>`
-        : `<div class="pair">
-        <button class="btn secondary" data-action="logSet" data-kind="warmup" data-i="${i}">WARM-UP SET</button>
-        <button class="btn" data-action="logSet" data-kind="working" data-i="${i}">WORKING SET</button>
-      </div>`}
-    </section>
+    ${logCard}
     ${plates}
-    ${extra ? `<button class="btn ${ex.done ? 'secondary' : ''}" data-action="toggleExtraDone" data-name="${esc(ex.name)}">${ex.done ? 'MARK NOT DONE' : 'MARK DONE'}</button>` : ''}
-    <section class="w2-card"><h2 class="w2-label">LOGGED TODAY · ${sets.length}</h2>${rows || '<p class="w2-sub">No sets yet.</p>'}</section>
+    ${extra ? `<button class="btn ${ex.done ? 'secondary' : ''}" data-action="toggleExtraDone" data-name="${esc(ex.name)}">${ex.done ? 'Mark not done' : 'Mark done'}</button>` : ''}
+    <section class="w2-card"><h2 class="w2-label">Logged today · ${sets.length}</h2>${rows || '<p class="w2-sub">No sets yet.</p>'}</section>
+    ${logBar}
   </div>`;
 }

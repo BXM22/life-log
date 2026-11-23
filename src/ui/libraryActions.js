@@ -1,15 +1,16 @@
 // Exercise library (logic/library.js): save an exercise from its options menu, autofill by name, manage the list.
-//   actions: libSave (data-i, the open exercise's index) | libRemove (data-name)
-//   exports: createLibraryActions({ state, today }), autofillForm(state, input), libraryDatalist(state), librarySheet(state, ui)
+//   actions: libSave (data-i) | libOpenWin | libCloseWin | libSearch | libFilter (data-key) | libNew | libEdit (data-name) | libEditCancel | libEditSave |
+//            libAsk (data-name) | libAskCancel | libRemove (data-name). The page itself is src/ui/libraryWindow.js.
+//   exports: createLibraryActions({ state, today }), autofillForm(state, input), libraryDatalist(state)
 // State: library (list). Name inputs carry list="lib-names" and data-libfill; app.js calls autofillForm on their change event.
 
-import { loadLibrary, seedLibrary, saveLibrary, saveToLibrary, removeFromLibrary, autofillFor } from '../logic/library.js';
+import { loadLibrary, seedLibrary, saveLibrary, saveToLibrary, removeFromLibrary, autofillFor, updateLibraryEntry } from '../logic/library.js';
 import { workoutContext } from './workoutNavActions.js';
-import { EQUIP_TEXT } from './templateView.js';
 import { esc } from './format.js';
 
-const MODE_TEXT = { weight: 'weight and reps', bodyweight: 'reps, weight optional', timed: 'seconds, weight optional' };
-
+const field = (id) => document.getElementById(`le-${id}`);
+const readForm = () => ({ name: field('name')?.value, equipment: field('equip')?.value, mode: field('mode')?.value, perSide: field('side')?.checked, warmup: field('warm')?.value, target: field('target')?.value });
+const top = () => window.scrollTo(0, 0);
 export function createLibraryActions({ state, today }) {
   state.library = seedLibrary(localStorage, loadLibrary(localStorage));
   return {
@@ -23,10 +24,29 @@ export function createLibraryActions({ state, today }) {
       saveLibrary(localStorage, state.library);
       state.msg = `${item.ex.name} ${r.updated ? 'updated in' : 'saved to'} your library.`;
     },
+    libOpenWin: () => { Object.assign(state, { libWin: true, libQuery: '', libEquip: 'all', libEdit: null, libDraft: null, libErr: '', libAsk: null, wMenu: null, wSheet: null, msg: '' }); top(); },
+    libCloseWin: () => { Object.assign(state, { libWin: false, libEdit: null, libDraft: null, libErr: '', libAsk: null, msg: '' }); top(); },
+    libSearch: (el) => { state.libQuery = String(el?.value ?? '').slice(0, 80); },
+    libFilter: (el) => { state.libEquip = el.dataset.key || 'all'; },
+    libNew: () => { Object.assign(state, { libEdit: { name: null }, libDraft: null, libErr: '', libAsk: null }); },
+    libEdit: (el) => { Object.assign(state, { libEdit: { name: el.dataset.name }, libDraft: null, libErr: '', libAsk: null }); },
+    libEditCancel: () => { Object.assign(state, { libEdit: null, libDraft: null, libErr: '' }); },
+    libEditSave: () => {
+      const f = readForm();
+      const r = updateLibraryEntry(state.library, state.libEdit?.name ?? null, f);
+      if (r.error) { state.libErr = r.error; state.libDraft = f; return; }
+      state.library = r.list;
+      saveLibrary(localStorage, state.library);
+      state.msg = `${String(f.name).trim()} ${r.added ? 'added to' : 'updated in'} your library.`;
+      Object.assign(state, { libEdit: null, libDraft: null, libErr: '' });
+    },
+    libAsk: (el) => { state.libAsk = el.dataset.name; state.libEdit = null; },
+    libAskCancel: () => { state.libAsk = null; },
     libRemove: (el) => {
       state.library = removeFromLibrary(state.library, el.dataset.name);
       saveLibrary(localStorage, state.library);
-      state.msg = `Removed ${el.dataset.name} from the library.`;
+      state.libAsk = null;
+      state.msg = `Deleted ${el.dataset.name} from the library.`;
     },
   };
 }
@@ -48,11 +68,3 @@ export function autofillForm(state, input) {
 }
 
 export const libraryDatalist = (state) => `<datalist id="lib-names">${(state.library ?? []).map((e) => `<option value="${esc(e.name)}"></option>`).join('')}</datalist>`;
-
-export function librarySheet(state, ui) {
-  const rows = (state.library ?? []).map((e) => `<div class="w2-actrow"><div><b>${esc(e.name)}</b><small>${esc([e.equipment ? EQUIP_TEXT[e.equipment] : '', MODE_TEXT[e.mode], e.target].filter(Boolean).join(' · '))}</small></div>
-    <button class="btn secondary small" data-action="libRemove" data-name="${esc(e.name)}" aria-label="Remove ${esc(e.name)}">REMOVE</button></div>`).join('');
-  return ui.frame('Exercise library', `<div class="w2-sheet-head"><h2>Exercise library</h2>${ui.closeBtn}</div>
-    <div class="w2-body">${rows || '<p class="w2-empty">Nothing saved yet. Open an exercise, tap the three dots, then Save to library. Saved names autofill when you add or edit an exercise.</p>'}</div>
-    <button class="btn w2-done" data-action="wSheetClose">Done</button>`);
-}

@@ -1,6 +1,7 @@
-// WORKOUT v2 Today page (screens 1, 12, 13): template card, "Before you lift", one row per exercise.
+// WORKOUT v3 Today page (board 14): header with rest pill and menu, template card, Next up button, Warm-up + Activities card,
+// Up next list with a Done fold.
 //   html: todayPage(state) (no rest bar, menus or sheets; the integrator appends them)
-//   actions used: wOpenEx (data-i), wMenuToggle, wSheetOpen (data-sheet = switch | warm | add), aOpen / aManage / aNew (activities)
+//   actions used: wDoneToggle (state.wDoneOpen), restOpen (via restChip), wOpenEx (data-i), wMenuToggle, wSheetOpen (data-sheet = switch | warm | add), aOpen / aManage / aNew (activities)
 
 import { logicalDate } from '../logic/dates.js';
 import { setsFor, lastWorking } from '../logic/workout.js';
@@ -12,6 +13,8 @@ import { isChecked } from '../logic/habits.js';
 import { esc } from './format.js';
 import { EQUIP_TEXT } from './templateView.js';
 import { workoutContext } from './workoutNavActions.js';
+import { restChip } from './restView.js';
+import { switchedFrom } from '../logic/workout.js';
 
 const CHEV = '<svg class="w2-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 const DOTS_ICON = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="12" cy="5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="19" r="1.8"/></svg>';
@@ -33,6 +36,13 @@ function tagText(state, item) {
   return item.ex.equipment ? EQUIP_TEXT[item.ex.equipment] ?? '' : '';
 }
 
+/** Unfinished: a done spontaneous exercise, a set count reached, or a no-count exercise already logged are finished. */
+export function isOpen(state, item, day) {
+  if (item.kind === 'extra' && item.ex.done) return false;
+  const d = setDots(item.ex, state.entries, day, state.wTrims);
+  return d.total == null ? d.done === 0 : d.done < d.total;
+}
+
 /** Index of the row being worked on: the exercise most recently logged today, else the first incomplete one. */
 export function currentIndex(state, list, day) {
   let best = -1;
@@ -43,12 +53,7 @@ export function currentIndex(state, list, day) {
       if (e.updatedAt >= at) { at = e.updatedAt; best = k; }
     }
   });
-  // Unfinished: a done spontaneous exercise, a set count reached, or a no-count exercise already logged are finished.
-  const open = (item) => {
-    if (item.kind === 'extra' && item.ex.done) return false;
-    const d = setDots(item.ex, state.entries, day, state.wTrims);
-    return d.total == null ? d.done === 0 : d.done < d.total;
-  };
+  const open = (item) => isOpen(state, item, day);
   if (best >= 0 && open(list[best])) return list[best].i;
   // The one just worked on is finished: the next unfinished exercise after it (wrapping), or -1 when everything is done.
   const from = best >= 0 ? best + 1 : 0;
@@ -64,15 +69,22 @@ function dotsHtml(state, item, day) {
   return `<span class="w2-dots" role="img" aria-label="${d.done} of ${d.total} sets done">${Array.from({ length: n }, (_, k) => `<i class="${k < done ? 'on' : ''}"></i>`).join('')}</span>`;
 }
 
+/** Splits 'A or B (note)' into the main exercise and the alternative; names without a plain ' or ' stay whole. */
+export function splitAlt(name) {
+  const m = /^([^()]+?)\s+or\s+(.+)$/.exec(name);
+  return m ? { main: m[1], alt: m[2] } : { main: name, alt: '' };
+}
+
 function row(state, item, day, current) {
   const extra = item.kind === 'extra';
   const tag = extra ? 'Today only' : tagText(state, item);
-  const done = extra && item.ex.done;
+  const done = !isOpen(state, item, day);
+  const { main, alt } = splitAlt(item.ex.name);
   const cls = ['w2-row', extra ? 'extra' : '', done ? 'done' : '', item.i === current && !done ? 'current' : ''].filter(Boolean).join(' ');
   return `<button class="${cls}" data-action="wOpenEx" data-i="${item.i}" aria-label="Open ${esc(item.ex.name)}">
     <span class="w2-rowmain">
-      <span class="w2-name">${esc(item.ex.name)}</span>
-      <span class="w2-detail">${targetText(state, item.ex, day)}</span>
+      <span class="w2-name">${esc(main)}</span>
+      <span class="w2-detail">${targetText(state, item.ex, day)}${alt ? ` · or ${esc(alt)}` : ''}</span>
     </span>
     ${done ? '<span class="tag done w2-tag">Done</span>' : tag ? `<span class="tag w2-tag">${esc(tag)}</span>` : ''}
     ${dotsHtml(state, item, day)}
@@ -80,13 +92,12 @@ function row(state, item, day, current) {
   </button>`;
 }
 
-const sheetRow = (title, count, sheet, extraCls = '') => `<button class="w2-line ${extraCls}" data-action="wSheetOpen" data-sheet="${sheet}">
+const sheetRow = (title, count, sheet) => `<button class="w2-line" data-action="wSheetOpen" data-sheet="${sheet}">
     <span class="w2-linetitle">${esc(title)}</span><span class="w2-count">${count}</span>${CHEV}</button>`;
 
-function beforeYouLift(state, session, day) {
+function warmRow(state, session, day) {
   const key = checklistKey(session);
-  if (!key) return '';
-  return `<section class="w2-card"><h2 class="w2-label">BEFORE YOU LIFT</h2>${sheetRow(CHECKLISTS[key].title, `${checkedCount(state.wChecks, day, key)} / ${CHECKLISTS[key].items.length}`, 'warm')}</section>`;
+  return key ? sheetRow(CHECKLISTS[key].title, `${checkedCount(state.wChecks, day, key)} / ${CHECKLISTS[key].items.length}`, 'warm') : '';
 }
 
 const PR_UNIT = { '1RM': 'est. 1RM', sec: 'sec', reps: 'reps' };
@@ -99,10 +110,10 @@ function finishCard(state, list, day) {
   const habit = (state.habits ?? []).find((h) => h.id === 'workout');
   const ticked = habit && isChecked(state.entries, habit, day);
   const stat = (n, label) => `<div><b>${esc(n)}</b><small>${label}</small></div>`;
-  return `<section class="w2-card w2-summary" aria-label="Workout summary"><h2 class="w2-label">WORKOUT DONE</h2>
+  return `<section class="w2-card w2-summary" aria-label="Workout summary"><h2 class="w2-label">Workout done</h2>
     <div class="w2-sumrow">${stat(sum.sets, 'sets')}${stat(sum.exercises, sum.exercises === 1 ? 'exercise' : 'exercises')}${sum.volume ? stat(sum.volume.toLocaleString('en-US'), 'lb lifted') : ''}</div>
     ${prs.length ? `<p class="w2-prs"><b>NEW PR</b> ${prs.map((p) => `${esc(p.exercise)} ${esc(p.value)} ${esc(PR_UNIT[p.unit] || p.unit)} (was ${esc(p.previous)})`).join(' · ')}</p>` : ''}
-    ${habit ? (ticked ? '<p class="w2-sub">Workout habit ticked for today.</p>' : '<button class="btn" data-action="toggleHabit" data-habit="workout">TICK WORKOUT HABIT</button>') : ''}
+    ${habit ? (ticked ? '<p class="w2-sub">Workout habit ticked for today.</p>' : '<button class="btn" data-action="toggleHabit" data-habit="workout">Tick workout habit</button>') : ''}
   </section>`;
 }
 
@@ -113,36 +124,40 @@ export function todayPage(state) {
   const prog = sessionProgress(list.map((x) => x.ex), state.entries, day, state.wTrims);
   const pct = prog.total ? Math.min(100, Math.round((prog.done / prog.total) * 100)) : 0;
   const current = currentIndex(state, list, day);
+  const from = switchedFrom(state, day);
 
-  // One primary action: jump to the next unfinished exercise.
   const up = current >= 0 ? list.find((x) => x.i === current) : null;
   const cont = up
-    ? `<button class="btn w2-continue" data-action="wOpenEx" data-i="${up.i}">${prog.done > 0 ? 'Continue' : 'Start'}: ${esc(up.ex.name)}</button>`
+    ? `<button class="btn w2-next" data-action="wOpenEx" data-i="${up.i}">Next up: ${esc(splitAlt(up.ex.name).main)}</button>`
     : list.length ? finishCard(state, list, day) : '';
 
-  const lifts = list.filter((x) => x.kind !== 'cali');
-  const calis = list.filter((x) => x.kind === 'cali');
-  const group = (label, items) => `<h2 class="w2-label">${label}</h2><div class="w2-list">${items.map((x) => row(state, x, day, current)).join('')}</div>`;
+  const todo = list.filter((x) => isOpen(state, x, day));
+  const finished = list.filter((x) => !isOpen(state, x, day));
+  const open = !!state.wDoneOpen;
+  const rows = (items) => items.map((x) => row(state, x, day, current)).join('');
   const addBtn = '<button class="w2-add" data-action="wSheetOpen" data-sheet="add">+ Add exercise for today</button>';
+  const doneFold = finished.length
+    ? `<div class="w2-fold"><button class="w2-foldbtn" data-action="wDoneToggle" aria-expanded="${open}"><span>Done</span><span class="w2-count">${finished.length}</span>${CHEV.replace('class="w2-chev"', `class="w2-chev w2-foldchev${open ? ' open' : ''}"`)}</button>${open ? `<div class="w2-list">${rows(finished)}</div>` : ''}</div>`
+    : '';
 
   let body;
-  if (!list.length) body = '<div class="w2-card"><p>No exercises yet. Open Switch, then Edit on this template to add some.</p></div>' + addBtn;
-  else if (cali) body = `${group('LIFTS', lifts)}${addBtn}${group(`CALISTHENICS · ${esc(cali.id)}`, calis)}`;
-  else body = `${group(`EXERCISES · ${list.length}`, lifts)}${addBtn}`;
+  if (!list.length) body = `<div class="w2-card"><p>No exercises yet. Open Switch, then Edit on this template to add some.</p></div>${addBtn}`;
+  else body = `${todo.length ? `<h2 class="w2-label">Up next</h2><div class="w2-list">${rows(todo)}</div>` : ''}${doneFold}${addBtn}`;
 
+  const warm = warmRow(state, session, day);
   return `<div class="w2-page">
-    <header class="w2-head"><div><span class="w2-over">LIFE LOG · ${esc(dateLabel(day))}</span><h1>Workout</h1></div>
-      <button class="w2-icon" data-action="wMenuToggle" data-menu="today" aria-label="Workout menu" aria-haspopup="menu">${DOTS_ICON}</button></header>
+    <header class="w2-head"><div><span class="w2-over">Life log · ${esc(dateLabel(day))}</span><h1>Workout</h1></div>
+      <div class="w2-headact">${restChip(state)}
+      <button class="w2-icon" data-action="wMenuToggle" data-menu="today" aria-label="Workout menu" aria-haspopup="menu">${DOTS_ICON}</button></div></header>
     <section class="w2-card w2-tpl">
-      <div class="w2-tplhead"><div><span class="w2-sub">Active template</span><b class="w2-tplname">${esc(session.name)}</b></div>
+      <div class="w2-tplhead"><div><span class="w2-sub">${from ? `Switched from ${esc(from)}` : 'Active template'}</span><b class="w2-tplname">${esc(session.name)}</b></div>
         <button class="w2-switch" data-action="wSheetOpen" data-sheet="switch" aria-label="Switch template">Switch</button></div>
       ${prog.total ? `<div class="w2-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${prog.total}" aria-valuenow="${prog.done}"><i style="width:${pct}%"></i></div>
       <p class="w2-sub">${prog.done} of ${prog.total} sets</p>` : ''}
       ${session.focus ? `<p class="w2-sub">${esc(session.focus)}</p>` : ''}
     </section>
     ${cont}
-    ${beforeYouLift(state, session, day)}
-    ${activitiesCard(state, day, list.findIndex((x) => x.kind === 'cali'))}
+    <section class="w2-card w2-warmcard"><h2 class="w2-label">Warm-up and activities</h2>${warm}${activitiesCard(state, day, list.findIndex((x) => x.kind === 'cali'), true)}</section>
     ${body}
   </div>`;
 }

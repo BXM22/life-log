@@ -47,3 +47,27 @@ test('seed adds the built-in exercises once and keeps your own entries', async (
   assert.equal(seedLibrary(store, []).length, 0); // already seeded: a removed entry stays removed
   assert.ok(SEED_EXERCISES.every((e) => saveToLibrary([], e).list));
 });
+
+test('search matches every word across name, equipment, mode and target; equipment filter narrows', async () => {
+  const { searchLibrary } = await import('../src/logic/library.js');
+  const list = [curl, { name: 'Pull-up', mode: 'bodyweight', target: '3 x 6', equipment: 'calisthenics' }, { name: 'Plank', mode: 'timed', target: '3 x 40s' }];
+  assert.equal(searchLibrary(list, '').length, 3);
+  assert.deepEqual(searchLibrary(list, 'CURL').map((e) => e.name), ['Bicep curl']);
+  assert.deepEqual(searchLibrary(list, 'dumbbell curl').map((e) => e.name), ['Bicep curl']);
+  assert.deepEqual(searchLibrary(list, 'timed').map((e) => e.name), ['Plank']);
+  assert.deepEqual(searchLibrary(list, '', 'calisthenics').map((e) => e.name), ['Pull-up']);
+  assert.deepEqual(searchLibrary(list, 'zzz'), []);
+});
+
+test('update renames in place, refuses a clash, adds when oldName is null', async () => {
+  const { updateLibraryEntry } = await import('../src/logic/library.js');
+  const list = [curl, { name: 'Abs', mode: 'timed' }].sort((a, b) => a.name.localeCompare(b.name));
+  const r = updateLibraryEntry(list, 'Bicep curl', { ...curl, name: 'Zottman curl', target: '3 x 10' });
+  assert.deepEqual(r.list.map((e) => e.name), ['Abs', 'Zottman curl']); assert.equal(r.added, false);
+  assert.ok(updateLibraryEntry(list, 'Abs', { name: 'bicep CURL', mode: 'weight' }).error);
+  assert.equal(updateLibraryEntry(list, 'Abs', { name: 'Abs', mode: 'bodyweight' }).list.length, 2);
+  const a = updateLibraryEntry(list, null, { name: 'Dip', mode: 'bodyweight' });
+  assert.equal(a.added, true); assert.equal(a.list.length, 3);
+  assert.ok(updateLibraryEntry(list, 'Gone', { name: 'X', mode: 'weight' }).error);
+  assert.ok(updateLibraryEntry(list, null, { name: ' ', mode: 'weight' }).error);
+});

@@ -1,0 +1,61 @@
+/* Exercise library page (search, filter chips, cards with Edit and Delete). Palette tokens from forma.css; reuses .w2-ticon, .w2-tpill, .w2-tmeta from w3-templates.css. */
+.w2-lpage { --tone-a: #EEDEF6; --tone-b: #CCE5E3; --tone-c: #FEE1B6; --tone-n: #EEDEF6; --tone-ink: #2F2F2F; padding-bottom: calc(var(--tabbar-h, 76px) + 32px + env(safe-area-inset-bottom)); }
+html[data-theme="dark"] .w2-lpage { --tone-a: #3B3050; --tone-b: #234240; --tone-c: #4A3B22; --tone-n: #2F2A3A; --tone-ink: #F4EEF7; }
+.w2-lpage [data-tone="n"] { --tone: var(--tone-n); }
+.w2-lpage [data-tone="a"] { --tone: var(--tone-a); }
+.w2-lpage [data-tone="b"] { --tone: var(--tone-b); }
+.w2-lpage [data-tone="c"] { --tone: var(--tone-c); }
+
+.w2-lhead { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.w2-lcount { min-width: 36px; padding: 4px 12px; border-radius: 16px; background: var(--shade); color: var(--ink); font-size: 14px; font-weight: 800; text-align: center; }
+
+/* Search: icon inside a 56px field, native clear button kept */
+.w2-lsearch { position: relative; margin: 8px 0 12px; color: var(--dim); }
+.w2-lsearch svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.w2-lsearch .field { width: 100%; box-sizing: border-box; padding-left: 46px; margin: 0; }
+
+/* Equipment chips scroll sideways; counts sit inside each chip */
+.w2-lchips { display: flex; flex-wrap: nowrap; gap: 8px; margin-bottom: 14px; padding-bottom: 4px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+.w2-lchips::-webkit-scrollbar { display: none; }
+.w2-lchips button.btn.w2-lchip { flex: none; display: inline-flex; align-items: center; gap: 8px; width: auto; min-height: 44px; margin: 0; padding: 0 14px 0 16px; border: 1.5px solid var(--line); border-radius: 22px; background: transparent; color: var(--ink); font-size: 15px; font-weight: 700; white-space: nowrap; }
+.w2-lchip span { min-width: 22px; padding: 1px 7px; border-radius: 11px; background: var(--shade); color: var(--ink); font-size: 12px; font-weight: 800; text-align: center; }
+.w2-lchips button.btn.w2-lchip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.w2-lchip[aria-pressed="true"] span { background: rgba(255, 255, 255, .22); color: inherit; }
+
+.w2-lnew { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; margin: 0 0 4px; }
+.w2-lresult { min-height: 20px; margin: 10px 2px 8px; color: var(--dim); font-size: 13px; font-weight: 600; }
+
+/* Cards */
+.w2-lcard { position: relative; display: flex; flex-wrap: wrap; align-items: flex-start; gap: 12px; margin-bottom: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); box-shadow: 0 1px 0 rgba(47, 47, 47, .04), 0 6px 14px -10px rgba(47, 47, 47, .35); animation: w2-rise .24s ease-out both; }
+.w2-lcard .w2-ticon { background: var(--tone, var(--tone-n)); }
+.w2-lmain { display: flex; flex: 1; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; }
+.w2-lmain b { font-size: 17px; line-height: 22px; font-weight: 800; overflow-wrap: anywhere; }
+.w2-lmain small { color: var(--dim); font-size: 13px; line-height: 18px; font-weight: 600; }
+.w2-tmeta { flex-wrap: wrap; }
+.w2-tpill.plain { background: transparent; border: 1px solid var(--line); color: var(--dim); }
+.w2-lact { display: flex; flex: none; gap: 4px; }
+.w2-lico { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel-2); color: var(--ink); cursor: pointer; transition: transform 150ms ease-out, background 150ms ease-out; }
+.w2-lico:active { transform: scale(.94); }
+.w2-lico.danger { color: var(--danger); }
+.w2-lico:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Delete confirm and edit form sit inside the card, full width */
+.w2-lcard.ask { border: 2px solid var(--danger); }
+.w2-lconfirm { flex: 0 0 100%; padding-top: 12px; border-top: 1px solid var(--line); }
+.w2-lconfirm p { margin: 0 0 12px; font-size: 14px; line-height: 20px; font-weight: 600; }
+.w2-lbtns { display: flex; gap: 12px; margin-top: 12px; }
+.w2-lbtns > button.btn { flex: 1 1 0; width: auto; min-width: 0; min-height: 52px; margin: 0; white-space: nowrap; }
+.w2-lform { display: block; border: 2px solid var(--lav-line); background: var(--lav); animation: none; }
+.w2-lform h3 { margin: 0 0 8px; font-size: 17px; font-weight: 800; }
+.w2-lform .lbl { display: block; margin: 12px 0 6px; font-size: 13px; font-weight: 700; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.w2-lform .field { width: 100%; box-sizing: border-box; margin: 0; }
+.w2-lform .check { margin-top: 14px; }
+.w2-lgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.w2-lgrid > div { min-width: 0; }
+.w2-lerr { margin: 4px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--panel); border: 1.5px solid var(--danger); color: var(--danger); font-size: 14px; font-weight: 700; }
+
+.w2-lempty { display: flex; flex-direction: column; align-items: center; gap: 6px; margin: 28px 8px; text-align: center; color: var(--dim); font-size: 14px; line-height: 20px; }
+.w2-lempty b { color: var(--ink); font-size: 17px; }
+.w2-lempty button.btn { width: auto; margin-top: 10px; padding: 0 20px; }
+@media (max-width: 360px) { .w2-lgrid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .w2-lcard { animation: none; } .w2-lico { transition: none; } }

@@ -56,18 +56,18 @@ button.btn.editbtn { width: auto; min-height: 44px; margin: 0; padding: 0 14px; 
 .today .tag { font-size: var(--fs-meta); }
 
 /* Habits hero: heading, white 52px rows with round checks, Manage habits link row */
-.hero-title { margin: 0 0 12px; font-size: var(--fs-card); line-height: var(--lh-card); font-weight: 800; letter-spacing: -0.01em; color: var(--on-accent); }
+.hero-title { margin: 0 0 12px; font-size: var(--fs-card); line-height: var(--lh-card); font-weight: 800; letter-spacing: -0.01em; color: #2F2F2F; }
 /* The hero stays peach in dark mode, so its rows use fixed colors (var(--ink) turns light in dark and would vanish on white). */
-.hero { --hero-ink: #1C1B1F; --hero-dim: #6B6B70; --hero-row: #FFFFFF; --hero-ring: #8C817A; }
+.hero { background: #EEDEF6; --hero-ink: #2F2F2F; --hero-dim: #46424D; --hero-row: #FFFFFF; --hero-ring: #8E78A6; }
 .hero .habit { min-height: 52px; margin-bottom: 8px; padding: 0 16px; gap: 12px; background: var(--hero-row); border: 0; border-radius: 14px; color: var(--hero-ink); }
 .hero .habit:last-of-type { margin-bottom: 4px; }
 .hero .habit label.check { gap: 12px; font-size: var(--fs-body); font-weight: 700; }
 .hero label.check input { width: 26px; height: 26px; flex: none; border: 2px solid var(--hero-ring); border-radius: 50%; background: var(--hero-row); }
 .hero label.check input:checked { background: var(--hero-ink); border-color: var(--hero-ink); }
-.hero label.check input:checked::after { border-color: #FFFFFF; }
+.hero label.check input:checked::after { border-color: #FEE1B6; }
 .hero .streak { padding: 0; background: transparent; border: 0; font-size: var(--fs-meta); font-weight: 600; color: var(--hero-dim); }
-.hero-manage { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; padding: 0 4px; background: transparent; border: 0; color: var(--on-accent); font: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; }
-.hero-manage .chev-ico { color: var(--on-accent); }
+.hero-manage { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; padding: 0 4px; background: transparent; border: 0; color: #2F2F2F; font: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; }
+.hero-manage .chev-ico { color: #2F2F2F; }
 .hero-manage:focus-visible { outline: 2px solid var(--hero-ink); outline-offset: 2px; border-radius: 12px; }
 
 /* Workout card */

@@ -6,7 +6,8 @@ import { sessionById } from '../logic/template.js';
 import { caliBlockFor } from '../logic/activities.js';
 import { exerciseList, setsComplete } from '../logic/workoutPlan.js';
 import { prCheck } from '../logic/progress.js';
-import { activeSessionId, parseSet, setText } from '../logic/workout.js';
+import { activeSessionId, lastWorking, parseSet, setText } from '../logic/workout.js';
+import { setDots } from '../logic/workoutPlan.js';
 import { loadExtras, saveExtras, extrasFor, addExtra, updateExtra, toggleExtraDone, removeExtra } from '../logic/extras.js';
 
 export function createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet }) {
@@ -28,7 +29,78 @@ export function createWorkoutActions({ state, saveEntries, saveFail, inputValue,
     state.msg = msg;
   };
 
+  const itemAt = (i) => {
+    const day = today();
+    const id = activeSessionId(state.wSession, day, state.planDays);
+    return exerciseList(sessionById(id) ?? { id, exercises: [] }, extrasToday(), caliBlockFor(state.activities, day))[Number(i)];
+  };
+  // Put a value in the draft and the live input (the page copies input values into the draft before it re-renders).
+  const setField = (i, key, value) => {
+    state.wDraft = { ...state.wDraft, [i]: { ...state.wDraft?.[i], [key]: String(value) } };
+    const box = typeof document !== 'undefined' ? document.getElementById(`${key}-${i}`) : null;
+    if (box) box.value = String(value);
+  };
+  // After working sets are saved: rest timer, then move on when the target is reached (same as the last set).
+  const afterWorking = (item, wasComplete, msg) => {
+    if (onWorkingSet) onWorkingSet();
+    const day = today();
+    if (!wasComplete && setsComplete(item.ex, state.entries, day, state.wTrims)) {
+      msg = `${item.ex.name} done. ${msg}`;
+      state.plates = null;
+      state.wMore = null;
+      const n = exerciseList(sessionById(activeSessionId(state.wSession, day, state.planDays)) ?? { exercises: [] }, extrasToday(), caliBlockFor(state.activities, day)).length;
+      state.wEx = item.i + 1 < n ? item.i + 1 : null;
+    }
+    return msg;
+  };
+
   return {
+    // Last time strip, Use chip: fill the logging card with the last working set.
+    wUseLast: (el) => {
+      const item = itemAt(el.dataset.i);
+      if (!item) return;
+      const last = lastWorking(state.entries, state.stats, item.ex.name);
+      if (!last) return;
+      const i = el.dataset.i;
+      if (last.weight != null) setField(i, 'w', last.weight);
+      if (item.ex.mode === 'timed') { if (last.seconds != null) setField(i, 's', last.seconds); } else if (last.reps != null) setField(i, 'r', last.reps);
+      if (last.load && (item.kind === 'cali' || item.ex.equipment === 'calisthenics')) setField(i, 'ld', last.load);
+    },
+    // Rep chip: set the reps (or seconds) box.
+    wRepChip: (el) => {
+      const item = itemAt(el.dataset.i);
+      if (item) setField(el.dataset.i, item.ex.mode === 'timed' ? 's' : 'r', el.dataset.v);
+    },
+    // Fill all as: log every remaining working set at the shown weight and reps, then act like the last set.
+    wFillAll: async (el) => {
+      const day = today();
+      const item = itemAt(el.dataset.i);
+      if (!item) return;
+      const i = el.dataset.i;
+      const dots = setDots(item.ex, state.entries, day, state.wTrims);
+      const remaining = dots.total == null ? 0 : dots.total - dots.done;
+      if (remaining <= 0) { state.msg = 'No sets left to fill.'; return; }
+      const wasComplete = setsComplete(item.ex, state.entries, day, state.wTrims);
+      const ex = item.kind === 'cali' ? { ...item.ex, equipment: 'calisthenics' } : item.ex;
+      const read = (side) => parseSet(ex, { weight: inputValue(`w-${i}`), reps: inputValue(`r-${i}`), seconds: inputValue(`s-${i}`), side, load: inputValue(`ld-${i}`) });
+      const sides = ex.perSide ? ['L', 'R'] : [undefined];
+      const entries = [];
+      let t = Date.now();
+      for (let n = 0; n < remaining; n++) {
+        for (const side of sides) {
+          const r = read(side);
+          if (r.error) { state.msg = r.error; return; }
+          entries.push(newEntry('lift_set', day, { session: item.sessionKey, exercise: ex.name, kind: 'working', ...r.data }, t++));
+        }
+      }
+      try { await saveEntries(entries); } catch (err) { state.msg = saveFail(err); return; }
+      state.entries.push(...entries);
+      const last = entries.at(-1);
+      state.pr = prCheck(state.entries, last, state.stats);
+      state.msg = afterWorking(item, wasComplete, `${remaining} ${remaining === 1 ? 'set' : 'sets'} logged: ${setText(last.data)}.`);
+      state.undo = { id: last.id, msg: state.msg, i: item.i };
+    },
+
     addExtraOpen: () => { state.wAdd = true; state.wXEdit = null; state.msg = ''; },
     addExtraCancel: () => { state.wAdd = false; state.wSheet = null; state.wXEdit = null; state.msg = ''; },
     addExtraSave: () => {

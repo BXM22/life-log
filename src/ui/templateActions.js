@@ -4,7 +4,7 @@
 import { SESSIONS, getSessions, setTemplate } from '../logic/template.js';
 import { activeSessionId } from '../logic/workout.js';
 import { extrasFor, removeExtra, saveExtras } from '../logic/extras.js';
-import { addExercise, updateExercise, removeExercise } from '../logic/templateEdit.js';
+import { addExercise, updateExercise, removeExercise, moveExercise } from '../logic/templateEdit.js';
 
 export function createTemplateActions({ state, saveTemplate, clearTemplate, saveFail, today }) {
   const sessionId = () => activeSessionId(state.wSession, today(), state.planDays);
@@ -44,6 +44,13 @@ export function createTemplateActions({ state, saveTemplate, clearTemplate, save
 
     tEditStart: (el) => { state.tEdit = { mode: 'edit', i: Number(el.dataset.i) }; state.tDraft = null; state.msg = ''; },
 
+    // Edit template page: reorder with the drag handle's up and down buttons (data-i, data-delta = -1 | 1).
+    tMove: async (el) => {
+      const r = moveExercise(getSessions(), sessionId(), Number(el.dataset.i), Number(el.dataset.delta));
+      if (r.error) { state.msg = r.error; return; }
+      await commit(r.sessions, '');
+    },
+
     tCancel: () => { close(); state.msg = ''; },
 
     tSave: async () => {
@@ -68,6 +75,7 @@ export function createTemplateActions({ state, saveTemplate, clearTemplate, save
     },
 
     tReset: async () => {
+      state.tMore = false;
       if (!window.confirm('Reset every session to the built-in plan? Your added and edited exercises are removed. Logged sets stay.')) return;
       try { await clearTemplate(); } catch (err) { state.msg = saveFail(err); return; }
       setTemplate(SESSIONS);

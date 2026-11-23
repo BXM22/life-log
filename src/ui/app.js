@@ -27,6 +27,7 @@ import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
 import { createWorkoutNavActions, captureDraft } from './workoutNavActions.js';
 import { createWorkoutSheetActions } from './workoutSheetActions.js';
+import { createWorkoutHistoryActions } from './workoutHistoryActions.js';
 import { createActivityActions } from './activityActions.js';
 import { createLibraryActions, autofillForm } from './libraryActions.js';
 import { createWorkoutExtrasActions } from './workoutExtrasActions.js';
@@ -142,6 +143,7 @@ const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
   ...createWorkoutNavActions({ state, today }),
   ...createWorkoutSheetActions({ state, today }),
+  ...createWorkoutHistoryActions({ state }),
   ...createActivityActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createLibraryActions({ state, today }),
   ...createWorkoutExtrasActions({ state, today }),
@@ -163,7 +165,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { expireSessionPick(state); state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.manageHabits = false; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
+  tab: (el) => { expireSessionPick(state); state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.manageHabits = false; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.libWin = false; state.libEdit = null; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
 
@@ -460,7 +462,7 @@ function render() {
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
   const undo = state.undo && state.undo.msg === state.msg ? state.undo : null; // only while the message that offered it is showing
-  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${(state.tab === 'history' && state.histWin) || (state.tab === 'workout' && !state.tScreen && !state.tWin && !state.wHistory) ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
+  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${(state.tab === 'history' && state.histWin) || (state.tab === 'workout' && !state.tScreen && !state.tWin && !state.libWin && !state.wHistory) ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
   $app.innerHTML = `${page}
     ${state.msg ? `<button class="toast" data-action="${undo ? 'undoSet' : 'dismissMsg'}" role="status">${esc(state.msg)}${undo ? ' <b class="toast-undo">UNDO</b>' : ''}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
@@ -492,6 +494,14 @@ $app.addEventListener('scroll', rest.onScroll, true); // the rest-time wheels sc
 document.addEventListener('visibilitychange', () => { if (!document.hidden) rest.resume(); });
 // Picking a saved exercise name fills the rest of the form in place (no re-render, so nothing typed is lost).
 $app.addEventListener('input', (ev) => { if (ev.target.id === 'note-body') updateNoteCount(); }); // F68: live note count, no re-render
+// F67: History search filters as you type; re-render, then put the cursor back so typing is not interrupted.
+$app.addEventListener('input', async (ev) => {
+  if (ev.target.id !== 'w-hist-search' && ev.target.id !== 'lib-search') return;
+  const pos = ev.target.selectionStart;
+  await dispatch(ev.target);
+  const box = document.getElementById(ev.target.id);
+  if (box) { box.focus(); box.setSelectionRange(pos, pos); }
+});
 $app.addEventListener('change', (ev) => { if (ev.target.matches?.('input[data-libfill]')) autofillForm(state, ev.target); });
 $app.addEventListener('change', (ev) => {
   const el = ev.target.closest('[data-action]');

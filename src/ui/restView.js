@@ -5,6 +5,9 @@
 //   actions:         restOpen | restClose | restPreset (data-s) | restStart | restStop | restAuto, see restActions.js
 
 import { PRESETS, WHEEL_MINUTES, WHEEL_SECONDS, fmt, remaining, toWheel } from '../logic/rest.js';
+import { logicalDate } from '../logic/dates.js';
+import { nextSetInfo } from '../logic/restNext.js';
+import { esc } from './format.js';
 
 export const ITEM = 40; // px height of one wheel row; keep in sync with .wheel i in main.css
 export const RING = 615.8; // circumference of the progress ring (r = 98)
@@ -41,12 +44,21 @@ export function restChip(state) {
     <span class="w2-restbar-label">REST</span><span class="w2-restbar-time" id="rest-row-time">${fmt(timeLeft(state.rest))}</span></button>`;
 }
 
+/** Next card: what set comes next for the open exercise. Empty when no exercise is open. */
+function nextCard(state) {
+  let n = null;
+  try { n = nextSetInfo(state, logicalDate(Date.now(), state.dayStartHour)); } catch { n = null; }
+  if (!n) return '';
+  const what = n.total == null ? `Set ${n.setNumber}` : n.extra ? `Extra set ${n.setNumber}` : `Set ${n.setNumber} of ${n.total}`;
+  return `<section class="w2-restnext"><div class="w2-restnext-text"><p class="w2-restnext-label">NEXT</p><p class="w2-restnext-name">${esc(n.name)}</p><p class="w2-restnext-set">${what}</p></div><button class="btn w2-restnext-back" data-action="restClose">Back to log</button></section>`;
+}
+
 export function restPage(state) {
   const r = state.rest;
   const running = r.endAt != null;
   const left = timeLeft(r);
   const chips = PRESETS.map((s) => `<button class="rest-chip" data-action="restPreset" data-s="${s}" ${(running ? r.total : r.seconds) === s ? 'aria-pressed="true"' : ''}>${fmt(s)}</button>`).join('');
-  return `<section class="restpage" id="rest">
+  return `<section class="restpage w2-restpage" id="rest">
     <div class="rest-head">
       <button class="rest-back" data-action="restClose" aria-label="Back to workout"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
       <h1>Rest timer</h1>
@@ -54,17 +66,18 @@ export function restPage(state) {
     </div>
     <div class="rest-ring">
       <svg width="220" height="220" viewBox="0 0 220 220" role="img" aria-label="${fmt(left)} left">
-        <circle cx="110" cy="110" r="98" fill="none" stroke="#FFFFFF" stroke-width="14"/>
-        <circle id="rest-ring" cx="110" cy="110" r="98" fill="none" stroke="#F4A28C" stroke-width="14" stroke-linecap="round" stroke-dasharray="${RING}" stroke-dashoffset="${ringOffset(r)}" transform="rotate(-90 110 110)"/>
+        <circle cx="110" cy="110" r="98" fill="none" stroke="var(--shade)" stroke-width="14"/>
+        <circle id="rest-ring" cx="110" cy="110" r="98" fill="none" stroke="var(--ink)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${RING}" stroke-dashoffset="${ringOffset(r)}" transform="rotate(-90 110 110)"/>
       </svg>
       <div class="rest-ring-text"><span class="rest-time" id="rest-time" aria-live="off">${fmt(left)}</span><span class="rest-sub" id="rest-sub">${running && r.total ? `of ${fmt(r.total)}` : 'ready'}</span></div>
     </div>
+    ${nextCard(state)}
     <div class="rest-chips">${chips}</div>
     <p class="rest-label">CUSTOM TIME</p>
     <div class="wheels">
       ${wheel('wh-min', WHEEL_MINUTES, (v) => v, 'Minutes')}<span class="colon" aria-hidden="true">:</span>${wheel('wh-sec', WHEEL_SECONDS, (v) => String(v).padStart(2, '0'), 'Seconds')}
     </div>
-    <label class="check rest-auto"><input type="checkbox" data-action="restAuto" ${r.auto ? 'checked' : ''}><span>Start by itself after each working set</span></label>
+    <label class="check rest-auto"><input type="checkbox" data-action="restAuto" ${r.auto ? 'checked' : ''}><span>Start after each set</span></label>
     ${running
     ? '<button class="rest-go stop" data-action="restStop">Stop rest</button>'
     : '<button class="rest-go" data-action="restStart">Start rest</button>'}

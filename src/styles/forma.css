@@ -1,5 +1,5 @@
 /* Forma layout and tokens (F48). Loaded last: re-skins the app from the design board without touching any markup or logic.
-   Cream #FBF3EC cards on white, peach #F4A28C accent, ink #1C1B1F, muted #6B6B70, Plus Jakarta Sans, 8pt grid. */
+   Palette: cream #FFF6E3 background, white cards, lavender #EEDEF6 accent card, mint #CCE5E3 highlight, butter #FEE1B6 on charcoal #2F2F2F buttons, muted #46424D, Plus Jakarta Sans, 8pt grid. */
 :root {
   --fs-meta: 13px; --lh-meta: 18px;
   --fs-body: 15px; --lh-body: 22px;
@@ -7,31 +7,33 @@
   --fs-card: 22px; --lh-card: 28px;
   --fs-title: 28px; --lh-title: 34px;
   --fs-num: 48px; --lh-num: 52px;
-  --bg: #FFFFFF;
-  --bg-top: #FFFFFF;
+  --bg: #FFF6E3;
+  --bg-top: #FFF6E3;
   --halo: transparent;
-  --panel: #FBF3EC;
+  --panel: #FFFFFF;
   --panel-2: #FFFFFF;
   --field: #FFFFFF;
-  --line: #E3D6CB;
-  --shade: #EEE6E0;
-  --text: #1C1B1F;
-  --dim: #6B6B70;
-  --accent: #F4A28C;
-  --on-accent: #1C1B1F;
-  --soft: #FDE8E0;
+  --line: #8E78A6;
+  --shade: #EEDEF6;
+  --text: #2F2F2F;
+  --dim: #46424D;
+  --accent: #2F2F2F;
+  --on-accent: #FEE1B6;
+  --soft: #CCE5E3;
   --danger: #B3261E;
-  --ink: #1C1B1F;
-  --on-ink: #FFFFFF;
+  --lav: #EEDEF6; /* accent card: one per screen */
+  --lav-line: #8E78A6;
+  --ink: #2F2F2F;
+  --on-ink: #FEE1B6;
   --switch-knob: #FFFFFF;
-  --peach-soft: #FDE8E0;
-  --peach-mid: #F9C9BB;
-  --pill: #FDE0D6;
-  --check-border: #C9B8AB;
-  --hairline: #EADFD5;
-  --heat-hot: #D9694A;
-  --bar-metal: #B8B0AA;
-  --muted: #6B6B70;
+  --peach-soft: #CCE5E3;
+  --peach-mid: #A9CFCC;
+  --pill: #CCE5E3;
+  --check-border: #8E78A6;
+  --hairline: #CDB8DC;
+  --heat-hot: #8E78A6;
+  --bar-metal: #A58FBB;
+  --muted: #46424D;
   --mono: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --dot: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
   --tabbar-h: 76px; /* bottom tab bar (about 75 px) + 1; Workout v2 pages reserve this plus safe area */
@@ -41,31 +43,33 @@
 /* Forma dark: warm surfaces, same peach accent (not Signalbox orange). */
 html[data-theme="dark"] {
   color-scheme: dark;
-  --bg: #141210;
-  --bg-top: #141210;
+  --bg: #17141C;
+  --bg-top: #17141C;
   --halo: transparent;
-  --panel: #1E1A17;
-  --panel-2: #25201C;
-  --field: #1A1614;
-  --line: #3A322C;
-  --shade: #2A2520;
-  --text: #F3EDE6;
-  --dim: #A89D92;
-  --accent: #F4A28C;
-  --on-accent: #1C1B1F;
-  --soft: #3A2A24;
+  --panel: #221E2A;
+  --panel-2: #2A2533;
+  --field: #1D1924;
+  --line: #6F6585;
+  --shade: #2F2A3A;
+  --text: #F4EEF7;
+  --dim: #B3AABD;
+  --accent: #FEE1B6;
+  --on-accent: #2F2F2F;
+  --soft: #233A39;
   --danger: #E57373;
-  --ink: #F3EDE6;
-  --on-ink: #141210;
-  --switch-knob: #F3EDE6;
-  --peach-soft: #3A2A24;
-  --peach-mid: #5C4038;
-  --pill: #3A2A24;
-  --check-border: #6B5E54;
-  --hairline: #3A322C;
-  --heat-hot: #D9694A;
-  --bar-metal: #8A827C;
-  --muted: #A89D92;
+  --lav: #332B45;
+  --lav-line: #6F6585;
+  --ink: #F4EEF7;
+  --on-ink: #17141C;
+  --switch-knob: #F4EEF7;
+  --peach-soft: #233A39;
+  --peach-mid: #35605D;
+  --pill: #2C4A48;
+  --check-border: #8A7FA0;
+  --hairline: #3A3347;
+  --heat-hot: #B9A3CA;
+  --bar-metal: #7D7390;
+  --muted: #B3AABD;
 }
 
 html { background: var(--bg); }
@@ -84,19 +88,19 @@ small { font-size: var(--fs-meta); font-weight: 600; color: var(--dim); }
 .lbl { font-size: var(--fs-meta); font-weight: 700; color: var(--dim); }
 
 /* Cards: 24 radius, 20 padding, no shadow, 12 between cards. */
-.panel { margin-bottom: 12px; padding: 20px; background: var(--panel); border-radius: 24px; box-shadow: none; }
+.panel { margin-bottom: 12px; padding: 20px; background: var(--panel); border: 1px solid var(--lav-line); border-radius: 24px; box-shadow: none; }
 .panel p { line-height: 22px; }
 .note { color: var(--dim); font-size: var(--fs-meta); line-height: 18px; font-weight: 600; }
 
 /* Today hero: peach card, big count, ink progress. */
-.hero { background: var(--accent); color: var(--on-accent); border-radius: 24px; }
-.hero .big { font-size: var(--fs-num); line-height: 52px; margin: 0 0 2px; color: var(--on-accent); }
-.hero p { margin: 0 0 12px; color: var(--on-accent); font-size: var(--fs-body); font-weight: 600; letter-spacing: 0; text-transform: none; }
+.hero { background: #EEDEF6; color: #2F2F2F; border-radius: 24px; }
+.hero .big { font-size: var(--fs-num); line-height: 52px; margin: 0 0 2px; color: #2F2F2F; }
+.hero p { margin: 0 0 12px; color: #2F2F2F; font-size: var(--fs-body); font-weight: 600; letter-spacing: 0; text-transform: none; }
 .pips i { background: var(--peach-mid); }
 .pips i.on { background: var(--ink); }
 
 /* Status row. */
-.rowbtn { min-height: 56px; margin: 0 0 12px; padding: 0 16px; background: var(--panel); border-radius: 16px; box-shadow: none; font-size: var(--fs-body); font-weight: 700; }
+.rowbtn { min-height: 56px; margin: 0 0 12px; padding: 0 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 16px; box-shadow: none; font-size: var(--fs-body); font-weight: 700; }
 .rowbtn:active { background: var(--peach-soft); }
 .chev { color: var(--dim); }
 

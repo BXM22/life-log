@@ -1,7 +1,8 @@
 // WORKOUT v2 navigation: which exercise page is open, stepper buttons, and typed-value drafts.
 //   exports: createWorkoutNavActions({ state, today }), captureDraft(state), workoutContext(state, day)
 //   actions: wOpenEx (data-i) | wCloseEx | wStep (data-i, data-field = weight|reps|seconds, data-delta) | wExNext / wExPrev (data-delta -1|1)
-//   state:   wEx (open exercise index or null), wDraft ({ [i]: { w, r, s, sd, ld } })
+//   actions: wDoneToggle (fold the finished exercises on Today)
+//   state:   wDoneOpen (bool, collapsed by default), wEx (open exercise index or null), wDraft ({ [i]: { w, r, s, sd, ld } })
 
 import { sessionById } from '../logic/template.js';
 import { extrasFor } from '../logic/extras.js';
@@ -41,6 +42,7 @@ const STEP = {
 export function createWorkoutNavActions({ state, today }) {
   state.wEx = null;
   state.wDraft = {};
+  state.wDoneOpen = false;
 
   const closeState = (i) => {
     if (i == null) return;
@@ -63,6 +65,7 @@ export function createWorkoutNavActions({ state, today }) {
 
   return {
     wOpenEx: (el) => { state.wEx = Number(el.dataset.i); state.wMore = null; state.msg = ''; },
+    wDoneToggle: () => { state.wDoneOpen = !state.wDoneOpen; },
     wCloseEx: () => { closeState(state.wEx); state.wEx = null; state.msg = ''; },
     wMoreSets: (el) => { state.wMore = { ...state.wMore, [el.dataset.i]: true }; },
     wExNext: () => move(1),

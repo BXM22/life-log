@@ -12,7 +12,7 @@ import { filterByTag, tagsOf, usedTags } from '../logic/templateTags.js';
 import { CHECKLISTS, backCue, checkKey, checkedCount, checklistKey, setCount, trimmedFor } from '../logic/workoutExtras.js';
 import { caliBlockFor } from '../logic/activities.js';
 import { activitySheet, manageSheet } from './workoutActivities.js';
-import { libraryDatalist, librarySheet } from './libraryActions.js';
+import { libraryDatalist } from './libraryActions.js';
 import { exerciseList } from '../logic/workoutPlan.js';
 import { extrasFor } from '../logic/extras.js';
 import { EQUIPMENT } from '../logic/templateEdit.js';
@@ -30,29 +30,45 @@ function frame(label, inner) {
     </div>`;
 }
 
-// ---- Switch template (screen 3) ----
+// ---- Switch template (board 18) ----
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const shortDate = (d) => `${MONTHS[Number(d.slice(5, 7)) - 1]} ${Number(d.slice(8, 10))}`;
+
+/** Latest date a working or warm-up set was logged per session id, from lift_set entries. */
+export function lastDoneBySession(entries) {
+  const out = {};
+  for (const e of entries || []) {
+    if (e.type !== 'lift_set' || e.deletedAt || !e.data?.session) continue;
+    if (!out[e.data.session] || e.date > out[e.data.session]) out[e.data.session] = e.date;
+  }
+  return out;
+}
+
 function switchSheet(state) {
   const all = getSessions();
-  const activeId = activeSessionId(pickedFor(state, dayOf(state)), dayOf(state), state.planDays);
-  const planned = plannedSessionId(state, dayOf(state));
+  const day = dayOf(state);
+  const activeId = activeSessionId(pickedFor(state, day), day, state.planDays);
+  const pick = sessionById(state.wSheetPick) ? state.wSheetPick : activeId;
+  const planned = plannedSessionId(state, day);
+  const last = lastDoneBySession(state.entries);
   const tags = usedTags(all);
   const shown = filterByTag(all, state.tFilter || '');
   const chip = (tag, text) => `<button class="w2-chip" data-action="tplFilter" data-tag="${esc(tag)}" aria-pressed="${(state.tFilter || '') === tag}">${esc(text)}</button>`;
   const chips = tags.length ? `<div class="w2-chiprow">${chip('', 'All')}${tags.map((t) => chip(t, t)).join('')}</div>` : '';
   const rows = shown.map((s) => {
-    const on = s.id === activeId;
+    const on = s.id === pick;
     const n = s.exercises.length;
-    const tg = s.id === planned ? 'Planned' : tagsOf(s)[0];
-    return `<button class="w2-radio${on ? ' on' : ''}" data-action="wSessionPick" data-id="${esc(s.id)}" role="radio" aria-checked="${on}">
+    const done = last[s.id] ? `Last done ${shortDate(last[s.id])}` : 'Not done yet';
+    return `<button class="w2-radio${on ? ' on' : ''}" data-action="wSheetSelect" data-id="${esc(s.id)}" role="radio" aria-checked="${on}">
       <span class="w2-dot" aria-hidden="true"></span>
-      <span class="w2-radio-text"><b>${esc(s.name)}</b>${s.focus ? `<small>${esc(s.focus)}</small>` : ''}<small>${n} exercise${n === 1 ? '' : 's'}</small></span>
-      ${tg ? `<span class="w2-tag">${esc(tg)}</span>` : ''}</button>`;
+      <span class="w2-radio-text"><b>${esc(s.name)}</b>${s.focus ? `<small>${esc(s.focus)}</small>` : ''}<small>${n} exercise${n === 1 ? '' : 's'}, ${done.toLowerCase()}</small></span>
+      ${s.id === planned ? '<span class="w2-tag">Planned</span>' : ''}</button>`;
   }).join('');
-  return frame('Switch today\'s workout', `<div class="w2-sheet-head"><h2>Switch today's workout</h2><button class="w2-link" data-action="wOpenTemplates">Manage all</button></div>
+  return frame('Switch today\'s workout', `<div class="w2-sheet-head"><h2>Switch today's workout</h2>${closeBtn}</div>
     <p class="w2-note">Only today changes. The rest of your week stays as planned.</p>
     ${chips}
     <div role="radiogroup" aria-label="Templates">${rows || '<p class="w2-empty">No templates with that tag.</p>'}</div>
-    <button class="w2-dashed" data-action="wOpenTemplates">+ New template</button>`);
+    <div class="w2-sheet-foot"><button class="w2-link" data-action="wOpenTemplates">Manage templates</button><button class="btn w2-use" data-action="wSheetUse">Use</button></div>`);
 }
 
 // ---- Warm-up / BJJ / Calisthenics (screen 4) ----
@@ -97,7 +113,6 @@ export function sheetLayer(state) {
   if (state.wSheet === 'switch') return switchSheet(state);
   if (state.wSheet === 'warm') return warmSheet(state);
   if (state.wSheet === 'add') return addSheet(state);
-  if (state.wSheet === 'lib') return librarySheet(state, { frame, closeBtn });
   if (state.wSheet === 'activity') return activitySheet(state, dayOf(state), { frame, closeBtn, checkRows });
   if (state.wSheet === 'actmgr') return manageSheet(state, { frame, closeBtn, checkRows });
   return '';
@@ -147,7 +162,7 @@ export function menuLayer(state) {
       item('wOpenTemplates', 'Templates and tags', 'Switch, add and tag templates')
       + item('wEditTemplate', 'Edit this template', 'Change the active template')
       + item('wOpenHistory', 'Workout history', 'Past sets, by day')
-      + item('wSheetOpen', 'Exercise library', 'Saved exercises for autofill', 'data-sheet="lib"'), true);
+      + item('libOpenWin', 'Exercise library', 'Search, edit and delete saved exercises'), true);
   }
   if (state.wMenu === 'exercise') return exerciseMenu(state);
   return '';

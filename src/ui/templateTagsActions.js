@@ -13,6 +13,7 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
   state.tFilter = ''; // tag filter in the window
   state.tScreen = null; // id of the template on the edit screen
   state.tplDraft = null; // { name, tags } typed on the edit screen but not saved yet
+  state.tMore = false; // Edit template: More actions menu open
   state.tAcc = { new: false, name: false, ex: true, more: true }; // accordion open state (state, not <details>, so render() keeps it)
 
   const current = () => getSessions().find((s) => s.id === state.tScreen);
@@ -56,6 +57,7 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
     tplCloseWin: closeWin,
     tplNewBlank: () => createTemplate(null, 'Blank template created. Add exercises below.'),
     tplNewCopy: () => createTemplate(activeSessionId(null, logicalDate(Date.now(), state.dayStartHour), state.planDays), 'Template copied.'),
+    tplMore: () => { state.tMore = !state.tMore; },
     tplFilter: (el) => { state.tFilter = el.dataset.tag || ''; },
 
     tplActive: async (el) => { await activate(id(el)); },
@@ -70,10 +72,10 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
     },
 
     tplOpen: (el) => {
-      state.tScreen = id(el); state.wSession = id(el); state.tplDraft = null; state.tEdit = null; state.msg = '';
+      state.tScreen = id(el); state.wSession = id(el); state.tplDraft = null; state.tEdit = null; state.tMore = false; state.msg = '';
       window.scrollTo(0, 0);
     },
-    tplBack: () => { state.tScreen = null; state.wSession = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
+    tplBack: () => { state.tMore = false; state.tScreen = null; state.wSession = null; state.tplDraft = null; state.tEdit = null; state.msg = ''; },
 
     tplToggleTag: (el) => {
       const d = syncDraft();
@@ -100,12 +102,14 @@ export function createTemplateTagsActions({ state, saveTemplate, saveFail }) {
     },
 
     tplSetActive: async () => {
+      state.tMore = false;
       const r = setActive(getSessions(), state.tScreen);
       if (r.error) { state.msg = r.error; return; }
       await commit(r.sessions, `${current()?.name ?? 'Template'} is now the active template.`);
     },
 
     tplDelete: async () => {
+      state.tMore = false;
       const s = current();
       if (!s) return;
       if (!window.confirm(`Delete ${s.name}? Sets you already logged stay in your log.`)) return;

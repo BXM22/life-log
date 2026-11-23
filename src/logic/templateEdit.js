@@ -54,6 +54,17 @@ export function updateExercise(sessions, sessionId, index, fields) {
   return { sessions: withExercises(sessions, sessionId, s.exercises.map((e, i) => (i === index ? r.exercise : e))) };
 }
 
+/** Move the exercise at an index up (delta -1) or down (+1). Out-of-range moves return the sessions unchanged. */
+export function moveExercise(sessions, sessionId, index, delta) {
+  const s = find(sessions, sessionId);
+  if (!s || !s.exercises[index]) return { error: 'That exercise does not exist.' };
+  const to = index + delta;
+  if (to < 0 || to >= s.exercises.length) return { sessions };
+  const list = [...s.exercises];
+  [list[index], list[to]] = [list[to], list[index]];
+  return { sessions: withExercises(sessions, sessionId, list) };
+}
+
 /** Remove the exercise at an index. */
 export function removeExercise(sessions, sessionId, index) {
   const s = find(sessions, sessionId);

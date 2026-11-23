@@ -58,7 +58,7 @@
 
 /* Confirmations ("Set saved") sit at the top on Workout so they never cover the logging buttons. The bar is a sibling rendered before the toast. */
 .w2-page ~ .toast { top: calc(12px + env(safe-area-inset-top)); bottom: auto; }
-.w2-restchip { display: inline-flex; align-items: baseline; gap: 8px; min-height: 44px; padding: 0 16px; align-items: center; border: 0; border-radius: 22px; background: var(--accent); color: var(--ink); cursor: pointer; }
+.w2-restchip { display: inline-flex; align-items: baseline; gap: 8px; min-height: 44px; padding: 0 16px; align-items: center; border: 0; border-radius: 22px; background: var(--peach-soft); color: var(--ink); cursor: pointer; }
 .w2-restchip.run { background: var(--ink); color: var(--on-ink); }
 .w2-logtop { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
 .w2-logtop .w2-setnum { margin: 0; }
@@ -81,3 +81,8 @@
 .w2-actsets li { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--line); }
 .w2-danger { color: var(--danger, #B3261E); margin-top: 16px; }
 .w2-note { margin: 0 0 12px; color: var(--dim); font-size: 13px; font-weight: 600; }
+
+/* Switch sheet footer: Manage templates link and the Use button */
+.w2-sheet-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 8px; }
+.w2-sheet-foot .w2-link { flex: none; }
+.w2-sheet-foot .w2-use { flex: 1; max-width: 200px; min-height: 48px; margin: 0; }

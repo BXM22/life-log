@@ -11,7 +11,8 @@ import { esc } from './format.js';
 const CHEV = '<svg class="w2-chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
 
 /** Activities card for the Today page. firstCaliIndex is the exercise index the Calisthenics row opens (or -1). */
-export function activitiesCard(state, day, firstCaliIndex) {
+export function activitiesCard(state, day, firstCaliIndex, bare = false) {
+  const wrap = (html) => (bare ? `<div class="w2-actbare">${html}</div>` : `<section class="w2-card">${html}</section>`);
   const todays = activitiesFor(state.activities, day);
   const rows = todays.map((a) => {
     if (a.builtin === 'cali') {
@@ -22,11 +23,11 @@ export function activitiesCard(state, day, firstCaliIndex) {
     return `<button class="w2-line" data-action="aOpen" data-id="${esc(a.id)}"><span class="w2-linetitle">${esc(a.name)}</span><span class="w2-count${status === 'Not yet' ? '' : ' on'}">${esc(status)}</span>${CHEV}</button>`;
   });
   if (!rows.length) { // nothing today: one slim row instead of a card
-    return `<section class="w2-card"><div class="w2-acthead"><h2 class="w2-label">ACTIVITIES · NONE TODAY</h2><span><button class="editlink" data-action="aNew">+ Add</button> <button class="editlink" data-action="aManage">Edit</button></span></div></section>`;
+    return wrap(`<div class="w2-acthead"><h2 class="w2-label">Activities: none today</h2><span><button class="editlink w2-edit" data-action="aNew">+ Add</button> <button class="editlink w2-edit" data-action="aManage">Edit</button></span></div>`);
   }
-  return `<section class="w2-card"><div class="w2-acthead"><h2 class="w2-label">ACTIVITIES</h2><button class="editlink" data-action="aManage">Edit</button></div>
+  return wrap(`<div class="w2-acthead"><h2 class="w2-label">Activities</h2><button class="editlink w2-edit" data-action="aManage">Edit</button></div>
     ${rows.join('')}
-    <button class="w2-add w2-add-in" data-action="aNew">+ Add activity</button></section>`;
+    <button class="w2-add w2-add-in" data-action="aNew">+ Add activity</button>`);
 }
 
 /** The log sheet for the open activity (state.wAct). */
