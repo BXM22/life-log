@@ -111,6 +111,22 @@ export function renameSession(sessions, id, name) {
   return { sessions: sessions.map((s) => (s.id === id ? { ...s, name: r.name } : s)) };
 }
 
+/**
+ * Save a quick workout (F72) as a new template: `baseName` (made unique with " 2", " 3"), its exercises copied from today's extras
+ * (an open "as you like" target becomes the default). Returns { sessions, id } or { error }.
+ */
+export function sessionFromExtras(sessions, baseName, extras) {
+  if (!extras?.length) return { error: 'Add an exercise first.' };
+  const base = String(baseName ?? '').replace(/\s+/g, ' ').trim().slice(0, MAX_SESSION_NAME - 3) || 'Quick workout';
+  const taken = new Set(sessions.map((x) => x.name.toLowerCase()));
+  let name = base;
+  for (let n = 2; taken.has(name.toLowerCase()); n += 1) name = `${base} ${n}`;
+  const r = addSession(sessions, name);
+  if (r.error) return r;
+  const exercises = extras.map(({ done, ...e }) => ({ ...e, warmup: e.warmup || DEFAULT_WARMUP, target: !e.target || e.target === 'as you like' ? DEFAULT_TARGET : e.target }));
+  return { sessions: r.sessions.map((x) => (x.id === r.id ? { ...x, focus: 'Saved from a quick workout', exercises } : x)), id: r.id };
+}
+
 /** Delete a session. At least one must remain. */
 export function removeSession(sessions, id) {
   if (!find(sessions, id)) return { error: 'That session does not exist.' };

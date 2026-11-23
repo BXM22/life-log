@@ -350,3 +350,82 @@ Each needs a small action in `workoutNavActions.js` or `workoutSheetActions.js` 
 - Run `npm test` before and after; add tests for each new action.
 - Keep all new selectors under `.w2-`.
 - Check each board against the live app at 390 px wide before ticking it off.
+
+## Switch today's workout v2 and Quick workout (shipped 2026-11-22, F72)
+
+Status: **built 2026-11-22**, checked at 390 px in light and dark (contrast scan clean, no console errors). As built: quick ids are `__quick` / `__quick:<full|upper|lower|push|pull>` resolved by `sessionById` (`quickSession`), actions in `src/ui/quickWorkoutActions.js`, styles in `src/styles/w3-switch.css`, `sessionFromExtras` in `templateEdit.js`. The toast runs `state.undo.action` so Switch and Quick start both offer Undo. Edit this template is replaced by Save as template while a quick workout is on. Also fixed: the Today workout card now shows today's pick (it showed the weekday plan). `wSheetSelect` / `wSheetUse` stay for compatibility but the sheet no longer uses them. Chips set the name only; a quick workout counts toward the Workout habit like any other. Opened from Today (`Switch`, `Pick a workout`) and from Workout. Design pass used ui-ux-pro-max, ui-styling and frontend-design.
+
+### What is wrong today
+
+- The title is 15 px and reads like a label; the sheet has no clear top.
+- What is on today sits wherever it falls in the list (often last), so you scroll to find it.
+- Every row looks the same: outline, radio dot, three grey lines. Nothing says what is inside a workout.
+- Two taps to switch (select, then `Use`), and `Use` does nothing when the planned row is already picked.
+- Tag chips (lowercase, a full row) show even with five templates.
+- No way to just train: you must pick a template, even on a day you want to wing it. A `quick` tag in real data shows people work around this.
+
+### New layout (top to bottom)
+
+```
+┌───────────────────────────────────────┐
+│ ▬                                      │
+│ Today's workout                    ✕   │  22/28, weight 800
+│ Sunday · planned: Upper C              │
+│ ┌───────────────────────────────────┐ │
+│ │ [icon] Upper C (optional)   On now│ │  lavender card (--lav)
+│ │ Upper back and rear delts          │ │
+│ │ 4 exercises · last done Nov 15     │ │
+│ │ Pull-up · Face pull · Rear fly …   │ │
+│ │ (switched: "Back to Upper C" link) │ │
+│ └───────────────────────────────────┘ │
+│ ┌───────────────────────────────────┐ │
+│ │ ⚡ Quick workout                   │ │  butter card, the one loud element
+│ │ Start empty, add exercises as you  │ │
+│ │ go. Save it as a template after.   │ │
+│ │ [Full body][Upper][Lower][Push][Pull]│  optional name chip
+│ │ [ Start quick workout ]            │ │  charcoal button
+│ └───────────────────────────────────┘ │
+│ Or switch to                       5  │
+│ [All][Upper][Lower]  (only if > 5)    │
+│ ┌ [tone icon] Upper A           ›  ┐ │  tap = switch now
+│ │ 8 exercises · not done yet        │ │
+│ │ Incline press · Row · Fly …       │ │
+│ └───────────────────────────────────┘ │
+│ … one card per template              │
+│ [ ⚙ Manage templates ]               │  outlined row, opens Templates page
+└───────────────────────────────────────┘
+```
+
+### Behaviour
+
+- **One tap switches.** Tapping a template card sets today's pick (`wSessionPick`, day-scoped as now), closes the sheet and shows a toast "Switched to Upper A" with `Undo` (back to the previous pick). The `Use` button and select-only rows go away.
+- **On now card** is the current pick, planned or switched. When switched, it shows "Switched from Upper C" and a `Back to Upper C` link (`wSessionClear`).
+- **Quick workout** sets today's session to a built-in empty session (`QUICK_ID = '__quick'`, name "Quick workout", or "Quick: Upper" when a chip is picked). Workout opens on an empty state: "Add your first exercise" with the existing Add for today sheet (library suggestions, `xe-*` form). Sets log as normal `lift_set` entries with `session: '__quick'`.
+- **Save as template:** once a quick workout has at least one exercise, the Workout Today menu and the Done fold offer `Save as template`, which creates a template from today's extras (name from the chip, editable) and makes today's pick that template.
+- **Manage templates** opens Workout > Templates from any tab (shipped in `d001501`).
+- Tag chips show only with more than 5 templates, in sentence case.
+
+### Look
+
+- Sheet title 22/28 weight 800; subline 15 muted. Cards 22 px radius, 16 px padding, 12 px apart, icon tiles reuse the Templates page tones (`.w2-ticon`, tone by group order) so a template looks the same in both places.
+- On now: `--lav` fill, `--lav-line` 2 px border, "On now" pill in ink.
+- Quick workout: butter `#FEE1B6` fill with charcoal text in light; in dark `--accent` (butter) fill with `--on-accent` charcoal, so it is the brightest thing on the sheet in both modes. Lightning icon in a charcoal circle. Button: charcoal fill, butter text (`--ink` / `--bg` inverted in dark).
+- Template cards: `--panel`, 1 px `--line`, chevron on the right, first three exercise names as a muted preview line (ellipsis).
+- Motion: sheet slides up 240 ms ease-out; pressed cards scale to .98 for 150 ms; none under reduced motion.
+- All text 4.5:1 in both modes; every target at least 44 px; cards are buttons with `aria-label` "Switch today to Upper A".
+
+### Code plan
+
+| Part | Files |
+|---|---|
+| Quick session: `QUICK_ID`, `quickSession(label)`, `sessionById` returns it, `getSessions` never lists it | `src/logic/template.js`, `src/logic/workout.js` (`activeSessionId` accepts it) |
+| Sheet markup | `src/ui/workoutSheets.js` (`switchSheet`) |
+| Actions: `wQuickStart` (data-label), `wQuickLabel`, `wSwitchUndo`, `wSaveQuick`; drop `wSheetSelect`, `wSheetUse` | `src/ui/workoutSheetActions.js` |
+| Empty state for a quick workout | `src/ui/workoutView.js` |
+| Styles | new `src/styles/w3-switch.css` (linked in `index.html`, precached in `sw.js`) |
+| Tests | `tests/workoutSwitch.test.js`, new `tests/quickWorkout.test.js` |
+
+### Open questions
+
+- Should a quick workout count as "planned workout done" for the Workout habit? Proposed: yes, any logged working set counts, as now.
+- Quick workout chips: name only (proposed), or also pre-fill a few exercises from the library by muscle group (later)?

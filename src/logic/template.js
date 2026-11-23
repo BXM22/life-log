@@ -78,7 +78,21 @@ export const getSessions = () => active;
 /** Use an edited plan, or pass null to go back to the built-in one. */
 export function setTemplate(sessions) { active = Array.isArray(sessions) && sessions.length ? sessions : SESSIONS; }
 
-export const sessionById = (id) => active.find((s) => s.id === id) ?? null;
+// Quick workout (F72): a built-in empty session for a day you train without a template. Exercises come from today's
+// extras. The id carries the optional name chip ('__quick' or '__quick:upper'), so every reader can name it from data.session.
+export const QUICK_ID = '__quick';
+export const QUICK_LABELS = { full: 'Full body', upper: 'Upper', lower: 'Lower', push: 'Push', pull: 'Pull' };
+export const isQuickId = (id) => typeof id === 'string' && (id === QUICK_ID || id.startsWith(`${QUICK_ID}:`));
+export const quickId = (label) => (QUICK_LABELS[label] ? `${QUICK_ID}:${label}` : QUICK_ID);
+/** The quick session for an id, or null. Never listed by getSessions(). */
+export function quickSession(id) {
+  if (!isQuickId(id)) return null;
+  const key = id.slice(QUICK_ID.length + 1);
+  if (key && !QUICK_LABELS[key]) return null;
+  return { id, name: key ? `Quick: ${QUICK_LABELS[key]}` : 'Quick workout', focus: 'Add exercises as you go', tags: [], exercises: [], quick: true };
+}
+
+export const sessionById = (id) => active.find((s) => s.id === id) ?? quickSession(id);
 
 /** The exercise definition for a logged exercise name, from any session. */
 export function findExercise(name) {

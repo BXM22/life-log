@@ -83,7 +83,7 @@ export function todayView(state) {
   if (state.todayWin) return `${todayWindow(state, today(state))}${quickAddSheet(state)}`; // Log, Learn or Notes window
   const day = today(state);
   const recent = liveEntries(state.entries);
-  const id = workout.sessionForDate(day, state.planDays);
+  const id = workout.pickedFor(state, day) || workout.sessionForDate(day, state.planDays); // today's pick (incl. a quick workout), else the schedule
   const s = id && sessionById(id);
   return `<div class="today">${habitsHero(state, day, Boolean(s))}
     ${workoutCard(state, s)}

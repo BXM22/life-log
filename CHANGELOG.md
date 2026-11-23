@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat: Switch today's workout v2 and Quick workout (F72): larger title, On now card, one-tap switching with Undo, template cards with exercise previews, a butter Quick workout card (optional Full body, Upper, Lower, Push, Pull name) that starts an empty session and opens Add exercise, and Save as template from the Workout page or menu. Fix: the Today workout card shows today's pick. Tests 388 to 393; cache v59 (2026-11-22)
+
 - feat: History, Sync and Settings v2 (F71), one agent per tab: History root with This week and Look closer rows plus Weight, Habits, Lift progress and All entries pages (search, chips, Edit sheet with delete confirm); Sync as one ordered screen (Copies meters, three-step Free up space, Export, Wipe, Weekly review and Backup pages, Dropbox and wipe sheets; Export | Wipe switch removed); Settings with a Theme card, grouped rows, New day starts at sheet, Rest timer and Dropbox pages. New `historyActions.js`, `settingsActions.js`, `w3-history.css`, `w3-sync.css`, `w3-settings.css`; Escape closes the new sheets; 5 modules that were missing from the precache list added; tests 357 to 387; cache v58 (2026-11-22)
 
 - feat: Exercise library is a full page (F70): search, equipment chips with counts, Edit (inline, rename allowed) and Delete (confirm in the card), New exercise; `searchLibrary` and `updateLibraryEntry` added; 2 new tests; cache v54 (2026-11-22)

@@ -1,11 +1,12 @@
 // Workout v2 sheets and dropdown menus (docs/screens/workout.md screens 2, 3, 4, 6, 7).
 //   html:    sheetLayer(state) -> open sheet + scrim or ''; menuLayer(state) -> open dropdown + transparent scrim or ''
 //   state:   wSheet (null | 'switch' | 'warm' | 'add' | 'activity' | 'actmgr' | 'lib'), wMenu (null | 'today' | 'exercise'), wEx (exercise index or null)
-//   actions: wSheetOpen, wSheetClose, wSheetTab, wMenuToggle, wMenuClose, wEditTemplate, wEditExercise, wOpenTemplates, wOpenHistory
+//   actions: wSheetOpen, wSheetClose, wSheetTab, wMenuToggle, wMenuClose, wEditTemplate, wEditExercise, wOpenTemplates, wOpenHistory,
+//            switch sheet (F72): wSwitchTo, wSessionClear, wQuickLabel, wQuickStart; menu: wSaveQuick (quickWorkoutActions.js)
 //            (see workoutSheetActions.js); sheets reuse wSessionPick, tplFilter, toggleCheck, toggleBjj, addExtraSave, addExtraCancel,
 //            trimSet, untrimSet, toggleCue, tDelete, keepExtra, removeExtra.
 
-import { getSessions, sessionById } from '../logic/template.js';
+import { getSessions, sessionById, QUICK_LABELS, isQuickId } from '../logic/template.js';
 import { activeSessionId, pickedFor, plannedSessionId } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
 import { filterByTag, tagsOf, usedTags } from '../logic/templateTags.js';
@@ -44,31 +45,70 @@ export function lastDoneBySession(entries) {
   return out;
 }
 
+const svg = (d, size = 22) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const SW_ICON = {
+  bell: svg('<path d="M3 9v6M6.5 6.5v11M17.5 6.5v11M21 9v6M6.5 12h11"/>'),
+  bolt: svg('<path d="M13 3L5 13.5h6L10 21l8-10.5h-6L13 3z"/>'),
+  gear: svg('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>', 20),
+  back: svg('<path d="M9 14L4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>', 18),
+  chev: svg('<path d="M9 5l7 7-7 7"/>', 20),
+};
+const TONES = ['a', 'b', 'c'];
+const WEEKDAY = (d) => new Date(`${d}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long' });
+const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`;
+const preview = (s) => s.exercises.slice(0, 3).map((e) => e.name.replace(/\s*\(.*?\)/g, '').replace(/\s+or\s+.*$/, '')).join(', ') + (s.exercises.length > 3 ? ', …' : '');
+
 function switchSheet(state) {
   const all = getSessions();
   const day = dayOf(state);
   const activeId = activeSessionId(pickedFor(state, day), day, state.planDays);
-  const pick = sessionById(state.wSheetPick) ? state.wSheetPick : activeId;
-  const planned = plannedSessionId(state, day);
+  const now = sessionById(activeId);
+  const planned = sessionById(plannedSessionId(state, day));
+  const switched = activeId !== planned?.id;
   const last = lastDoneBySession(state.entries);
+  const lastText = (id) => (last[id] ? `last done ${shortDate(last[id])}` : 'not done yet');
+  const extras = extrasFor(state.wExtras, day);
+
+  const nowMeta = now.quick
+    ? (extras.length ? `${plural(extras.length, 'exercise')} added` : 'No exercises yet')
+    : `${plural(now.exercises.length, 'exercise')}, ${lastText(now.id)}`;
+  const nowPrev = now.quick ? extras.slice(0, 3).map((e) => e.name).join(', ') : preview(now);
+  const nowCard = `<section class="sw-now" aria-label="On now: ${esc(now.name)}">
+      <div class="sw-cardtop"><span class="sw-ico" aria-hidden="true">${now.quick ? SW_ICON.bolt : SW_ICON.bell}</span>
+        <span class="sw-text"><b>${esc(now.name)}</b>${now.focus ? `<small>${esc(now.focus)}</small>` : ''}</span><span class="sw-pill">On now</span></div>
+      <p class="sw-meta">${esc(nowMeta)}</p>${nowPrev ? `<p class="sw-prev">${esc(nowPrev)}</p>` : ''}
+      ${switched && planned ? `<button class="sw-back" data-action="wSessionClear">${SW_ICON.back}<span>Back to ${esc(planned.name)}</span></button>` : ''}
+    </section>`;
+
+  const label = state.wQuickLabel;
+  const quickCard = `<section class="sw-quick" aria-label="Quick workout">
+      <div class="sw-cardtop"><span class="sw-bolt" aria-hidden="true">${SW_ICON.bolt}</span>
+        <span class="sw-text"><b>Quick workout</b><small>Start empty and add exercises as you go. Save it as a template after.</small></span></div>
+      <div class="sw-labels" role="group" aria-label="Name it (optional)">${Object.entries(QUICK_LABELS).map(([k, t]) => `<button class="sw-label" data-action="wQuickLabel" data-label="${k}" aria-pressed="${label === k}">${esc(t)}</button>`).join('')}</div>
+      <button class="sw-go" data-action="wQuickStart">Start ${label ? `quick ${esc(QUICK_LABELS[label].toLowerCase())}` : 'quick workout'}</button>
+    </section>`;
+
+  const others = filterByTag(all, state.tFilter || '').filter((s) => s.id !== activeId);
   const tags = usedTags(all);
-  const shown = filterByTag(all, state.tFilter || '');
+  const cap = (t) => t.charAt(0).toUpperCase() + t.slice(1);
   const chip = (tag, text) => `<button class="w2-chip" data-action="tplFilter" data-tag="${esc(tag)}" aria-pressed="${(state.tFilter || '') === tag}">${esc(text)}</button>`;
-  const chips = tags.length ? `<div class="w2-chiprow">${chip('', 'All')}${tags.map((t) => chip(t, t)).join('')}</div>` : '';
-  const rows = shown.map((s) => {
-    const on = s.id === pick;
-    const n = s.exercises.length;
-    const done = last[s.id] ? `Last done ${shortDate(last[s.id])}` : 'Not done yet';
-    return `<button class="w2-radio${on ? ' on' : ''}" data-action="wSheetSelect" data-id="${esc(s.id)}" role="radio" aria-checked="${on}">
-      <span class="w2-dot" aria-hidden="true"></span>
-      <span class="w2-radio-text"><b>${esc(s.name)}</b>${s.focus ? `<small>${esc(s.focus)}</small>` : ''}<small>${n} exercise${n === 1 ? '' : 's'}, ${done.toLowerCase()}</small></span>
-      ${s.id === planned ? '<span class="w2-tag">Planned</span>' : ''}</button>`;
+  const chips = all.length > 5 && tags.length ? `<div class="w2-chiprow sw-chips">${chip('', 'All')}${tags.map((t) => chip(t, cap(t))).join('')}</div>` : '';
+  const cards = others.map((s) => {
+    const tone = TONES[all.indexOf(s) % TONES.length];
+    return `<button class="sw-card" data-tone="${tone}" data-action="wSwitchTo" data-id="${esc(s.id)}" aria-label="Switch today to ${esc(s.name)}">
+      <span class="sw-ico" aria-hidden="true">${SW_ICON.bell}</span>
+      <span class="sw-text"><span class="sw-name"><b>${esc(s.name)}</b>${planned && s.id === planned.id ? '<span class="sw-tag">Planned</span>' : ''}</span>
+        <small>${esc(`${plural(s.exercises.length, 'exercise')}, ${lastText(s.id)}`)}</small>${s.exercises.length ? `<small class="sw-prev">${esc(preview(s))}</small>` : ''}</span>
+      ${SW_ICON.chev}</button>`;
   }).join('');
-  return frame('Switch today\'s workout', `<div class="w2-sheet-head"><h2>Switch today's workout</h2>${closeBtn}</div>
-    <p class="w2-note">Only today changes. The rest of your week stays as planned.</p>
+
+  return frame('Today\'s workout', `<div class="w2-sheet-head sw-head"><div><h2 class="sw-title">Today's workout</h2>
+      <p class="sw-sub">${esc(WEEKDAY(day))}${planned ? `, planned: ${esc(planned.name)}` : ''}. Only today changes.</p></div>${closeBtn}</div>
+    ${nowCard}${quickCard}
+    <div class="sw-listhead"><h3>Or switch to</h3><span class="sw-count">${others.length}</span></div>
     ${chips}
-    <div role="radiogroup" aria-label="Templates">${rows || '<p class="w2-empty">No templates with that tag.</p>'}</div>
-    <div class="w2-sheet-foot"><button class="w2-link" data-action="wOpenTemplates">Manage templates</button><button class="btn w2-use" data-action="wSheetUse">Use</button></div>`);
+    <div class="sw-list">${cards || '<p class="w2-empty">No other templates with that tag.</p>'}</div>
+    <button class="sw-manage" data-action="wOpenTemplates">${SW_ICON.gear}<span>Manage templates</span></button>`);
 }
 
 // ---- Warm-up / BJJ / Calisthenics (screen 4) ----
@@ -158,9 +198,11 @@ function exerciseMenu(state) {
 
 export function menuLayer(state) {
   if (state.wMenu === 'today') {
+    const day = dayOf(state);
+    const quick = isQuickId(activeSessionId(pickedFor(state, day), day, state.planDays));
     return dropdown('Workout menu',
       item('wOpenTemplates', 'Templates and tags', 'Switch, add and tag templates')
-      + item('wEditTemplate', 'Edit this template', 'Change the active template')
+      + (quick ? item('wSaveQuick', 'Save as template', 'Keep today\'s exercises as a template') : item('wEditTemplate', 'Edit this template', 'Change the active template'))
       + item('wOpenHistory', 'Workout history', 'Past sets, by day')
       + item('libOpenWin', 'Exercise library', 'Search, edit and delete saved exercises'), true);
   }

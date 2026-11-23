@@ -1,5 +1,6 @@
 // Recent updates shown in Settings > WHAT'S NEW. Newest first. Add a line here when you ship something you'd notice.
 export const UPDATES = [
+  { date: '2026-11-22', text: 'Switch today\'s workout is clearer: what is on now sits at the top, one tap switches (with Undo), and Quick workout lets you start empty, add exercises as you go and save it as a template.' },
   { date: '2026-11-22', text: 'History, Sync and Settings have a new look. History has pages for Weight, Habits, Lift progress and All entries (with search). Sync walks you through export, confirm and wipe in three steps. Settings groups everything, with its own Rest timer and Dropbox pages.' },
   { date: '2026-11-22', text: 'Exercise library has its own page: search, filter by equipment, edit or delete any exercise, and add new ones. Find it in the Workout menu.' },
   { date: '2026-11-22', text: 'New colors: lavender, mint and butter on a cream background, with a matching dark mode. Templates are now cards with a preview of their exercises.' },

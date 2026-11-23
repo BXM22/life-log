@@ -48,6 +48,7 @@ import { normalizeTemplate } from '../logic/templateEdit.js';
 import { exportView, wipeView, wipeOpts, svSubpage } from './exportWipeView.js';
 import { createSettingsActions } from './settingsActions.js';
 import { createHistoryActions } from './historyActions.js';
+import { createQuickWorkoutActions } from './quickWorkoutActions.js';
 import { backupActions } from './backupPanel.js';
 import { createSyncActions } from './syncActions.js';
 import { getConfig, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
@@ -148,6 +149,7 @@ const actions = {
   ...createWorkoutActions({ state, saveEntries, saveFail, inputValue, today, onWorkingSet: rest.startIfAuto }),
   ...createWorkoutNavActions({ state, today }),
   ...createWorkoutSheetActions({ state, today }),
+  ...createQuickWorkoutActions({ state, today, saveFail, saveTemplate: async (s) => { if (state.storageOk) await saveTemplate(s); } }),
   ...createWorkoutHistoryActions({ state }),
   ...createActivityActions({ state, saveEntries, saveFail, inputValue, today }),
   ...createLibraryActions({ state, today }),
@@ -465,7 +467,7 @@ function render() {
   const undo = state.undo && state.undo.msg === state.msg ? state.undo : null; // only while the message that offered it is showing
   const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${(state.tab === 'history' && state.histWin) || (state.tab === 'settings' && state.stPage) || ((state.tab === 'export' || state.tab === 'wipe') && svSubpage(state)) || (state.tab === 'workout' && !state.tScreen && !state.tWin && !state.libWin && !state.wHistory) ? '' : header()}${prBanner(state)}${views[state.tab](state)}`;
   $app.innerHTML = `${page}
-    ${state.msg ? `<button class="toast" data-action="${undo ? 'undoSet' : 'dismissMsg'}" role="status">${esc(state.msg)}${undo ? ' <b class="toast-undo">UNDO</b>' : ''}</button>` : ''}
+    ${state.msg ? `<button class="toast" data-action="${undo ? (undo.action || 'undoSet') : 'dismissMsg'}" role="status">${esc(state.msg)}${undo ? ' <b class="toast-undo">UNDO</b>' : ''}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
   if (state.tab === 'workout' && state.restOpen) positionWheels(state);
   clearTimeout(toastTimer);

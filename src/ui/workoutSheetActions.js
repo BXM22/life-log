@@ -7,6 +7,7 @@
 // can be turned into "close the sheet" by the integrator: clear wSheet when it sees wAdd false while wSheet === 'add'.
 
 import { activeSessionId, expireSessionPick, pickedFor } from '../logic/workout.js';
+import { isQuickId } from '../logic/template.js';
 
 export function createWorkoutSheetActions({ state, today }) {
   state.wSheet = null;
@@ -46,6 +47,7 @@ export function createWorkoutSheetActions({ state, today }) {
     wMenuClose: () => { state.wMenu = null; },
     wEditTemplate: () => {
       const id = activeId();
+      if (isQuickId(id)) { state.wMenu = null; return; } // a quick workout has no template to edit (Save as template instead)
       state.tScreen = id; state.wSession = id; state.tEdit = null; state.tplDraft = null;
       state.wMenu = null; state.msg = '';
       top();

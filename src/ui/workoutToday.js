@@ -140,9 +140,12 @@ export function todayPage(state) {
     ? `<div class="w2-fold"><button class="w2-foldbtn" data-action="wDoneToggle" aria-expanded="${open}"><span>Done</span><span class="w2-count">${finished.length}</span>${CHEV.replace('class="w2-chev"', `class="w2-chev w2-foldchev${open ? ' open' : ''}"`)}</button>${open ? `<div class="w2-list">${rows(finished)}</div>` : ''}</div>`
     : '';
 
+  const quick = !!session.quick;
+  const saveBtn = quick && list.some((x) => x.kind === 'extra') ? '<button class="btn secondary sw-save" data-action="wSaveQuick">Save as template</button>' : '';
   let body;
-  if (!list.length) body = `<div class="w2-card"><p>No exercises yet. Open Switch, then Edit on this template to add some.</p></div>${addBtn}`;
-  else body = `${todo.length ? `<h2 class="w2-label">Up next</h2><div class="w2-list">${rows(todo)}</div>` : ''}${doneFold}${addBtn}`;
+  if (!list.length && quick) body = `<div class="w2-card sw-empty"><b>Add your first exercise</b><p>Pick one from your library or type a new one. Add more as you go.</p><button class="btn" data-action="wSheetOpen" data-sheet="add">Add exercise</button></div>`;
+  else if (!list.length) body = `<div class="w2-card"><p>No exercises yet. Open Switch, then Edit on this template to add some.</p></div>${addBtn}`;
+  else body = `${todo.length ? `<h2 class="w2-label">Up next</h2><div class="w2-list">${rows(todo)}</div>` : ''}${doneFold}${addBtn}${saveBtn}`;
 
   const warm = warmRow(state, session, day);
   return `<div class="w2-page">
@@ -150,7 +153,7 @@ export function todayPage(state) {
       <div class="w2-headact">${restChip(state)}
       <button class="w2-icon" data-action="wMenuToggle" data-menu="today" aria-label="Workout menu" aria-haspopup="menu">${DOTS_ICON}</button></div></header>
     <section class="w2-card w2-tpl">
-      <div class="w2-tplhead"><div><span class="w2-sub">${from ? `Switched from ${esc(from)}` : 'Active template'}</span><b class="w2-tplname">${esc(session.name)}</b></div>
+      <div class="w2-tplhead"><div><span class="w2-sub">${quick ? 'Quick workout, today only' : from ? `Switched from ${esc(from)}` : 'Active template'}</span><b class="w2-tplname">${esc(session.name)}</b></div>
         <button class="w2-switch" data-action="wSheetOpen" data-sheet="switch" aria-label="Switch template">Switch</button></div>
       ${prog.total ? `<div class="w2-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${prog.total}" aria-valuenow="${prog.done}"><i style="width:${pct}%"></i></div>
       <p class="w2-sub">${prog.done} of ${prog.total} sets</p>` : ''}

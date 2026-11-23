@@ -1,7 +1,7 @@
 // Life Log service worker: cache-first app shell so the app opens offline.
 // Shell files are fetched network-first (cache is the offline fallback), so deploys
 // show up on the next open without re-adding the bookmark. Bump CACHE only to drop stale entries.
-const CACHE = 'life-log-shell-v58';
+const CACHE = 'life-log-shell-v59';
 const FONT_CACHE = 'life-log-fonts-v1';
 
 const SHELL = [
@@ -24,6 +24,7 @@ const SHELL = [
   'src/styles/w3-sync.css',
   'src/styles/w3-settings.css',
   'src/styles/w3-history.css',
+  'src/styles/w3-switch.css',
   'src/logic/quickAdd.js',
   'src/logic/studySubjects.js',
   'src/ui/quickAddView.js',
@@ -33,6 +34,7 @@ const SHELL = [
   'src/ui/libraryWindow.js',
   'src/ui/settingsActions.js',
   'src/ui/historyActions.js',
+  'src/ui/quickWorkoutActions.js',
   'src/ui/winParts.js',
   'src/ui/workoutHistoryActions.js',
   'src/db/store.js',

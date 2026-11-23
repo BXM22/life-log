@@ -1,0 +1,59 @@
+/* Switch today's workout v2 and Quick workout (F72). Palette tokens from forma.css; the Quick card is the one loud element. */
+.qa-sheet.w2-sheet:has(.sw-now) { --tone-a: #EEDEF6; --tone-b: #CCE5E3; --tone-c: #FEE1B6; --tone-ink: #2F2F2F; }
+html[data-theme="dark"] .qa-sheet.w2-sheet:has(.sw-now) { --tone-a: #3B3050; --tone-b: #234240; --tone-c: #4A3B22; --tone-ink: #F4EEF7; }
+
+.sw-head { align-items: flex-start; margin-bottom: 16px; }
+.sw-title { margin: 0; font-size: 22px; line-height: 28px; font-weight: 800; letter-spacing: -0.01em; text-transform: none; color: var(--ink); }
+.sw-sub { margin: 4px 0 0; color: var(--dim); font-size: 15px; line-height: 20px; font-weight: 600; }
+
+/* Shared card parts */
+.sw-cardtop { display: flex; align-items: flex-start; gap: 12px; }
+.sw-text { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; text-align: left; }
+.sw-text b { font-size: 17px; line-height: 22px; font-weight: 800; overflow-wrap: anywhere; }
+.sw-text small { font-size: 14px; line-height: 19px; font-weight: 600; color: var(--dim); }
+.sw-ico { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 14px; background: var(--tone, var(--panel)); color: var(--tone-ink, var(--ink)); }
+.sw-prev { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+
+/* On now: lavender, what today is set to */
+.sw-now { padding: 16px; border: 2px solid var(--lav-line); border-radius: 22px; background: var(--lav); color: var(--ink); }
+.sw-now .sw-ico { background: var(--panel); color: var(--ink); }
+.sw-pill { flex: none; padding: 5px 11px; border-radius: 14px; background: var(--ink); color: var(--bg); font-size: 13px; font-weight: 800; }
+.sw-meta { margin: 12px 0 0; font-size: 14px; line-height: 19px; font-weight: 700; }
+.sw-now .sw-prev { margin: 2px 0 0; color: var(--dim); font-size: 14px; line-height: 19px; font-weight: 600; }
+.sw-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 8px 0 -6px; padding: 0 4px; border: 0; background: none; color: var(--ink); font: inherit; font-size: 15px; font-weight: 800; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+
+/* Quick workout: butter in both modes, charcoal type */
+.sw-quick { margin-top: 12px; padding: 16px; border-radius: 22px; background: #FEE1B6; color: #2F2F2F; box-shadow: 0 10px 24px -16px rgba(47, 47, 47, .55); }
+.sw-quick .sw-text small { color: #46424D; }
+.sw-bolt { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 22px; background: #2F2F2F; color: #FEE1B6; }
+.sw-bolt svg { fill: currentColor; }
+.sw-labels { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.sw-label { min-height: 44px; padding: 0 16px; border: 1.5px solid #2F2F2F; border-radius: 22px; background: transparent; color: #2F2F2F; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 150ms ease-out, color 150ms ease-out; }
+.sw-label[aria-pressed="true"] { background: #2F2F2F; color: #FEE1B6; }
+.sw-go { width: 100%; min-height: 52px; border: 0; border-radius: 26px; background: #2F2F2F; color: #FEE1B6; font: inherit; font-size: 16px; font-weight: 800; cursor: pointer; transition: transform 150ms ease-out; }
+.sw-go:active, .sw-label:active { transform: scale(.98); }
+
+/* Other templates: one tap switches */
+.sw-listhead { display: flex; align-items: center; justify-content: space-between; margin: 24px 2px 10px; }
+.sw-listhead h3 { margin: 0; font-size: 17px; font-weight: 800; color: var(--ink); text-transform: none; letter-spacing: 0; }
+.sw-count { min-width: 32px; padding: 3px 10px; border-radius: 14px; background: var(--shade); color: var(--ink); font-size: 13px; font-weight: 800; text-align: center; }
+.sw-chips { margin-bottom: 10px; }
+.sw-list { display: flex; flex-direction: column; gap: 10px; }
+.sw-card { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 72px; padding: 14px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); color: var(--ink); font: inherit; cursor: pointer; transition: transform 150ms ease-out, border-color 150ms ease-out; }
+.sw-card:active { transform: scale(.98); }
+.sw-card[data-tone="a"] { --tone: var(--tone-a); }
+.sw-card[data-tone="b"] { --tone: var(--tone-b); }
+.sw-card[data-tone="c"] { --tone: var(--tone-c); }
+.sw-card > svg { flex: none; color: var(--dim); }
+.sw-name { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.sw-tag { padding: 3px 9px; border-radius: 12px; background: var(--peach-soft); color: var(--ink); font-size: 12px; font-weight: 800; }
+.sw-manage { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 52px; margin-top: 16px; border: 1.5px solid var(--line); border-radius: 26px; background: transparent; color: var(--ink); font: inherit; font-size: 15px; font-weight: 800; cursor: pointer; }
+.sw-card:focus-visible, .sw-go:focus-visible, .sw-label:focus-visible, .sw-manage:focus-visible, .sw-back:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Workout tab: quick workout empty state and Save as template */
+.sw-empty { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; border: 2px dashed var(--lav-line); background: var(--lav); }
+.sw-empty b { font-size: 17px; font-weight: 800; }
+.sw-empty p { margin: 0 0 8px; color: var(--dim); font-size: 14px; font-weight: 600; }
+.w2-page button.btn.sw-save { margin-top: 12px; }
+
+@media (prefers-reduced-motion: reduce) { .sw-card, .sw-go, .sw-label { transition: none; } .sw-card:active, .sw-go:active, .sw-label:active { transform: none; } }
