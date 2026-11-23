@@ -36,7 +36,16 @@ Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66).
 - **Reset to built-in plan:** the new Edit template screen has `Reset all to the built-in plan` (with a confirmation). Settings gets no copy of it.
 - **Tab bar space:** if the 72 px reserved strip becomes a global rule, this screen's scroll container needs the same `padding-bottom: calc(72px + 16px + env(safe-area-inset-bottom))`.
 
-## v2 update (redesign, planned, not built)
+## v2 update (redesign, shipped 2026-11-22, F71)
+
+**As built (2026-11-22).** Same palette and contrast checks as History. Classes `.st-*` in `src/styles/w3-settings.css`; actions `stOpen` (works from any tab; data-page `rest | dropbox`), `stBack`, `stDayOpen`, `stDayPick`, `stDayUse`, `stSheetClose`, `stRestCustom` and friends in `src/ui/settingsActions.js` (`createSettingsActions({ state, persist })`); state `stPage`, `stSheet`, `stDayPick`. Existing `setTheme`, `setKeep`, `setPlanDays`, `setDayStart`, `setExportReminder`, `setAutoSync`, `install`, `disconnect`, `openDropbox`, `connect`, `closeModal` and `restAuto` are reused unchanged, so every setting writes the same stored value.
+- Root: Theme as the lavender card with a System / Light / Dark segmented control; `Your day` (New day starts at row opens a sheet; Keep after a wipe segmented 0, 3, 7, 14 days); `Training` (Lifting days per week 3 or 4 with the plan sentence; Rest timer row); `Backup` (Dropbox row; Remind me to export weekly switch); a mint card with the storage line and install hint (Add to Home Screen only when the browser offers it); `What's new` with dates and a count pill.
+- New day starts at (sheet): radio rows Midnight to 6:00 AM, Use saves, Cancel or backdrop closes; Escape closes.
+- Rest timer page: default length chips 0:45 to 3:00 plus Custom (opens the rest wheel on Workout), Start rest after each set switch.
+- Dropbox page: connected (status, folder, last export, Upload finished days switch, Go to Sync, Disconnect set apart) or not connected (explanation, Connect Dropbox using the unchanged `dropboxModal()`, switch shown disabled).
+- **Not built:** a Weekly plan row (no plan editor until F66; Lifting days per week stays instead); disconnect turning exports and wipe off (no such logic; the page says files already in Dropbox stay). Copy written without the mock-up text.
+
+### Original v2 spec
 
 Mock-ups: Design canvas "Life Log Settings, History and Sync v2" (https://claude.ai/artifact/Uwig18H7bxcS54s1u1W4zC), Settings row, 6 phone boards, 390 wide, playable. Same rules as Workout v2 and Today F65: one calm root screen, pages for work you stay in, sheets for quick choices, switches and segmented controls inline for two to four options. Sentence case, nothing under 13 px, no all-caps overlines, no `·` joins. Reserve the 72 px tab bar strip on every page.
 

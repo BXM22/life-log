@@ -13,12 +13,29 @@ function download(file) {
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
+const SV_PAGES = ['wipe', 'review', 'backup'];
+
 export function createSyncActions({ state, onChange }) {
   return {
     openWipe: () => { state.syncModal = 'wipe'; state.wipeTick = false; },
     openDropbox: () => { state.syncModal = 'dropbox'; },
     closeModal: () => { state.syncModal = null; state.wipeTick = false; },
     toggleBackup: () => { state.backupOpen = !state.backupOpen; },
+
+    // Sync v2 page stack. svPage: null (root) | 'wipe' | 'review' | 'backup'. Export follows state.flow.
+    svOpen: (el) => {
+      const page = el && el.dataset ? el.dataset.page : null;
+      state.svPage = SV_PAGES.includes(page) ? page : null;
+      state.syncModal = null;
+      state.wipeTick = false;
+      try { window.scrollTo(0, 0); } catch { /* no window in tests */ }
+    },
+    svBack: () => { state.svPage = null; state.syncModal = null; state.wipeTick = false; },
+    // "Not yet" on the Is the file in Dropbox? sheet: back to the Export page with the same file, nothing marked.
+    svNotYet: () => {
+      if (state.flow && state.flow.step === 'shared') state.flow.step = 'built';
+      state.msg = 'Not confirmed. Save the file again, or cancel.';
+    },
 
     // Same export path as notes: straight to Dropbox when connected, else the share sheet or a download.
     sendReview: async () => {

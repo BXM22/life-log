@@ -6,9 +6,9 @@ One document per tab, describing what is on each screen, in order, with the data
 |---|---|---|
 | Today | [today.md](today.md) | Habits, today's session, quick logging (guitar, weigh-in, meals, study, notes) |
 | Workout | [workout.md](workout.md) | Active template, exercise logging, rest timer, templates, history. v2 redesign and v3 polish (F67) are documented there and shipped; the library is a full page |
-| History | [history.md](history.md) | Week grid, weight trend, streaks, heatmap, records, all entries |
-| Sync | [sync.md](sync.md) | Export, wipe, weekly review, backup and restore, Dropbox |
-| Settings | [settings.md](settings.md) | Plan days, keep days, day start, export reminder, Dropbox, What's New |
+| History | [history.md](history.md) | Week grid, weight trend, streaks, heatmap, records, all entries. v2 shipped (F71) |
+| Sync | [sync.md](sync.md) | Export, wipe, weekly review, backup and restore, Dropbox. v2 shipped (F71) |
+| Settings | [settings.md](settings.md) | Plan days, keep days, day start, export reminder, Dropbox, What's New. v2 shipped (F71) |
 
 ## Cross-screen impact of the Workout redesign (planned)
 
@@ -17,7 +17,7 @@ Today, Settings, History and Sync each have a "Workout redesign impact" section.
 ## Shared shell
 
 - **Page header** (every tab except History's own windows): small overline `LIFE LOG · TUE, NOV 17` over the tab title as an H1 (`TODAY`, `WORKOUT`, `HISTORY`, `SYNC`, `SETTINGS`). Source: `header()` in `src/ui/app.js`.
-- **Bottom tab bar:** five tabs, in order Today, Workout, History, Sync, Settings. Icon above a lowercase 11 px label. The active tab's icon sits in a peach pill (56 x 32, 16 px radius). Sync stays highlighted while its Export and Wipe sub-tabs are shown.
+- **Bottom tab bar:** five tabs, in order Today, Workout, History, Sync, Settings. Icon above a lowercase 11 px label. The active tab's icon sits in a mint pill (56 x 32, 16 px radius). Sync stays highlighted while its Export and Wipe sub-tabs are shown.
 - **Reserved tab bar strip (planned, from Workout v2):** every scroll container ends with `padding-bottom: calc(72px + 16px + env(safe-area-inset-bottom))`, and pinned bars sit above the 72 px strip. Apply to all tabs, not only Workout.
 - **Toast:** one dark pill above the tab bar for confirmations and errors (`state.msg`). Short messages clear after 4.5 s; tap to dismiss.
 - **Windows:** several features open as a full screen with a back control instead of a modal (Today's Log and Study, Workout's Templates and rest timer, History's Personal records and All entries). Confirmations (wipe, Dropbox setup) are centered modals. The quick-add sheet is a bottom sheet.
@@ -48,4 +48,4 @@ Type scale: screen title 28/34 weight 800; section overline (H2) 12/16 weight 70
 | Chip | pill toggle with `aria-pressed`; selected is peach, unselected is white |
 | Fold (`details`) | panel that collapses; arrow at the right of its title |
 | Status tag | small pill, ink text: `WAITING` (peach, not exported yet) or `EXPORTED` / `IN VAULT` (soft peach, done) |
-| Segmented control | two-button switch (Sync: Export / Wipe) |
+| Segmented control | pill switch (Settings: Theme, Keep after a wipe, Lifting days; the Sync Export / Wipe switch was removed in F71) |

@@ -40,7 +40,18 @@ Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66).
 - **Edit form for lift sets** is unchanged. Workout's `Fill all as` (board 15) writes ordinary `lift_set` entries, so they appear here as separate rows.
 - **Tab bar space:** same 72 px reserved strip as Workout if it becomes global.
 
-## v2 update (redesign, planned, not built)
+## v2 update (redesign, shipped 2026-11-22, F71)
+
+**As built (2026-11-22).** Lavender, mint, butter and charcoal palette (F69), tokens only, so light and dark both work; every page and sheet passed a 4.5:1 text contrast scan in both modes. Classes `.hv-*` in `src/styles/w3-history.css`; actions `hvOpen`, `hvClose`, `hvSearch`, `hvFilter`, `hvAsk`, `hvDelete` in `src/ui/historyActions.js` (`createHistoryActions({ state, today, saveEntries, saveFail })`); state `histWin` (`null | 'lifts' | 'entries' | 'weight' | 'habits'`), `hvQuery`, `hvFilter`, `hvAsk`. Existing `openHistWin`, `closeHistWin`, `pickLift`, `startEdit`, `cancelEdit`, `saveEdit` still drive their parts.
+- Root: `This week` card (habit by day grid, today's letter in an ink pill, done = charcoal cell with a butter check) and four `Look closer` rows with tinted icon tiles: Weight (latest, goal gap, sparkline), Habits (best current streak), Lift progress (biggest 8-week change), All entries (count, waiting).
+- Weight page: lavender hero, 28-day chart with dashed goal line and a mint projection, "At this pace you reach ... around ..." line, Recent weigh-ins with the change; a row opens its Edit sheet.
+- Habits page: Streaks list and a 5-week heatmap in five shades with a legend.
+- Lift progress page: lavender hero, lift chips, restyled 8-week chart, Personal records as fold-out cards.
+- All entries page: search (`#hv-search`, filters as you type), chips All, Waiting, Weigh-ins, Lifts with counts, rows grouped by day with Waiting or Exported tags, empty and no-match states, still capped at 60.
+- Edit entry sheet: labelled fields (same `ed-*` ids), Save changes, Cancel, and Delete entry with a confirm inside the sheet; Escape closes it.
+- **Not built:** the dashed ring for a planned workout that was not logged and its "Workout was not logged" sheet (need F66 plan history and a stored skip); stepper fields in the Edit sheet (a re-render would drop typed values, so plain number fields are used); merging the heatmap into the week card (left open).
+
+### Original v2 spec
 
 Mock-ups: Design canvas "Life Log Settings, History and Sync v2" (https://claude.ai/artifact/Uwig18H7bxcS54s1u1W4zC), History row, 7 phone boards, playable. The root becomes one card and four rows. Detail moves to pages, edit moves to a sheet.
 

@@ -1,0 +1,117 @@
+/* Sync v2: root (Copies, Free up space steps, More rows), Export, Wipe, Weekly review, Backup pages and sheets.
+   Tokens only (forma.css), so light and dark both work. Every selector starts with .sv-
+   button.btn is width: 100% globally; narrower buttons need a selector at least as specific (.sv-x button.btn.sv-...). */
+
+.sv-x { padding-bottom: calc(var(--tabbar-h, 76px) + 24px + env(safe-area-inset-bottom)); }
+.sv-x > :first-child { margin-top: 0; }
+
+/* Section header with a count pill (matches .w2-tgroup, History and Settings) */
+.sv-head { display: flex; align-items: center; gap: 8px; margin: 24px 0 10px; color: var(--ink); font-size: 14px; line-height: 20px; font-weight: 800; letter-spacing: .02em; }
+.sv-pill { margin-left: auto; min-width: 24px; padding: 2px 10px; border-radius: 12px; background: var(--shade); color: var(--ink); font-size: 12px; line-height: 18px; font-weight: 700; text-align: center; }
+.sv-pill.late { background: var(--danger); color: var(--on-ink); }
+
+/* Cards */
+.sv-card { margin-bottom: 12px; padding: 16px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel); color: var(--ink); box-shadow: 0 1px 0 rgba(47, 47, 47, .04), 0 6px 14px -10px rgba(47, 47, 47, .35); animation: sv-rise .24s ease-out both; }
+.sv-card.sv-accent { border-color: var(--lav-line); background: var(--lav); }
+.sv-card-title { margin: 0 0 4px; color: var(--ink); font-size: 17px; line-height: 24px; font-weight: 800; }
+.sv-sub { margin: 0 0 8px; color: var(--ink); font-size: 15px; line-height: 22px; font-weight: 500; }
+.sv-note { margin: 8px 2px 0; color: var(--dim); font-size: 13px; line-height: 18px; font-weight: 600; }
+.sv-tag { flex: none; padding: 2px 10px; border-radius: 12px; background: var(--danger); color: var(--on-ink); font-size: 12px; line-height: 18px; font-style: normal; font-weight: 800; }
+.sv-tag.ok { background: var(--peach-soft); color: var(--ink); }
+.sv-tag.neutral { background: var(--shade); color: var(--ink); }
+
+/* Copies meters */
+.sv-meter + .sv-meter { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--hairline); }
+.sv-meter-top { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.sv-meter-top b { font-size: 15px; line-height: 22px; font-weight: 700; }
+.sv-meter-top span { margin-left: auto; color: var(--dim); font-size: 13px; font-weight: 600; }
+.sv-bar { height: 8px; border-radius: 4px; background: var(--shade); overflow: hidden; }
+.sv-bar i { display: block; height: 100%; border-radius: 4px; background: var(--ink); transition: width .3s ease-out; }
+.sv-bar i.warn { background: var(--lav-line); }
+.sv-bar i.due, .sv-bar i.never { background: var(--danger); }
+
+/* Free up space: three ordered steps on the accent card */
+.sv-steps { margin: 0; padding: 0; list-style: none; }
+.sv-step { position: relative; display: flex; gap: 12px; padding-bottom: 16px; }
+.sv-step:last-child { padding-bottom: 0; }
+.sv-step:not(:last-child)::before { content: ''; position: absolute; left: 17px; top: 40px; bottom: 4px; width: 2px; border-radius: 1px; background: var(--lav-line); opacity: .5; }
+.sv-num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 18px; border: 2px solid var(--lav-line); background: var(--panel); color: var(--ink); font-size: 15px; font-weight: 800; }
+.sv-step.active .sv-num { border-color: var(--accent); background: var(--accent); color: var(--on-accent); }
+.sv-step.done .sv-num { border-color: var(--ink); background: var(--ink); color: var(--on-ink); }
+.sv-step.locked .sv-num { border-style: dashed; color: var(--dim); }
+.sv-step-txt { display: flex; flex: 1; flex-direction: column; min-width: 0; padding-top: 6px; }
+.sv-step-txt b { font-size: 17px; line-height: 24px; font-weight: 800; }
+.sv-step-txt span { color: var(--ink); font-size: 14px; line-height: 20px; font-weight: 500; overflow-wrap: anywhere; }
+.sv-step.locked .sv-step-txt b, .sv-step.todo .sv-step-txt b { font-weight: 700; }
+.sv-step.locked .sv-step-txt span, .sv-step.todo .sv-step-txt span, .sv-step.done .sv-step-txt span { color: var(--dim); }
+.sv-step-txt button.btn { margin-top: 12px; min-height: 52px; }
+html[data-theme="dark"] .sv-step:not(.active) .sv-num { background: var(--panel); }
+
+/* Wipe in step 3: outlined red, not filled (the filled red is only on the Wipe page and sheet) */
+.sv-x button.btn.sv-outline-danger { background: var(--panel); color: var(--danger); border: 1.5px solid var(--danger); }
+
+/* Rows (More, What stays) */
+.sv-rows { padding: 0 16px; }
+.sv-row { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 64px; padding: 10px 0; border: 0; border-bottom: 1px solid var(--hairline); background: transparent; color: var(--ink); font: inherit; text-align: left; cursor: pointer; transition: opacity 150ms ease-out; }
+.sv-row:last-child { border-bottom: 0; }
+.sv-row:active:not(.static) { opacity: .7; }
+.sv-row.static { cursor: default; }
+.sv-row:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 12px; }
+.sv-row-txt { display: flex; flex: 1; flex-direction: column; min-width: 0; }
+.sv-row-txt b { font-size: 16px; line-height: 22px; font-weight: 700; }
+.sv-row-txt span { color: var(--dim); font-size: 13px; line-height: 18px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sv-ico { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 14px; background: var(--lav); color: var(--ink); }
+.sv-ico.ok { background: var(--peach-soft); }
+.sv-chev { flex: none; display: inline-flex; color: var(--dim); }
+.sv-link { flex: none; min-height: 44px; padding: 0 14px; border: 1px solid var(--line); border-radius: 22px; background: var(--panel-2); color: var(--ink); font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+.sv-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+/* Page hero (file, week) */
+.sv-hero { display: flex; align-items: center; gap: 12px; }
+.sv-hero .sv-ico { width: 48px; height: 48px; border-radius: 16px; background: var(--panel); }
+.sv-hero-txt { display: flex; flex-direction: column; min-width: 0; }
+.sv-hero-txt b { font-size: 17px; line-height: 24px; font-weight: 800; overflow-wrap: anywhere; }
+.sv-hero-txt span { color: var(--ink); font-size: 14px; line-height: 20px; font-weight: 500; }
+
+/* Buttons with a leading icon */
+.sv-x button.btn.sv-iconbtn { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.sv-x button.btn[aria-busy="true"] { cursor: progress; }
+.sv-x button.btn[aria-busy="true"] svg { animation: sv-pulse 1s ease-in-out infinite; }
+
+/* Markdown preview and review */
+.sv-pre { max-height: 320px; margin: 0 0 4px; padding: 14px 16px; overflow: auto; border: 1px solid var(--line); border-radius: 16px; background: var(--field); color: var(--ink); font-family: var(--code); font-size: 13px; line-height: 20px; white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* Wipe page */
+.sv-danger-card { border: 2px solid var(--danger); padding: 15px; }
+.sv-big { display: block; color: var(--danger); font-size: 48px; line-height: 52px; font-weight: 800; letter-spacing: -0.02em; }
+.sv-danger-zone { margin-top: 24px; padding-top: 12px; border-top: 1px solid var(--hairline); }
+
+/* Backup page */
+.sv-list { margin: 8px 0 4px; padding: 0; list-style: none; }
+.sv-list li { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 44px; border-bottom: 1px solid var(--lav-line); }
+.sv-list li:last-child { border-bottom: 0; }
+.sv-list b { font-size: 15px; font-weight: 700; }
+.sv-list span { color: var(--ink); font-size: 14px; font-weight: 600; }
+.sv-lbl { display: block; margin: 12px 0 6px; color: var(--ink); font-size: 13px; font-weight: 700; }
+.sv-x .field.sv-file { display: flex; align-items: center; width: 100%; box-sizing: border-box; padding: 8px 12px; font-size: 14px; }
+.sv-file::file-selector-button { min-height: 40px; margin-right: 12px; padding: 0 14px; border: 1px solid var(--line); border-radius: 20px; background: var(--panel-2); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
+
+/* Bottom sheet */
+.sv-sheet { position: fixed; inset: 0; z-index: 60; display: flex; align-items: flex-end; justify-content: center; }
+.sv-scrim { position: absolute; inset: 0; width: 100%; padding: 0; border: 0; background: rgba(23, 20, 28, .5); cursor: pointer; animation: sv-fade .2s ease-out both; }
+.sv-sheet-card { position: relative; width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; box-sizing: border-box; padding: 8px 20px calc(20px + env(safe-area-inset-bottom)); border-radius: 24px 24px 0 0; background: var(--bg); color: var(--ink); box-shadow: 0 -8px 30px rgba(23, 20, 28, .25); animation: sv-up .26s ease-out both; }
+.sv-grab { display: block; width: 40px; height: 4px; margin: 0 auto 12px; border-radius: 2px; background: var(--line); }
+.sv-sheet-card h2 { margin: 0 0 10px; color: var(--ink); font-size: 22px; line-height: 28px; font-weight: 800; letter-spacing: -0.02em; text-transform: none; }
+.sv-warn { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 8px; line-height: 22px; }
+.sv-warn svg { flex: none; color: var(--danger); margin-top: 1px; }
+.sv-check { margin: 12px 0 4px; align-items: center; }
+.sv-check span { font-size: 15px; line-height: 22px; font-weight: 600; }
+
+@keyframes sv-rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes sv-up { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
+@keyframes sv-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sv-pulse { 50% { opacity: .35; } }
+@media (prefers-reduced-motion: reduce) {
+  .sv-card, .sv-scrim, .sv-sheet-card, .sv-x button.btn[aria-busy="true"] svg { animation: none; }
+  .sv-bar i, .sv-row { transition: none; }
+}

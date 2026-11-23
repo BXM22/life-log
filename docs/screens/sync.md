@@ -36,7 +36,17 @@ Status: **planned.** From Workout v2/v3 (`workout.md`) and weekly plans (F66 ste
 - **`Reset all to the built-in plan`** (Workout, Edit template) changes data that Sync exports. Confirm the export after a reset marks the changed templates as `WAITING`.
 - **Wipe** keeps templates and statistics. Add plans to that list.
 
-## v2 update (redesign, planned, not built)
+## v2 update (redesign, shipped 2026-11-22, F71)
+
+**As built (2026-11-22).** Same palette and contrast checks as History. Classes `.sv-*` in `src/styles/w3-sync.css`; new actions `svOpen` (data-page `wipe | review | backup`), `svBack`, `svNotYet` in `createSyncActions`; state `svPage` (cleared by `resetFlow`, the tab action and `stOpen`); `svSubpage(state)` in `exportWipeView.js` tells `app.js` when to hide the big header. Nothing about what is exported, wiped, backed up or restored changed. The Export | Wipe switch (`segmented()` in `app.js`) is gone; `export` and `wipe` render the same screen.
+- Root: `Copies` card with two meters (Dropbox export, backup file; red with an Overdue tag when due), the lavender `Free up space` card with three steps (Export entries is the only primary button; Confirm the file is in Dropbox; Wipe old entries locked until confirmed, then an outlined red `Wipe N entries`), and `More` rows: Weekly review, Backup and restore, Dropbox (opens Settings > Dropbox via `stOpen`).
+- Export entries page: file name, count and dates, Upload to Dropbox (or Set up Dropbox), Save with the share sheet, preview, Cancel; buttons disabled with "Uploading..." while it runs.
+- Sheets: "Is the file in Dropbox?" (Yes, it is there / Not yet, which returns to the same file) and "Wipe N entries?" (checkbox, red Wipe disabled until ticked). Escape closes them.
+- Wipe page: count and dates, What stays rows (the Last N days row links to Settings), red Wipe set apart, Not now.
+- Weekly review page (Send to vault, "Sending..." state) and Backup and restore page (what the file holds, Back up now, Choose a backup file, Restore from file).
+- **Not built:** templates and rest timer settings in the backup file (needs a backup schema change; the page says so); a busy state on Back up now (it goes straight to the share sheet). Disconnect Dropbox moved to Settings > Dropbox.
+
+### Original v2 spec
 
 Mock-ups: Design canvas "Life Log Settings, History and Sync v2" (https://claude.ai/artifact/Uwig18H7bxcS54s1u1W4zC), Sync row, 8 phone boards, playable. The Export and Wipe sub-tabs go away. Freeing space is one ordered flow, which is the one place on these screens where numbers are a real sequence: export, confirm, wipe.
 

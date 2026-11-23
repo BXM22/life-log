@@ -4,7 +4,7 @@ import { newEntry } from '../src/logic/entries.js';
 import { toggleCheck } from '../src/logic/habits.js';
 import { streakOf, allStreaks, guitarDays } from '../src/logic/streaks.js';
 import { weekDates, habitGrid, weightTrend, chartPoints } from '../src/logic/weekView.js';
-import { weekPanel, streaksPanel } from '../src/ui/weekPanel.js';
+import { weekPanel, streaksPanel, weightChart } from '../src/ui/weekPanel.js';
 
 const gym = { id: 'workout', name: 'Workout' };
 const check = (date) => toggleCheck([], gym, date, 1);
@@ -55,8 +55,8 @@ test('weightTrend windows to 28 days; chart range includes the 170 goal', () => 
 test('panels render grid, goal line and streaks', () => {
   const state = { entries: [check('2026-11-13'), newEntry('weigh_in', '2026-11-13', { weight_lb: 181 }, 1)], habits: [gym], stats: null };
   const w = weekPanel(state, '2026-11-13');
-  assert.match(w, /THIS WEEK/);
-  assert.match(w, /170 lb goal/);
+  assert.match(w, /This week/);
+  assert.match(weightChart(state, '2026-11-13'), /170 lb goal/);
   assert.match(streaksPanel(state, '2026-11-13'), /Guitar practice/);
   assert.match(weekPanel({ ...state, entries: [], habits: [] }, '2026-11-13'), /No habits yet/);
 });

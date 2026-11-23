@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- feat: History, Sync and Settings v2 (F71), one agent per tab: History root with This week and Look closer rows plus Weight, Habits, Lift progress and All entries pages (search, chips, Edit sheet with delete confirm); Sync as one ordered screen (Copies meters, three-step Free up space, Export, Wipe, Weekly review and Backup pages, Dropbox and wipe sheets; Export | Wipe switch removed); Settings with a Theme card, grouped rows, New day starts at sheet, Rest timer and Dropbox pages. New `historyActions.js`, `settingsActions.js`, `w3-history.css`, `w3-sync.css`, `w3-settings.css`; Escape closes the new sheets; 5 modules that were missing from the precache list added; tests 357 to 387; cache v58 (2026-11-22)
+
 - feat: Exercise library is a full page (F70): search, equipment chips with counts, Edit (inline, rename allowed) and Delete (confirm in the card), New exercise; `searchLibrary` and `updateLibraryEntry` added; 2 new tests; cache v54 (2026-11-22)
 - feat: Templates redo (F70): tone-coded cards with count, focus and exercise preview, lavender Active card, round Set active button, New template in its own card (2026-11-22)
 - feat: new palette app-wide (F69): lavender, mint, butter, charcoal on cream via `forma.css` tokens, derived dark theme, contrast checked (4.5:1 text, about 3:1 borders); peach tokens removed (2026-11-22)

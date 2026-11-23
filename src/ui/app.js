@@ -45,7 +45,9 @@ import { positionWheels, restPage } from './restView.js';
 import { loadRest } from '../logic/rest.js';
 import { setTemplate } from '../logic/template.js';
 import { normalizeTemplate } from '../logic/templateEdit.js';
-import { exportView, wipeView, wipeOpts } from './exportWipeView.js';
+import { exportView, wipeView, wipeOpts, svSubpage } from './exportWipeView.js';
+import { createSettingsActions } from './settingsActions.js';
+import { createHistoryActions } from './historyActions.js';
 import { backupActions } from './backupPanel.js';
 import { createSyncActions } from './syncActions.js';
 import { getConfig, disconnect, startAuth, finishAuthIfRedirected, upload } from '../dropbox/dropbox.js';
@@ -61,7 +63,7 @@ const syncTheme = () => {
   stopThemeWatch();
   stopThemeWatch = watchSystemTheme(state.theme, () => applyTheme(state.theme));
 };
-// Bottom tab bar: five top-level screens. Export and Wipe share the Sync tab and switch with a segmented control.
+// Bottom tab bar: five top-level screens. Export and Wipe share the Sync tab (one screen since Sync v2).
 const NAV = [['today', 'TODAY'], ['workout', 'WORKOUT'], ['history', 'HISTORY'], ['export', 'SYNC'], ['settings', 'SETTINGS']];
 const TITLES = { today: 'TODAY', workout: 'WORKOUT', history: 'HISTORY', export: 'SYNC', wipe: 'SYNC', settings: 'SETTINGS' };
 const navGroup = (t) => (t === 'wipe' ? 'export' : t);
@@ -77,7 +79,8 @@ const state = {
   planDays: settings.planDays, // 3 or 4 lifting days a week, see logic/template.js scheduleFor
   theme: settings.theme, // system | light | dark — see logic/theme.js
   editId: null, // id of the entry being edited on the History tab
-  histWin: null, // History own window: null | 'lifts' | 'entries'
+  histWin: null, // History own window: null | 'lifts' | 'entries' | 'weight' | 'habits'
+  hvQuery: '', hvFilter: 'all', hvAsk: null, // History v2: All entries search, filter chip, delete awaiting confirm
   histLift: null, // lift shown in the Lift progress window
   exOpen: {}, // exercise panels expanded on the Workout tab, by exercise name
   wSession: null, // workout session picked on the Workout tab (null = today's)
@@ -95,6 +98,8 @@ const state = {
   lastExportAt: null, // newest confirmed export, null if never
   // flow.step: idle | built | shared | confirmed
   flow: { step: 'idle', result: null, viaDownload: false },
+  svPage: null, // Sync v2 page: null (root) | 'wipe' | 'review' | 'backup'
+  stPage: null, stSheet: null, stDayPick: null, // Settings v2 sub-page, sheet, picked hour
   wipeTick: false,
   storageOk: true, // false when IndexedDB is unavailable; entries then live in memory only
   persisted: null, // true/false once the browser answers
@@ -102,7 +107,7 @@ const state = {
 };
 
 const $app = document.getElementById('app');
-const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; state.syncModal = null; };
+const resetFlow = () => { state.flow = { step: 'idle', result: null, viaDownload: false }; state.wipeTick = false; state.syncModal = null; state.svPage = null; };
 const inputValue = (id) => document.getElementById(id)?.value ?? '';
 const today = () => logicalDate(Date.now(), state.dayStartHour);
 
@@ -151,6 +156,8 @@ const actions = {
   ...createPlatesActions({ state, inputValue }),
   ...rest.actions,
   ...createSyncActions({ state, onChange: () => render() }),
+  ...createSettingsActions({ state, persist: persistSettings }),
+  ...createHistoryActions({ state, today, saveEntries, saveFail }),
   ...practice.actions,
   ...createTodayActions({ state, saveEntries, saveFail, inputValue, today, persistAreas }),
   ...createManageHabitsActions({ state }),
@@ -165,7 +172,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { expireSessionPick(state); state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.manageHabits = false; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.libWin = false; state.libEdit = null; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
+  tab: (el) => { expireSessionPick(state); state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.manageHabits = false; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.libWin = false; state.svPage = null; state.stPage = null; state.stSheet = null; state.stDayPick = null; state.libEdit = null; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
 
@@ -449,12 +456,6 @@ function header() {
   return `<header class="top"><span class="kicker">${esc(kicker)}</span><h1>${TITLES[state.tab]}</h1>${state.tab === 'today' ? syncChipHtml(state) : ''}</header>`;
 }
 
-function segmented() {
-  if (navGroup(state.tab) !== 'export') return '';
-  const b = (t, text) => `<button data-action="tab" data-tab="${t}" ${state.tab === t ? 'aria-current="page"' : ''}>${text}</button>`;
-  return `<div class="seg">${b('export', 'EXPORT')}${b('wipe', 'WIPE')}</div>`;
-}
-
 function render() {
   state.storageLine = storageLine();
   refreshInstall();
@@ -462,7 +463,7 @@ function render() {
   const tabs = NAV.map(([t, text]) =>
     `<button class="tab" data-action="tab" data-tab="${t}" ${navGroup(state.tab) === t ? 'aria-current="page"' : ''}>${icon(t)}<span>${text}</span></button>`).join('');
   const undo = state.undo && state.undo.msg === state.msg ? state.undo : null; // only while the message that offered it is showing
-  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${(state.tab === 'history' && state.histWin) || (state.tab === 'workout' && !state.tScreen && !state.tWin && !state.libWin && !state.wHistory) ? '' : header()}${segmented()}${prBanner(state)}${views[state.tab](state)}`;
+  const page = state.tab === 'workout' && state.restOpen ? restPage(state) : `${(state.tab === 'history' && state.histWin) || (state.tab === 'settings' && state.stPage) || ((state.tab === 'export' || state.tab === 'wipe') && svSubpage(state)) || (state.tab === 'workout' && !state.tScreen && !state.tWin && !state.libWin && !state.wHistory) ? '' : header()}${prBanner(state)}${views[state.tab](state)}`;
   $app.innerHTML = `${page}
     ${state.msg ? `<button class="toast" data-action="${undo ? 'undoSet' : 'dismissMsg'}" role="status">${esc(state.msg)}${undo ? ' <b class="toast-undo">UNDO</b>' : ''}</button>` : ''}
     <nav class="tabbar" aria-label="Main">${tabs}</nav>`;
@@ -488,7 +489,7 @@ $app.addEventListener('click', (ev) => {
 // Escape closes the open dropdown first, then the open sheet (Workout v2).
 document.addEventListener('keydown', (ev) => {
   if (ev.key !== 'Escape') return;
-  if (state.wMenu) { actions.wMenuClose(); render(); } else if (state.wSheet) { actions.wSheetClose(); render(); }
+  if (state.wMenu) { actions.wMenuClose(); render(); } else if (state.wSheet) { actions.wSheetClose(); render(); } else if (state.stSheet) { actions.stSheetClose(); render(); } else if (state.syncModal) { actions.closeModal(); render(); } else if (state.tab === 'history' && state.editId) { actions.cancelEdit(); render(); }
 });
 $app.addEventListener('scroll', rest.onScroll, true); // the rest-time wheels scroll without a re-render
 document.addEventListener('visibilitychange', () => { if (!document.hidden) rest.resume(); });
@@ -496,7 +497,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) rest
 $app.addEventListener('input', (ev) => { if (ev.target.id === 'note-body') updateNoteCount(); }); // F68: live note count, no re-render
 // F67: History search filters as you type; re-render, then put the cursor back so typing is not interrupted.
 $app.addEventListener('input', async (ev) => {
-  if (ev.target.id !== 'w-hist-search' && ev.target.id !== 'lib-search') return;
+  if (ev.target.id !== 'w-hist-search' && ev.target.id !== 'lib-search' && ev.target.id !== 'hv-search') return;
   const pos = ev.target.selectionStart;
   await dispatch(ev.target);
   const box = document.getElementById(ev.target.id);

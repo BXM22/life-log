@@ -1,5 +1,5 @@
-// BACKUP / RESTORE panel. The caller (app.js) wires it in:
-//   html:    renderBackupPanel(state)
+// BACKUP / RESTORE page body (Sync v2, shown by exportWipeView when state.svPage === 'backup'). The caller (app.js) wires it in:
+//   html:    renderBackupPanel(state)  (styles: w3-sync.css)
 //   actions: data-action="backup" -> backupActions.backup(state)  (returns a message string)
 //            data-action="restore" -> backupActions.restore(state) (returns { msg, merged? })
 
@@ -7,15 +7,31 @@ import { buildBackup, backupFilename, parseBackup, mergeBackup } from '../logic/
 import { saveLastBackup } from '../logic/backupNudge.js';
 import { loadForBackup, applyRestore } from '../db/backupStore.js';
 
+const plural = (n, one, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+
+/** Backup and restore page body (Sync v2): what the file holds, Back up now, then the Restore card. */
 export function renderBackupPanel(state) {
   const n = state.entries ? state.entries.length : 0;
-  return `<div>
-    <p>A copy of everything on this phone (${n} entries) as one file. Save it somewhere off this phone.</p>
-    <button class="btn" data-action="backup">BACKUP NOW</button>
-    <p style="margin-top:12px">Restore adds back anything missing and keeps the newest version of each entry. It never deletes.</p>
-    <input id="restoreFile" class="field" type="file" accept="application/json,.json" aria-label="Backup file">
-    <button class="btn secondary" data-action="restore">RESTORE FROM FILE</button>
-  </div>`;
+  const h = state.habits ? state.habits.length : 0;
+  const x = state.exportedNames ? state.exportedNames.length : 0;
+  return `<section class="sv-card sv-accent">
+      <h3 class="sv-card-title">Back up</h3>
+      <p class="sv-sub">One file with everything on this phone. Save it somewhere off this phone.</p>
+      <ul class="sv-list">
+        <li><b>Entries</b><span>${plural(n, 'entry', 'entries')}</span></li>
+        <li><b>Habits</b><span>${plural(h, 'habit')}</span></li>
+        <li><b>Export history</b><span>${plural(x, 'file')}</span></li>
+      </ul>
+      <p class="sv-note">Workout templates and rest timer settings are not in the file yet.</p>
+      <button class="btn" data-action="backup">Back up now</button>
+    </section>
+    <section class="sv-card">
+      <h3 class="sv-card-title">Restore</h3>
+      <p class="sv-sub">Adds back anything missing and keeps the newest version of each entry. It never deletes.</p>
+      <label class="sv-lbl" for="restoreFile">Choose a backup file</label>
+      <input id="restoreFile" class="field sv-file" type="file" accept="application/json,.json">
+      <button class="btn secondary" data-action="restore">Restore from file</button>
+    </section>`;
 }
 
 function download(file) {
@@ -46,7 +62,7 @@ export const backupActions = {
         return `Backup shared: ${file.name}. Check that it landed somewhere safe.`;
       }
       download(file);
-          try { saveLastBackup(localStorage, Date.now()); } catch { /* storage blocked */ }
+      try { saveLastBackup(localStorage, Date.now()); } catch { /* storage blocked */ }
       return `Backup downloaded: ${file.name}. Move it off this phone.`;
     } catch (err) {
       if (err && err.name === 'AbortError') return 'Backup cancelled. Nothing changed.';
