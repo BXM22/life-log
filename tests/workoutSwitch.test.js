@@ -33,3 +33,18 @@ test('wSessionPick and wSessionClear set and clear the today-only override', () 
   assert.equal(state.wSession, null);
   assert.equal(switchedFrom(state, day), null);
 });
+
+test('Manage templates in the Switch sheet opens the Templates page, also from Today', () => {
+  const state = { tab: 'today', wSheet: 'switch', wSheetPick: 'upper_b', todayWin: 'log', libWin: true, restOpen: true, wEx: 2, tScreen: 'lower' };
+  const a = createWorkoutSheetActions({ state, today: () => day });
+  a.wOpenTemplates();
+  assert.equal(state.tab, 'workout');
+  assert.equal(state.tWin, true);
+  assert.equal(state.wSheet, null);
+  assert.equal(state.wSheetPick, null);
+  assert.equal(state.todayWin, null);
+  assert.equal(state.libWin, false);
+  assert.equal(state.restOpen, false);
+  assert.equal(state.wEx, null);
+  assert.equal(state.tScreen, null);
+});

@@ -57,8 +57,10 @@ export function createWorkoutSheetActions({ state, today }) {
       state.wEx = null; state.wMenu = null; state.msg = '';
       top();
     },
+    // Also used by the Switch sheet on Today: always lands on the Workout tab's Templates page.
     wOpenTemplates: () => {
       state.wSheetPick = null;
+      state.tab = 'workout'; state.todayWin = null; state.restOpen = false; state.libWin = false; state.wEx = null; state.tScreen = null;
       state.tWin = true; state.wHistory = false; state.tEdit = null;
       state.wMenu = null; state.wSheet = null; state.msg = '';
       top();
