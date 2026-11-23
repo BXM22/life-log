@@ -267,7 +267,7 @@ Muted text, line, divider, dashed outline and the two card borders are derived f
 | 15 Polish: log a set | Exercise page | 5 Exercise |
 | 16 Polish: exercise done | Exercise page after the last set | 5 Exercise (finished state) |
 | 17 Polish: rest timer | Rest timer page | 8 Rest timer |
-| 18 Polish: switch template sheet | Switch template (sheet) | 3 Switch template |
+| 18 Polish: switch template sheet (replaced by F72, see the Switch today's workout v2 section) | Switch template (sheet) | 3 Switch template |
 | 19 Polish: templates | Templates page | 9 Templates |
 | 20 Polish: edit template | Edit template page, More actions open | 10 Edit template |
 | 21 Polish: history | History page | 11 History |
@@ -355,7 +355,7 @@ Each needs a small action in `workoutNavActions.js` or `workoutSheetActions.js` 
 
 Status: **built 2026-11-22**, checked at 390 px in light and dark (contrast scan clean, no console errors). As built: quick ids are `__quick` / `__quick:<full|upper|lower|push|pull>` resolved by `sessionById` (`quickSession`), actions in `src/ui/quickWorkoutActions.js`, styles in `src/styles/w3-switch.css`, `sessionFromExtras` in `templateEdit.js`. The toast runs `state.undo.action` so Switch and Quick start both offer Undo. Edit this template is replaced by Save as template while a quick workout is on. Also fixed: the Today workout card now shows today's pick (it showed the weekday plan). `wSheetSelect` / `wSheetUse` stay for compatibility but the sheet no longer uses them. Chips set the name only; a quick workout counts toward the Workout habit like any other. Opened from Today (`Switch`, `Pick a workout`) and from Workout. Design pass used ui-ux-pro-max, ui-styling and frontend-design.
 
-### What is wrong today
+### What was wrong (before F72)
 
 - The title is 15 px and reads like a label; the sheet has no clear top.
 - What is on today sits wherever it falls in the list (often last), so you scroll to find it.
@@ -398,7 +398,7 @@ Status: **built 2026-11-22**, checked at 390 px in light and dark (contrast scan
 
 ### Behaviour
 
-- **One tap switches.** Tapping a template card sets today's pick (`wSessionPick`, day-scoped as now), closes the sheet and shows a toast "Switched to Upper A" with `Undo` (back to the previous pick). The `Use` button and select-only rows go away.
+- **One tap switches.** Tapping a template card sets today's pick (`wSwitchTo`, day-scoped as before), closes the sheet and shows a toast "Switched to Upper A" with `Undo` (back to the previous pick). The `Use` button and select-only rows go away.
 - **On now card** is the current pick, planned or switched. When switched, it shows "Switched from Upper C" and a `Back to Upper C` link (`wSessionClear`).
 - **Quick workout** sets today's session to a built-in empty session (`QUICK_ID = '__quick'`, name "Quick workout", or "Quick: Upper" when a chip is picked). Workout opens on an empty state: "Add your first exercise" with the existing Add for today sheet (library suggestions, `xe-*` form). Sets log as normal `lift_set` entries with `session: '__quick'`.
 - **Save as template:** once a quick workout has at least one exercise, the Workout Today menu and the Done fold offer `Save as template`, which creates a template from today's extras (name from the chip, editable) and makes today's pick that template.
@@ -414,18 +414,22 @@ Status: **built 2026-11-22**, checked at 390 px in light and dark (contrast scan
 - Motion: sheet slides up 240 ms ease-out; pressed cards scale to .98 for 150 ms; none under reduced motion.
 - All text 4.5:1 in both modes; every target at least 44 px; cards are buttons with `aria-label` "Switch today to Upper A".
 
-### Code plan
+### Where the code lives (as built)
 
 | Part | Files |
 |---|---|
-| Quick session: `QUICK_ID`, `quickSession(label)`, `sessionById` returns it, `getSessions` never lists it | `src/logic/template.js`, `src/logic/workout.js` (`activeSessionId` accepts it) |
-| Sheet markup | `src/ui/workoutSheets.js` (`switchSheet`) |
-| Actions: `wQuickStart` (data-label), `wQuickLabel`, `wSwitchUndo`, `wSaveQuick`; drop `wSheetSelect`, `wSheetUse` | `src/ui/workoutSheetActions.js` |
-| Empty state for a quick workout | `src/ui/workoutView.js` |
-| Styles | new `src/styles/w3-switch.css` (linked in `index.html`, precached in `sw.js`) |
-| Tests | `tests/workoutSwitch.test.js`, new `tests/quickWorkout.test.js` |
+| Quick session: `QUICK_ID`, `QUICK_LABELS`, `isQuickId`, `quickId(label)`, `quickSession(id)`; `sessionById` returns it, `getSessions` never lists it | `src/logic/template.js` (`activeSessionId` in `workout.js` accepts it unchanged) |
+| Save as template: `sessionFromExtras(sessions, baseName, extras)` (unique name, default target `3 sets`) | `src/logic/templateEdit.js` |
+| Sheet markup (`switchSheet`), menu swap (Save as template replaces Edit this template) | `src/ui/workoutSheets.js` |
+| Actions `wSwitchTo`, `wSwitchUndo`, `wQuickLabel`, `wQuickStart`, `wSaveQuick` | `src/ui/quickWorkoutActions.js` (spread in `app.js`) |
+| `wEditTemplate` ignores a quick workout; `wSheetSelect` / `wSheetUse` kept, unused by the sheet | `src/ui/workoutSheetActions.js` |
+| Empty state, `Quick workout, today only` label, Save as template button | `src/ui/workoutToday.js` |
+| Toast runs `state.undo.action` (default `undoSet`) | `src/ui/app.js` |
+| Today card reads today's pick | `src/ui/todayView.js` |
+| Styles (`.sw-*`) | `src/styles/w3-switch.css` (linked in `index.html`, precached in `sw.js`) |
+| Tests | `tests/workoutSwitch.test.js` (5 F72 tests) |
 
-### Open questions
+### Decisions (answered 2026-11-22)
 
-- Should a quick workout count as "planned workout done" for the Workout habit? Proposed: yes, any logged working set counts, as now.
-- Quick workout chips: name only (proposed), or also pre-fill a few exercises from the library by muscle group (later)?
+- A quick workout counts toward the Workout habit like any other: logged working sets count.
+- Name chips set the name only. Pre-filling exercises by muscle group is a possible later step.
