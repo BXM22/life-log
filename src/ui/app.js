@@ -22,6 +22,7 @@ import { prBanner } from './progressView.js';
 import { lastExportAt, loadReminderEnabled, saveReminderEnabled, maybeNotify, requestNotifyPermission } from '../logic/exportReminder.js';
 import { settingsView } from './settingsView.js';
 import { workoutView } from './workoutView.js';
+import { expireSessionPick } from '../logic/workout.js';
 import { todayView } from './todayView.js';
 import { createWorkoutActions } from './workoutActions.js';
 import { createWorkoutNavActions, captureDraft } from './workoutNavActions.js';
@@ -161,7 +162,7 @@ const actions = {
     clearTemplate: async () => { if (state.storageOk) await clearTemplate(); },
   }),
 
-  tab: (el) => { state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.manageHabits = false; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
+  tab: (el) => { expireSessionPick(state); state.tab = el.dataset.tab; state.msg = ''; state.editId = null; state.histWin = null; state.syncModal = null; state.wipeTick = false; state.restOpen = false; state.todayWin = null; state.manageHabits = false; state.wEx = null; state.wDraft = {}; state.wSheet = null; state.wAct = null; state.wActForm = null; state.wMenu = null; state.plates = null; state.tWin = false; state.tScreen = null; state.tplDraft = null; state.tEdit = null; state.wHistory = false; window.scrollTo(0, 0); },
 
   dismissMsg: () => { state.msg = ''; },
 
@@ -438,7 +439,10 @@ const refreshInstall = () => {
 
 function header() {
   const d = new Date(`${today()}T12:00:00`).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-  return `<header class="top"><span class="kicker">LIFE LOG &middot; ${esc(d.toUpperCase())}</span><h1>${TITLES[state.tab]}</h1>${state.tab === 'today' ? syncChipHtml(state) : ''}</header>`;
+  const kicker = state.tab === 'today'
+    ? new Date(`${today()}T12:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+    : `LIFE LOG · ${d.toUpperCase()}`;
+  return `<header class="top"><span class="kicker">${esc(kicker)}</span><h1>${TITLES[state.tab]}</h1>${state.tab === 'today' ? syncChipHtml(state) : ''}</header>`;
 }
 
 function segmented() {

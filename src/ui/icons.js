@@ -7,6 +7,11 @@ const PATHS = {
   settings: '<path d="M4 7h8M16 7h4M4 17h4M12 17h8"/><rect x="12" y="4" width="4" height="6"/><rect x="8" y="14" width="4" height="6"/>',
 };
 
+/** Right-pointing chevron for rows (replaces a typed ">"). */
+export const chevronRight = '<svg class="chev-ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6"/></svg>';
+/** Swap arrows for the Switch button. */
+export const swapIcon = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 4L3 8l4 4M3 8h14M17 20l4-4-4-4M21 16H7"/></svg>';
+
 export function icon(name) {
   return `<svg class="ico" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${PATHS[name] || ''}</svg>`;
 }

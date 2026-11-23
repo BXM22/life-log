@@ -4,6 +4,9 @@ import { setText } from '../logic/workout.js';
 
 export const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
+/** Streak text for a habit row: "14 days", "1 day", or "" when there is no streak. */
+export const streakText = (n) => (n > 0 ? `${n} ${n === 1 ? 'day' : 'days'}` : '');
+
 /** One-line text for an entry in a list. */
 export function label(e) {
   if (e.type === 'weigh_in') return `${e.data.weight_lb} lb`;

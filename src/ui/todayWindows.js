@@ -1,23 +1,11 @@
 // TODAY tab windows (F49): Log (weigh-in, meals), Learn (areas) and Notes.
 // Views over existing state and actions; saving is done by the Log, Learn and Notes actions.
-//   html:    todayRows(state, day), todayWindow(state, day)
+//   html:    todayWindow(state, day)
 //   actions: openTodayWin | closeTodayWin (see todayWinActions.js)
 
-import { esc } from './format.js';
 import { logWindow } from './logWindow.js';
 import { notesWindow } from './notesWindow.js';
 import { learnView } from './learnView.js';
-import { logSummary, learnSummary, notesSummary } from '../logic/todayWin.js';
-
-/** The three summary rows on Today (LOG, LEARN, NOTES). */
-export function todayRows(state, day) {
-  const running = Boolean(state.practice && state.practice.startAt != null);
-  const row = (win, title, text) => `<button class="rowbtn winrow" data-action="openTodayWin" data-win="${win}">
-    <span><small class="winrow-k">${title}</small><span class="winrow-v">${esc(text)}</span></span><span class="chev" aria-hidden="true">&gt;</span></button>`;
-  return row('log', 'LOG', logSummary(state.entries, day))
-    + row('learn', 'LEARN', learnSummary(state.entries, day, running))
-    + row('notes', 'NOTES', notesSummary(state.entries));
-}
 
 export function todayWindow(state, day) {
   if (state.todayWin === 'log') return logWindow(state, day);

@@ -80,3 +80,4 @@
 .w2-actsets { list-style: none; margin: 0; padding: 0; }
 .w2-actsets li { display: flex; align-items: center; justify-content: space-between; min-height: 48px; border-bottom: 1px solid var(--line); }
 .w2-danger { color: var(--danger, #B3261E); margin-top: 16px; }
+.w2-note { margin: 0 0 12px; color: var(--dim); font-size: 13px; font-weight: 600; }

@@ -2,11 +2,11 @@
 //   html:    sheetLayer(state) -> open sheet + scrim or ''; menuLayer(state) -> open dropdown + transparent scrim or ''
 //   state:   wSheet (null | 'switch' | 'warm' | 'add' | 'activity' | 'actmgr' | 'lib'), wMenu (null | 'today' | 'exercise'), wEx (exercise index or null)
 //   actions: wSheetOpen, wSheetClose, wSheetTab, wMenuToggle, wMenuClose, wEditTemplate, wEditExercise, wOpenTemplates, wOpenHistory
-//            (see workoutSheetActions.js); sheets reuse tplPick, tplFilter, toggleCheck, toggleBjj, addExtraSave, addExtraCancel,
+//            (see workoutSheetActions.js); sheets reuse wSessionPick, tplFilter, toggleCheck, toggleBjj, addExtraSave, addExtraCancel,
 //            trimSet, untrimSet, toggleCue, tDelete, keepExtra, removeExtra.
 
 import { getSessions, sessionById } from '../logic/template.js';
-import { activeSessionId } from '../logic/workout.js';
+import { activeSessionId, pickedFor, plannedSessionId } from '../logic/workout.js';
 import { logicalDate } from '../logic/dates.js';
 import { filterByTag, tagsOf, usedTags } from '../logic/templateTags.js';
 import { CHECKLISTS, backCue, checkKey, checkedCount, checklistKey, setCount, trimmedFor } from '../logic/workoutExtras.js';
@@ -33,7 +33,8 @@ function frame(label, inner) {
 // ---- Switch template (screen 3) ----
 function switchSheet(state) {
   const all = getSessions();
-  const activeId = activeSessionId(state.wSession, dayOf(state), state.planDays);
+  const activeId = activeSessionId(pickedFor(state, dayOf(state)), dayOf(state), state.planDays);
+  const planned = plannedSessionId(state, dayOf(state));
   const tags = usedTags(all);
   const shown = filterByTag(all, state.tFilter || '');
   const chip = (tag, text) => `<button class="w2-chip" data-action="tplFilter" data-tag="${esc(tag)}" aria-pressed="${(state.tFilter || '') === tag}">${esc(text)}</button>`;
@@ -41,13 +42,14 @@ function switchSheet(state) {
   const rows = shown.map((s) => {
     const on = s.id === activeId;
     const n = s.exercises.length;
-    const tg = tagsOf(s)[0];
-    return `<button class="w2-radio${on ? ' on' : ''}" data-action="tplPick" data-id="${esc(s.id)}" role="radio" aria-checked="${on}">
+    const tg = s.id === planned ? 'Planned' : tagsOf(s)[0];
+    return `<button class="w2-radio${on ? ' on' : ''}" data-action="wSessionPick" data-id="${esc(s.id)}" role="radio" aria-checked="${on}">
       <span class="w2-dot" aria-hidden="true"></span>
-      <span class="w2-radio-text"><b>${esc(s.name)}</b><small>${n} exercise${n === 1 ? '' : 's'}</small></span>
+      <span class="w2-radio-text"><b>${esc(s.name)}</b>${s.focus ? `<small>${esc(s.focus)}</small>` : ''}<small>${n} exercise${n === 1 ? '' : 's'}</small></span>
       ${tg ? `<span class="w2-tag">${esc(tg)}</span>` : ''}</button>`;
   }).join('');
-  return frame('Switch template', `<div class="w2-sheet-head"><h2>Switch template</h2><button class="w2-link" data-action="wOpenTemplates">Manage all</button></div>
+  return frame('Switch today\'s workout', `<div class="w2-sheet-head"><h2>Switch today's workout</h2><button class="w2-link" data-action="wOpenTemplates">Manage all</button></div>
+    <p class="w2-note">Only today changes. The rest of your week stays as planned.</p>
     ${chips}
     <div role="radiogroup" aria-label="Templates">${rows || '<p class="w2-empty">No templates with that tag.</p>'}</div>
     <button class="w2-dashed" data-action="wOpenTemplates">+ New template</button>`);

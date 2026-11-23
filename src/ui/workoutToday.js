@@ -34,7 +34,7 @@ function tagText(state, item) {
 }
 
 /** Index of the row being worked on: the exercise most recently logged today, else the first incomplete one. */
-function currentIndex(state, list, day) {
+export function currentIndex(state, list, day) {
   let best = -1;
   let at = -1;
   list.forEach((item, k) => {

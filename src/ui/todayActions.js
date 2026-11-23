@@ -1,8 +1,10 @@
 // Actions for the TODAY extras: quick add sheet (F36) and collapsible sections (F43). app.js merges
-// these into its action table. State used: state.quick, state.sections, state.todaySections.
+// these into its action table. State used: state.quick, state.sections.
 
 import { buildQuickEntry, QUICK_FIELDS, NEW_AREA } from '../logic/quickAdd.js';
 import { addArea } from '../logic/areas.js';
+import { workoutContext } from './workoutNavActions.js';
+import { currentIndex } from './workoutToday.js';
 
 export function createTodayActions({ state, saveEntries, saveFail, inputValue, today, persistAreas }) {
   const readQuick = (kind) => Object.fromEntries(QUICK_FIELDS[kind].map((f) => [f.key, inputValue(`qa-${f.key}`)]));
@@ -13,13 +15,17 @@ export function createTodayActions({ state, saveEntries, saveFail, inputValue, t
     ...(document.getElementById('qa-newarea') ? { newarea: inputValue('qa-newarea') } : {}), // survives switching the area back and forth
   });
   return {
+    // Today's Start workout: open the Workout tab on the next unfinished exercise (same target as Next up).
+    startWorkout: () => {
+      const day = today();
+      const { list } = workoutContext(state, day);
+      const i = currentIndex(state, list, day);
+      state.tab = 'workout'; state.msg = ''; state.todayWin = null; state.wSheet = null;
+      state.wEx = i >= 0 ? i : null; state.wMore = null;
+      window.scrollTo(0, 0);
+    },
     toggleSection: (el) => {
       const k = el.dataset.section;
-      if (k === 'habits' || k === 'recent') { // Today v2 drop-downs, session only
-        const cur = state.todaySections || { habits: true, recent: false };
-        state.todaySections = { ...cur, [k]: !cur[k] };
-        return;
-      }
       state.sections = { ...(state.sections || {}), [k]: !(state.sections || {})[k] };
     },
 

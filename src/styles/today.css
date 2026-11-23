@@ -22,30 +22,13 @@ button.btn.qa-close { width: 44px; min-height: 44px; margin: 0; padding: 0; }
 .qa-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
 .qa-chip {
   min-height: 44px; padding: 8px 14px; border: 1px solid var(--line); border-radius: 99px;
-  background: var(--panel-2); color: var(--text); font-family: var(--mono); font-size: 13px; cursor: pointer;
+  background: var(--panel-2); color: var(--text); font-family: var(--mono); font-size: var(--fs-meta); cursor: pointer;
 }
 .qa-chip[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .qa-sheet .btn { margin-top: 12px; }
 .qa-fold { margin-bottom: 12px; }
 .qa-fold small { color: var(--dim); margin-left: 6px; }
 
-/* Today v2 drop-downs (Habits, Recent) */
-.acc { padding: 0 20px; }
-.acc.open { padding-bottom: 12px; }
-.acc-head {
-  display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 56px;
-  padding: 0; background: transparent; border: 0; color: inherit; text-align: left; cursor: pointer;
-}
-.acc-head h2 { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .04em; color: var(--dim); }
-.acc-chev { flex: none; transition: transform 150ms ease-out; }
-.acc.open .acc-chev { transform: rotate(180deg); }
-.acc-head:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 12px; }
-.acc-body .habit { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.acc-body .habit label.check { flex: 1; }
-.acc-body .rowbtn.acc-manage { margin: 8px 0 0; background: var(--panel-2); border: 1px solid var(--line); }
-.acc-body .rowbtn.acc-manage:active { background: var(--peach-soft); }
-.acc-body .btn { margin-bottom: 8px; }
-@media (prefers-reduced-motion: reduce) { .acc-chev { transition: none; } }
 
 /* Chips inside cream panels: white with a hairline, so they read as buttons (forma.css gives them the panel colour) */
 .panel .qa-chip:not([aria-pressed="true"]):not(.on) { background: var(--panel-2); border: 1px solid var(--line); }
@@ -57,14 +40,68 @@ span.qa-chip { display: inline-flex; align-items: center; }
 /* Learn: area row = name, minutes and a small Edit button on one line */
 .arow-end { display: inline-flex; align-items: center; gap: 8px; }
 button.btn.editbtn { width: auto; min-height: 44px; margin: 0; padding: 0 14px; }
+.timercard .big { font-size: var(--fs-num); line-height: var(--lh-num); }
 
-/* Today v2: header sync chip and Sync row */
+/* Today header: date line, title and sync chip (markup in app.js) */
 .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-.top .kicker { flex: 1 0 100%; }
-.syncchip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--peach-soft); color: var(--ink); font: inherit; font-size: 13px; font-weight: 700; }
+.top .kicker { flex: 1 0 100%; font-size: var(--fs-meta); line-height: var(--lh-meta); font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--dim); }
+.top h1 { font-size: var(--fs-title); line-height: var(--lh-title); font-weight: 800; letter-spacing: -0.02em; }
+.syncchip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--peach-soft); color: var(--ink); font: inherit; font-size: var(--fs-meta); font-weight: 700; }
 .syncchip .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
 .syncchip .dot.due { box-shadow: 0 0 0 3px var(--peach-mid); }
-.syncrow { display: flex; align-items: center; gap: 12px; padding: 12px 16px; margin: 12px 0; border-radius: 16px; background: var(--peach-soft); color: var(--ink); }
-.syncrow .cap { font-size: 12px; font-weight: 700; letter-spacing: .04em; }
-.syncrow .txt { flex: 1; font-size: 15px; font-weight: 600; }
-.syncrow .btn { width: auto; min-height: 44px; padding: 0 16px; margin: 0; }
+
+/* Today F65 layout. 72px bottom padding so the + button never covers a row. */
+.today { padding-bottom: 72px; }
+.chev-ico { flex: none; color: var(--dim); }
+.today .tag { font-size: var(--fs-meta); }
+
+/* Habits hero: heading, white 52px rows with round checks, Manage habits link row */
+.hero-title { margin: 0 0 12px; font-size: var(--fs-card); line-height: var(--lh-card); font-weight: 800; letter-spacing: -0.01em; color: var(--on-accent); }
+/* The hero stays peach in dark mode, so its rows use fixed colors (var(--ink) turns light in dark and would vanish on white). */
+.hero { --hero-ink: #1C1B1F; --hero-dim: #6B6B70; --hero-row: #FFFFFF; --hero-ring: #8C817A; }
+.hero .habit { min-height: 52px; margin-bottom: 8px; padding: 0 16px; gap: 12px; background: var(--hero-row); border: 0; border-radius: 14px; color: var(--hero-ink); }
+.hero .habit:last-of-type { margin-bottom: 4px; }
+.hero .habit label.check { gap: 12px; font-size: var(--fs-body); font-weight: 700; }
+.hero label.check input { width: 26px; height: 26px; flex: none; border: 2px solid var(--hero-ring); border-radius: 50%; background: var(--hero-row); }
+.hero label.check input:checked { background: var(--hero-ink); border-color: var(--hero-ink); }
+.hero label.check input:checked::after { border-color: #FFFFFF; }
+.hero .streak { padding: 0; background: transparent; border: 0; font-size: var(--fs-meta); font-weight: 600; color: var(--hero-dim); }
+.hero-manage { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 48px; padding: 0 4px; background: transparent; border: 0; color: var(--on-accent); font: inherit; font-size: var(--fs-body); font-weight: 700; cursor: pointer; }
+.hero-manage .chev-ico { color: var(--on-accent); }
+.hero-manage:focus-visible { outline: 2px solid var(--hero-ink); outline-offset: 2px; border-radius: 12px; }
+
+/* Workout card */
+.wcard-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.wcard-k { margin: 0; font-size: var(--fs-meta); line-height: var(--lh-meta); font-weight: 600; color: var(--dim); }
+.wcard-name { margin: 2px 0 0; font-size: var(--fs-card); line-height: var(--lh-card); font-weight: 800; letter-spacing: -0.01em; }
+.wcard-focus { margin: 4px 0 12px; font-size: var(--fs-body); line-height: var(--lh-body); font-weight: 500; color: var(--dim); }
+.wcard-from { margin: -4px 0 12px; font-size: var(--fs-meta); line-height: var(--lh-meta); color: var(--dim); }
+.linkbtn { min-height: 44px; padding: 0 8px; background: transparent; border: 0; color: var(--text); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.wcard-btns { display: flex; gap: 8px; }
+.wcard-btns .btn { margin: 0; }
+.wcard-btns .btn:first-child { flex: 1; }
+.wcard-btns .btn.secondary { flex: none; width: auto; padding: 0 16px; }
+button.btn.wcard-switch { display: inline-flex; align-items: center; gap: 6px; width: auto; min-height: 44px; margin: 0; padding: 0 16px; }
+
+/* Sync notice: hairline outline, no fill */
+.syncnote { display: flex; align-items: center; gap: 12px; margin: 12px 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 16px; background: transparent; }
+.syncnote-txt { flex: 1; display: flex; flex-direction: column; }
+.syncnote-txt b { font-size: var(--fs-body); font-weight: 700; }
+.syncnote-txt span { font-size: var(--fs-meta); line-height: var(--lh-meta); color: var(--dim); }
+.syncnote .btn { width: auto; min-height: 44px; margin: 0; padding: 0 16px; }
+
+/* Log, Learn and Notes: one panel, 64px rows split by hairlines */
+.prows { padding: 0 20px; }
+.prow { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; min-height: 64px; padding: 0; background: transparent; border: 0; border-bottom: 1px solid var(--shade); color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.prow:last-child { border-bottom: 0; }
+.prow-txt { display: flex; flex-direction: column; min-width: 0; }
+.prow-t { font-size: var(--fs-head); line-height: var(--lh-head); font-weight: 700; }
+.prow-s { font-size: var(--fs-meta); line-height: var(--lh-meta); font-weight: 500; color: var(--dim); }
+.prow:focus-visible, .recent:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 12px; }
+
+/* Recent entries: plain row, no panel */
+.recent { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 56px; padding: 0 4px; background: transparent; border: 0; color: inherit; font: inherit; text-align: left; cursor: pointer; }
+.recent-t { flex: 1; font-size: var(--fs-head); font-weight: 700; }
+.recent-n { font-size: var(--fs-body); font-weight: 500; color: var(--dim); }
+.recent-empty { padding: 8px 4px; }
+

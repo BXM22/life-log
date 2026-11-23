@@ -86,7 +86,7 @@ Smaller improvements to shipped features, from the design board ideas. Not mocke
 - [ ] F62 Color themes (Should). Peach, Sage, Ocean, Lavender, Mono, each light and dark, plus Auto (follow the phone). Starts with a token cleanup (about 120 hard-coded colors), then src/logic/themes.js, data-theme and data-mode on <html>, a no-flash script in index.html, theme-color updates, a contrast test for every theme, and Settings > Appearance (Theme, Mode). Plan in docs/APPEARANCE.md
 - [ ] F63 Goal layouts for Today (Should). Fitness, Learning, Habits, Balanced presets set the section order, the hero metric, which drop-downs start open and the Quick add default; a Today layout window to show, hide and move sections; reset to the goal layout. Needs F60 step 1. Plan in docs/APPEARANCE.md
 - [ ] F64 First-run picker (Could). Three steps for new installs (goal, theme and mode, done), Skip gives Balanced, Peach, Auto; existing installs get a What's New line; lifelog.appearance added to backup and restore. Needs F62 and F63. Plan in docs/APPEARANCE.md
-- [ ] F65 Today polish, direction A (Should). Habits move into the peach hero (counted once, on the first screen); workout card gets a Switch button that opens the Workout tab's Switch template sheet (today only, Undo) and Start workout plus Rest day on one row; Sync row and storage note become one outlined notice shown only when needed; Log, Learn and Notes share one panel with action-style empty summaries; Recent is a plain row. Type scale tokens (13, 15, 17, 22, 28, 48; nothing under 13 px), sentence case, no caps overlines, SVG chevrons. Plan in docs/screens/today.md (Planned section), mock-up on the Design canvas board A
+- [x] F65 Today polish, direction A (Should). Built 2026-11-22 (not yet checked by eye in light and dark). Habits move into the peach hero (counted once, on the first screen); workout card gets a Switch button that opens the Workout tab's Switch template sheet (today only, Undo) and Start workout plus Rest day on one row; Sync row and storage note become one outlined notice shown only when needed; Log, Learn and Notes share one panel with action-style empty summaries; Recent is a plain row. Type scale tokens (13, 15, 17, 22, 28, 48; nothing under 13 px), sentence case, no caps overlines, SVG chevrons. Plan in docs/screens/today.md (Planned section), mock-up on the Design canvas board A
 
 - [ ] F66 My schedules and templates (Should). Users build their own weekly schedule for any area and save any schedule as a template. A schedule is planned items on weekdays for one area; a template is a reusable copy not tied to dates, and editing a copy never edits the template. Build in three steps: (1) workouts first: replace the hardcoded SCHEDULE and SCHEDULE_3 in src/logic/template.js with a user-editable weekday map saved with the workout template (Upper/Lower stays the default), plus Save as template; (2) schedules and templates for any area, starter templates (workout, study, guitar, blank) offered per area, Today shows each area's planned items and tapping one opens the log form pre-filled; (3) schedules and templates added to the JSON backup (bump SCHEMA_VERSION) and export and import of one template as a small file. An unlogged planned item shows as Missed on History; pressing it marks it Skipped. F63 layouts stay independent and may only suggest starters. Spec in the F66 section of docs/SPEC.md (screens, wiring, user-centred rules and four open decisions; revised 2026-11-21); mock-ups on the Design canvas page "F66 Schedules". Not built.
 - [ ] F67 Workout tab polish pass (Should). Faster set logging and an easier way to find the next exercise, on top of the shipped F53 layout. Today header gets the rest pill, a Next up button and a Done fold; Exercise gets a Use last chip, Fill all as and a pinned Log set bar; the Rest timer page, Switch template sheet, Templates, Edit template and History pages get the same tokens and a 76 px tab bar. Rest timer stays reachable everywhere (pill, chip, full page). Spec, board index and wiring tables in the v3 polish pass section of docs/screens/workout.md; mock-ups on the Design canvas "Workout tab redesign", Page 1, boards 14 to 21 (Polish row). Boards use a test palette (lavender, mint, butter, charcoal on a cream background); roles and the token plan are in the Color palette section of the same doc; the shipped peach tokens stay until it is approved. Not built.
@@ -97,8 +97,8 @@ To-do list for the two designs settled on 2026-11-21. Each group ships on its ow
 
 ### Decide first
 
-- [ ] F65: does `state.wSession` (the picked workout) reset the next day? Needed for "Only today changes" on the Switch sheet
-- [ ] F65: can the Workout Switch template sheet open over the Today tab as-is?
+- [x] F65: does `state.wSession` (the picked workout) reset the next day? No; now day-scoped with `wSessionDay`, cleared on tab change
+- [x] F65: can the Workout Switch template sheet open over the Today tab as-is? Yes through `sheetLayer`, after rows moved to `wSessionPick`
 - [ ] F66: how a planned item counts as done (any session in that area that day, or a `planItemId` link on the session)
 - [ ] F66: snapshot per date or versioned plans with a start date, so edits start today
 - [ ] F66: do auto-saved old plans count toward the 30-template limit, or go in a separate Earlier plans group?
@@ -106,16 +106,17 @@ To-do list for the two designs settled on 2026-11-21. Each group ships on its ow
 
 ### F65 Today polish, direction A
 
-- [ ] Type scale tokens (`--fs-meta` 13 up to `--fs-num` 48) in `forma.css`; move every 9 to 12 px use up to 13; sentence case, drop the caps `h2` overline rule
-- [ ] Header: date line without `LIFE LOG ·`, title `Today`
-- [ ] Habits inside the peach hero (heading `2 of 3 habits done`, white rows, round checks, `14 days` streak text, `After your workout`); remove the Habits drop-down and the pips
-- [ ] Workout card: Switch button opening the Switch template sheet (title, Planned tag, focus lines, "Only today changes"), `Switched from …` with Undo, Start workout and Rest day on one row, free day `Pick a workout`
-- [ ] Sync notice: one outlined row shown only when entries wait or storage is unprotected; `Sync now` secondary; remove the Sync row and the separate storage note
-- [ ] Log, Learn and Notes in one panel with action-style empty summaries and no `·`
-- [ ] Recent entries as a plain row; `No entries yet` with `Load demo data` only when there are none
-- [ ] SVG chevrons everywhere; 72 px bottom padding so the `+` never covers a row; status tags 13 px
-- [ ] Update docs/screens/today.md (fold the Planned section into the main description) and the What's new list
-- [ ] Check: tests pass, the F49 screen flow still works, light and dark both readable
+- [x] Type scale tokens (`--fs-meta` 13 up to `--fs-num` 48) in `forma.css`; move every 9 to 12 px use up to 13; sentence case, drop the caps `h2` overline rule
+- [x] Header: date line without `LIFE LOG ·`, title `Today`
+- [x] Habits inside the peach hero (heading `2 of 3 habits done`, white rows, round checks, `14 days` streak text, `After your workout`); remove the Habits drop-down and the pips
+- [x] Workout card: Switch button opening the Switch template sheet (title, Planned tag, focus lines, "Only today changes"), `Switched from …` with Undo, Start workout and Rest day on one row, free day `Pick a workout`
+- [x] Sync notice: one outlined row shown only when entries wait or storage is unprotected; `Sync now` secondary; remove the Sync row and the separate storage note
+- [x] Log, Learn and Notes in one panel with action-style empty summaries and no `·`
+- [x] Recent entries as a plain row; `No entries yet` with `Load demo data` only when there are none
+- [x] SVG chevrons everywhere; 72 px bottom padding so the `+` never covers a row; status tags 13 px
+- [x] Update docs/screens/today.md (fold the Planned section into the main description) and the What's new list
+- [x] Tests pass (334)
+- [ ] Check by eye: the F49 screen flow still works, light and dark both readable (dark fix for the hero rows is in, unverified on a device)
 
 ### F66 step 1: Workout plan
 

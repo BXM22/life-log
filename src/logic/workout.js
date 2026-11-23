@@ -5,6 +5,7 @@
 // One entry per set, so each set can be edited, deleted, exported and wiped like any other entry.
 
 import { scheduleFor, sessionById, getSessions } from './template.js';
+import { logicalDate } from './dates.js';
 
 /** Weekday of a YYYY-MM-DD date, 0 = Sunday. */
 export function weekday(date) {
@@ -23,6 +24,33 @@ export function activeSessionId(picked, date, days = 4) {
   const scheduled = sessionForDate(date, days);
   if (sessionById(scheduled)) return scheduled; // a scheduled session may have been deleted
   return sessionById('upper_a') ? 'upper_a' : getSessions()[0].id;
+}
+
+/**
+ * The picked session for a day, or null. The pick is day-scoped: state.wSessionDay holds the date it was made for
+ * (set by wSessionPick), so a pick from yesterday no longer counts. Picks without a day (template editing) never expire here.
+ */
+export function pickedFor(state, day = logicalDate(Date.now(), state.dayStartHour)) {
+  if (!state.wSession) return null;
+  if (state.wSessionDay && state.wSessionDay !== day) return null;
+  return state.wSession;
+}
+
+/** Drop a day-scoped pick made on an earlier day. Call on tab changes and when the app wakes up. */
+export function expireSessionPick(state, day = logicalDate(Date.now(), state.dayStartHour)) {
+  if (state.wSessionDay && state.wSessionDay !== day) { state.wSession = null; state.wSessionDay = null; }
+}
+
+/** The session planned for the day, ignoring any pick: the active template, else the weekday schedule. */
+export const plannedSessionId = (state, day = logicalDate(Date.now(), state.dayStartHour)) => activeSessionId(null, day, state.planDays);
+
+/** Name of the originally planned session when today's override is active and differs from it, else null. */
+export function switchedFrom(state, day = logicalDate(Date.now(), state.dayStartHour)) {
+  const picked = pickedFor(state, day);
+  if (!picked || !state.wSessionDay) return null; // only an explicit Switch counts, not template editing
+  const planned = plannedSessionId(state, day);
+  if (picked === planned) return null;
+  return sessionById(planned)?.name ?? null;
 }
 
 const blank = (v) => String(v ?? '').trim() === '';

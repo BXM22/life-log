@@ -1,12 +1,12 @@
 # Today tab (v2)
 
-Status: **built** (backlog F60, all five steps, 2026-11-19). Mock-ups are on the Design canvas "Life Log Today v2". The v1 layout is in git history (last v1 edit 2026-11-17).
+Status: **built** (backlog F60, all five steps, 2026-11-19; polish pass F65 built 2026-11-22, see "Main screen" below). Mock-ups are on the Design canvas "Life Log Today v2". The v1 layout is in git history (last v1 edit 2026-11-17).
 
 Not built from the original design: the Learn window's *Type* chips apply to non-Guitar areas only (a Guitar session ignores the type); Log window's "Guitar timer moved to Learn" row is still there (remove it after one release).
 
-## Planned: Today polish, direction A (F65)
+## Today polish, direction A (F65)
 
-Status: **planned, not built.** Chosen 2026-11-21 from three mock-ups (A Tidy, B Day list, C Next up) on the Design canvas "Life Log Today v2", board "A Tidy: same parts, clearer". When it ships, fold this section into "Main screen" and "Design style" below and delete it.
+Status: **built 2026-11-22.** Chosen 2026-11-21 from three mock-ups (A Tidy, B Day list, C Next up) on the Design canvas "Life Log Today v2", board "A Tidy: same parts, clearer". Not yet checked by eye on a phone in light and dark.
 
 ### Why
 
@@ -20,7 +20,7 @@ Review of the live screen (2026-11-21, 390 x 844):
 - 18 font sizes across the CSS, down to 9 and 10 px; the workout name (17 px) is smaller than its button text.
 - Empty rows are dead ends ("Nothing logged yet"); row chevrons are a typed `>` while drop-downs use an icon; the `+` button covers the first habit's streak badge.
 
-### Main screen, top to bottom (planned)
+### Main screen, top to bottom
 
 1. **Header:** date line `Saturday, November 21` (13/18, weight 500, muted; no `LIFE LOG ·` prefix, no caps) over the title `Today` (28/34, weight 800, -0.02em). Sync chip on the right, same states as now: `2 to export`, `Synced`, `Export due`.
 2. **Habits hero (peach):** heading `2 of 3 habits done` (22/28, weight 800), then the habit checklist inside the card. This replaces both the big `2/3` with pips and the Habits drop-down, so habits are on the first screen and counted once.
@@ -55,13 +55,23 @@ One family, Plus Jakarta Sans (already loaded). Nothing under 13 px.
 
 Rules: sentence case for headings, labels and buttons (`Start workout`, `Sync now`, `Rest day`); no all-caps overlines; no meta joined with `·`. Put the tokens in `forma.css` `:root` and replace the 18 current sizes; the 9, 10, 11 and 12 px uses move up to 13.
 
-### Design changes (planned)
+### Design changes
 
 - **Peach** only on the habits hero, `Start workout` and the `+` button. The sync chip stays soft peach; the sync notice and `Sync now` are neutral.
 - **Fewer boxes:** hero, workout card and one Log/Learn/Notes panel; the sync notice is outlined, Recent has no panel.
 - **Chevrons:** the SVG chevron everywhere, never a typed `>`.
 - **Unticked check ring:** `#8C817A`, which passes 3:1 against white.
 - **Status tags** go from 12 to 13 px.
+
+### Built notes (2026-11-22)
+
+- **Switch is today only.** The sheet rows run `wSessionPick`, which sets `state.wSession` and `state.wSessionDay` (not the stored template). `pickedFor` ignores a pick from another day and `expireSessionPick` (run on every tab change) clears it, so the override resets at the day start. `wSessionClear` is the Undo; `switchedFrom(state)` gives the `Switched from X` text. The sheet opens over Today with `sheetLayer`. The Workout tab's sheet is now today-only too.
+- **Start workout** runs `startWorkout` (`todayActions.js`): opens the Workout tab on the first unfinished exercise, the same target as Next up (`currentIndex` in `workoutToday.js`).
+- **Sync notice** comes from `syncNotice({pending, lastExportAt, storageProtected, now})` in `syncStatus.js`; the chip uses the same pending count so the two never disagree. The Sync row (`syncRowHtml`) is deleted.
+- **Header** (`app.js`): Today shows the full date line with no prefix; other tabs still use `LIFE LOG · DATE`.
+- **Dark mode:** the habits hero stays peach in both modes, so its rows use fixed colors (`--hero-ink`, `--hero-dim`, `--hero-row`, `--hero-ring` in `today.css`). Everything else on Today uses the theme tokens.
+- **Colors:** still the peach tokens in `forma.css`. The lavender, mint, butter and charcoal palette in `workout.md` is a test palette for Workout only and is not approved, so it is not applied.
+- Line-height tokens `--lh-*` exist but are only used in `today.css`.
 
 ### Code touchpoints
 
@@ -73,38 +83,35 @@ Rules: sentence case for headings, labels and buttons (`Start workout`, `Sync no
 | Switch button and free-day `Pick a workout` open the Switch sheet on Today; `Planned` tag, focus line, title | `src/ui/workoutSheets.js`, `src/ui/workoutSheetActions.js`, `src/ui/todayView.js` |
 | Streak text (`14 days`), summaries without `·` | `src/ui/format.js`, `src/logic/todayWin.js` |
 
-Open questions: does `state.wSession` reset on the next day (needed for "Only today changes")? Does the Switch sheet render over the Today tab as-is, or only inside Workout?
+Answered 2026-11-22: `state.wSession` now resets at the day start (`wSessionDay`), and the Switch sheet renders over Today through `sheetLayer`.
 
 Quick daily logging and a glance at how today is going. Source: `src/ui/todayView.js`, `todayWindows.js`, `logWindow.js`, `learnView.js`, `notesWindow.js`, `quickAddView.js`, `mealView.js`, `notesView.js`, `manageHabitsView.js`, `syncChip.js` (see "Where the code lives"). The old `studyView.js` and `practiceView.js` are gone.
+
+## Workout redesign impact (planned, not built)
+
+Status: **planned.** Comes from the Workout v2 redesign (F53) and v3 polish (F67); see `workout.md`. Today stays the front door to the workout, so these links must keep working when Workout changes.
+
+| Today control | Workout v2/v3 target | What must change |
+|---|---|---|
+| Workout card `Switch`, free-day `Pick a workout` | Switch template sheet | The sheet is a modal on the Workout tab. Today must open it as an overlay and return to Today on pick (see the open question under F65 above). Title `Switch today's workout`, `Planned` tag, "Only today changes" line. |
+| `Start workout` | Workout tab, board 14 `Next up` | Switch to the Workout tab and call `wOpenEx` on the first exercise with unfinished sets (the same action as `Next up`), not just change tabs. |
+| Warm-up and BJJ rows (if shown on the card) | Warm-up and BJJ sheet | Use the same sheet so ticking there and here updates one state. |
+| Habit "After your workout" | Done fold, board 14 | Counts as done when all sets are logged, same rule as the Done fold. |
+| Workout card name and focus line | Today screen of Workout, template card | Read the same active template and `state.wSession` so the two screens never disagree. |
+| `Rest day` | Workout Today, empty state | Workout must show a rest-day state, not an empty list. |
+
+After F66 (weekly plans), the card also reads from the plan for the weekday, not the hard-coded Tue/Thu/Sat plan. Add a `Planned today` section (F66 step 2) below the card.
+
+Open question: does `Start workout` on a rest day or free day open the Switch sheet or the last template? (`wSession` day reset is answered, see F65 built notes.)
 
 ## What changed from v1, and why
 
 - **Today is a summary, not a form.** v1 stacked ten blocks on one screen. v2 keeps four things visible (header, hero, session, windows) and puts the rest in drop-downs or their own windows.
-- **Drop-downs (accordions):** Habits and Recent. Tapping the header row opens or closes the panel; a chevron shows the state.
+- **Habits live in the hero (F65).** Recent is a plain row; the v2 drop-downs are gone.
 - **Windows:** Log, Learn and Notes each open a full window with a back arrow. Today only shows a one-line summary row for each.
 - **Study became Learn.** v1 had a KUMIO panel tied to one job. v2 has user-defined **areas** (Guitar, Coding, Spanish, Reading, exam prep...), so it works for anything you practise or study. Guitar and the practice timer moved into Learn because they are the same kind of thing.
-- **Sync is a chip plus a button.** The header chip shows status at a glance (and replaces the export banner); a Sync row under the hero has a `SYNC NOW` button.
+- **Sync is a chip plus a button.** The header chip shows status at a glance (and replaces the export banner); a Sync notice (only when entries wait or storage is unprotected) has a `Sync now` button.
 - **Habit removal moved** out of the checklist (no `X` next to every row) into a Manage habits sheet.
-
-## Main screen, top to bottom
-
-1. **Header:** overline `LIFE LOG · <weekday, date>`, title `TODAY`. Right side: **sync chip** (soft peach pill, status only) `3 waiting` or `Synced`; tapping it opens the Sync tab. When the last export is 7 or more days old and the Settings reminder is on, the chip reads `Export due` and shows a peach dot (replaces the old banner).
-2. **Hero card (peach):** big `done/total` of habits (`2/3`), caption "habits done today", pips (filled ink when done, ring when not).
-3. **Sync row** (soft peach row, directly under the hero): caption `SYNC`, text `3 entries waiting to export` or `Everything exported`, and a `SYNC NOW` button on the right (secondary `SYNCED` once nothing is waiting). `SYNC NOW` runs the export and updates the chip; the row itself is not a link, the Sync tab stays in the tab bar for the full export screen.
-4. **TODAY'S SESSION card:** session name (`Upper A`) and focus line (`Upper chest and back`), or "No lifting scheduled. BJJ, rest or a walk." when empty.
-   - Primary `START WORKOUT` (or `PICK A WORKOUT` on a free day) switches to the Workout tab.
-   - Secondary `Mark as rest day`; becomes `Undo rest day` once used; hidden if a real workout is checked. A rest day is a `habit_check` with `rest: true`, so the streak continues.
-5. **HABITS drop-down** (header `HABITS · 2 OF 3`, open by default):
-   - One tappable row per habit: checkbox, name, streak pill (`4d`, shown when the streak is 1 or more).
-   - `Manage habits` row at the bottom opens the Manage habits sheet.
-   - Empty state: "No habits yet. Add one in Manage habits."
-6. **LOG AND LEARN rows** (three row buttons, small caption over a one-line summary):
-   - `LOG`: `182.4 lb · Protein 85 / 160 g`. Opens the Log window.
-   - `LEARN`: `45 min today · Guitar, Coding`, or "Timer running" while a timer is on. Opens the Learn window.
-   - `NOTES`: `2 waiting for the vault`. Opens the Notes window.
-7. **RECENT drop-down** (header `RECENT · 8 ENTRIES`, closed by default): the 4 newest entries as rows `11-17 <label>` with a `WAITING` or `EXPORTED` tag, then `Edit or delete entries in History`. Empty state: "No entries yet." plus `LOAD DEMO DATA`.
-8. **Storage note** (conditional): one line under the header when storage is unprotected, with the Add to Home Screen hint.
-9. **Quick add FAB:** round peach `+`, bottom right, above the tab bar.
 
 ## Quick add sheet (bottom sheet)
 
