@@ -30,10 +30,13 @@ export function lastExportHint(lastExportAt, now = Date.now()) {
 export function syncNotice({ pending = 0, lastExportAt = null, storageProtected = true, now = Date.now() } = {}) {
   const unprotected = storageProtected === false;
   if (!(pending > 0) && !unprotected) return { show: false, title: '', hint: '' };
+  const hint = "Storage isn't protected. Add the app to your Home Screen.";
+  // Nothing waiting: lead with the storage warning (the chip already says Export due or Synced).
+  if (!(pending > 0)) return { show: true, title: "Storage isn't protected", hint: 'Add the app to your Home Screen.' };
   return {
     show: true,
-    title: pending > 0 ? `${pending} ${plural(pending)} waiting to export` : 'Nothing waiting to export',
-    hint: unprotected ? "Storage isn't protected. Add the app to your Home Screen." : lastExportHint(lastExportAt, now),
+    title: `${pending} ${plural(pending)} waiting to export`,
+    hint: unprotected ? hint : lastExportHint(lastExportAt, now),
   };
 }
 

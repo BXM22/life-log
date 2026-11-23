@@ -84,8 +84,8 @@ button.btn.editbtn { width: auto; min-height: 44px; margin: 0; padding: 0 14px; 
 button.btn.wcard-switch { display: inline-flex; align-items: center; gap: 6px; width: auto; min-height: 44px; margin: 0; padding: 0 16px; }
 
 /* Sync notice: hairline outline, no fill */
-.syncnote { display: flex; align-items: center; gap: 12px; margin: 12px 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 16px; background: transparent; }
-.syncnote-txt { flex: 1; display: flex; flex-direction: column; }
+.syncnote { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; margin: 12px 0; padding: 12px 16px; border: 1px solid var(--line); border-radius: 16px; background: transparent; }
+.syncnote-txt { display: flex; flex-direction: column; padding-right: 60px; } /* keeps text clear of the floating + button */
 .syncnote-txt b { font-size: var(--fs-body); font-weight: 700; }
 .syncnote-txt span { font-size: var(--fs-meta); line-height: var(--lh-meta); color: var(--dim); }
 .syncnote .btn { width: auto; min-height: 44px; margin: 0; padding: 0 16px; }

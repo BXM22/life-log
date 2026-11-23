@@ -50,7 +50,7 @@ test('notice: plural, singular and last export hint', () => {
 
 test('notice: unprotected storage shows the Home Screen hint, with or without entries', () => {
   const hint = "Storage isn't protected. Add the app to your Home Screen.";
-  assert.deepEqual(syncNotice({ pending: 0, lastExportAt: now, storageProtected: false, now }), { show: true, title: 'Nothing waiting to export', hint });
+  assert.deepEqual(syncNotice({ pending: 0, lastExportAt: now, storageProtected: false, now }), { show: true, title: "Storage isn't protected", hint: 'Add the app to your Home Screen.' });
   assert.deepEqual(syncNotice({ pending: 3, lastExportAt: now, storageProtected: false, now }), { show: true, title: '3 entries waiting to export', hint });
 });
 
