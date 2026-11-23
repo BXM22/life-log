@@ -1,0 +1,16 @@
+/* Log window (F68). Shared win-* rules live in windows.css. */
+.win-log-weighrow { display: flex; gap: var(--sp-1); align-items: stretch; }
+.win-log-weighrow .field { flex: 1; min-width: 0; min-height: var(--ctl-lg); }
+.win-log-save { min-height: var(--ctl-lg); padding: 0 var(--sp-3); background: transparent; border: 1px solid var(--line); color: var(--text); border-radius: 16px; font: inherit; font-weight: 700; cursor: pointer; }
+.win-log-saved { background: var(--panel-2); }
+.win-log-savedtext { display: inline-flex; align-items: center; gap: var(--sp-1); font-weight: 600; }
+.win-log-change { min-height: var(--ctl); padding: 0 var(--sp-1); background: none; border: 0; color: var(--text); font: inherit; font-weight: 700; text-decoration: underline; cursor: pointer; }
+.win-log-bar { display: block; width: 100%; height: 10px; border-radius: 999px; overflow: hidden; appearance: none; margin: 0 0 var(--sp-1); }
+.win-log-bar::-webkit-progress-bar { background: var(--shade); border-radius: 999px; }
+.win-log-bar::-webkit-progress-value { background: var(--accent); border-radius: 999px; }
+.win-log-bar::-moz-progress-bar { background: var(--accent); border-radius: 999px; }
+.win-log-togo { margin: 0 0 var(--sp-2); font-size: var(--fs-meta); color: var(--dim); }
+.win-log-rule { border: 0; border-top: 1px solid var(--line); margin: var(--sp-2) 0; }
+.win-log-sub { margin: 0 0 var(--sp-2); font-size: var(--fs-head); line-height: var(--lh-head); font-weight: 700; text-transform: none; letter-spacing: 0; }
+.win-log-primary { width: 100%; min-height: var(--ctl-lg); border-radius: 16px; background: var(--accent); color: var(--on-accent); font-weight: 700; text-transform: none; letter-spacing: 0; }
+.win-log-learn { width: 100%; min-height: var(--ctl-lg); margin: 0 0 var(--sp-4); border: 1px solid var(--line); border-radius: 16px; background: transparent; color: var(--text); font: inherit; font-weight: 600; text-transform: none; letter-spacing: 0; cursor: pointer; }

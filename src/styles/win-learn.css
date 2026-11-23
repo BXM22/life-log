@@ -1,0 +1,28 @@
+/* Learn window (F68). Per-window rules only; shared win-* classes live in windows.css. */
+.win-learn-timer { margin: 0 0 var(--sp-4); padding: var(--sp-3); border-radius: 24px; background: var(--peach-soft); }
+.win-learn-timer h2 { margin: 0 0 var(--sp-1); font-size: var(--fs-head); line-height: var(--lh-head); font-weight: 700; text-transform: none; letter-spacing: 0; }
+.win-learn-clock { font-family: inherit; font-size: 48px; line-height: 52px; font-weight: 800; font-variant-numeric: tabular-nums; margin: 0 0 var(--sp-1); }
+.win-learn-timer .note { margin: 0 0 var(--sp-2); }
+.win-learn-lbl { font-size: var(--fs-meta); font-weight: 600; color: var(--dim); }
+.win-learn-fixed { margin: 0; font-size: var(--fs-body); line-height: var(--lh-body); color: var(--dim); }
+.win-learn-sub { margin: var(--sp-2) 0 var(--sp-1); font-size: var(--fs-meta); font-weight: 600; color: var(--dim); }
+.win-learn-btns { display: flex; flex-wrap: wrap; gap: var(--sp-1); margin: var(--sp-2) 0 0; }
+.win-learn-btns .btn { width: auto; flex: 1 1 0; min-height: var(--ctl-lg); margin: 0; border-radius: 999px; }
+.win-learn-out, .win-learn-btns .btn.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+.win-learn-dark, .win-learn-btns .btn.win-learn-dark { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+.win-learn-save { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
+.win-learn-fold { margin: 0 0 var(--sp-2); border-radius: 16px; background: var(--panel-2); border: 1px solid var(--shade); }
+.win-learn-foldhead { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); width: 100%; min-height: var(--ctl-lg); padding: 0 var(--sp-2); background: transparent; border: 0; color: var(--text); font: inherit; text-align: left; cursor: pointer; }
+.win-learn-foldtitle { display: flex; flex-direction: column; }
+.win-learn-foldtitle b { font-size: var(--fs-body); font-weight: 700; }
+.win-learn-foldtitle small { font-size: var(--fs-meta); color: var(--dim); font-weight: 500; }
+.win-learn-fold.open .acc-chev { transform: rotate(180deg); }
+.win-learn-foldbody { padding: 0 var(--sp-2) var(--sp-1); }
+.win-learn-area { margin: 0 0 var(--sp-1); }
+.win-learn-area .win-row { margin: 0; display: grid; grid-template-columns: 1fr auto; column-gap: var(--sp-2); padding-top: 8px; padding-bottom: 8px; } /* name over minutes on the left, Edit on the right */
+.win-learn-aname { grid-column: 1; grid-row: 1; align-self: end; font-weight: 600; }
+.win-learn-aend { display: contents; }
+.win-learn-aend > span { grid-column: 1; grid-row: 2; align-self: start; font-size: var(--fs-meta); color: var(--dim); }
+.win-learn-edit { grid-column: 2; grid-row: 1 / span 2; align-self: center; width: auto; min-height: var(--ctl); margin: 0; padding: 0 16px; border-radius: 999px; }
+.win-learn-bar { margin: 6px var(--sp-2) 0; }
+.win-learn-remove { display: block; min-height: var(--ctl); margin: var(--sp-2) auto 0; padding: 0 var(--sp-2); background: transparent; border: 0; font: inherit; font-weight: 600; cursor: pointer; }

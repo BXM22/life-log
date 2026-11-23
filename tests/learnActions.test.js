@@ -102,6 +102,11 @@ test('toggleLearn, pickArea, pickType, learnMin, starter, lazy init', () => {
   assert.equal(t.state.learn.recent, false);
   t.a.pickArea({ value: 'Coding' });
   assert.equal(t.state.learn.area, 'Coding');
+  t.a.pickArea({ dataset: { area: 'Guitar' } });
+  assert.equal(t.state.learn.area, 'Guitar');
+  t.a.learnFocus({ dataset: { focus: 'songs' } });
+  assert.equal(t.state.learn.draft.focus, 'songs');
+  t.a.pickArea({ value: 'Coding' });
   t.a.pickType({ dataset: { type: 'study' } });
   t.a.pickType({ dataset: { type: 'nope' } });
   assert.equal(t.state.learn.type, 'study');

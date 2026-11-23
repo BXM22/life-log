@@ -20,7 +20,9 @@ export function createLearnActions({ state, saveEntries, saveFail, inputValue, t
   };
 
   return {
-    pickArea: (el) => { keepTyped(); const l = learn(); l.area = el.value; l.draft.metric = ''; }, // the metric belongs to one area
+    // Area chips carry data-area; the drop-down (more than 6 areas) carries value.
+    pickArea: (el) => { keepTyped(); const l = learn(); l.area = (el.dataset && el.dataset.area) || el.value; l.draft.metric = ''; }, // the metric belongs to one area
+    learnFocus: (el) => { keepTyped(); learn().draft.focus = el.dataset.focus || ''; },
     pickType: (el) => { keepTyped(); if (AREA_TYPES.includes(el.dataset.type)) learn().type = el.dataset.type; },
     learnMin: (el) => { keepTyped(); learn().draft.minutes = el.dataset.min; },
 

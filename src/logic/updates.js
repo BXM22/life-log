@@ -1,5 +1,6 @@
 // Recent updates shown in Settings > WHAT'S NEW. Newest first. Add a line here when you ship something you'd notice.
 export const UPDATES = [
+  { date: '2026-11-22', text: 'Log, Learn and Notes have a new look: even spacing, meal buttons, minute chips, area chips, a saved weigh-in row and a live note count. Everything works as before.' },
   { date: '2026-11-22', text: 'Today is tidier: habits sit in the top card, the workout card has a Switch button for today only, and the sync notice shows only when something is waiting.' },
   { date: '2026-11-19', text: 'Appearance: choose System, Light or Dark in Settings. System follows your phone; Light and Dark stay fixed.' },
   { date: '2026-11-19', text: 'Auto sync: when you open the app, finished days upload to Dropbox on their own (switch in Settings, needs Dropbox connected). Today also has a SYNC NOW button and a status chip at the top.' },

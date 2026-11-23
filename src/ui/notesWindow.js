@@ -1,13 +1,10 @@
-// Notes window on Today: title, body, SAVE NOTE, the 3 newest notes and SEND N NOTES TO VAULT.
+// Notes window on Today (F68): header, New note section, Latest notes section.
 //   html:    notesWindow(state)
 //   actions: closeTodayWin, logNote, exportNotes
 
 import { notesPanel } from './notesView.js';
-
-const BACK = '<button class="back-link" data-action="closeTodayWin" aria-label="Back to Today"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>';
+import { winHeader } from './winParts.js';
 
 export function notesWindow(state) {
-  return `<div class="backrow">${BACK}</div>
-    <h2 class="subtitle">Notes</h2>
-    ${notesPanel(state)}`;
+  return `<div class="win win-notes">${winHeader({ title: 'Notes', summary: 'Write down ideas now and send them to your vault later.' })}${notesPanel(state)}</div>`;
 }

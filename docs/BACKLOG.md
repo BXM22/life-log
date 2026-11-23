@@ -90,6 +90,7 @@ Smaller improvements to shipped features, from the design board ideas. Not mocke
 
 - [ ] F66 My schedules and templates (Should). Users build their own weekly schedule for any area and save any schedule as a template. A schedule is planned items on weekdays for one area; a template is a reusable copy not tied to dates, and editing a copy never edits the template. Build in three steps: (1) workouts first: replace the hardcoded SCHEDULE and SCHEDULE_3 in src/logic/template.js with a user-editable weekday map saved with the workout template (Upper/Lower stays the default), plus Save as template; (2) schedules and templates for any area, starter templates (workout, study, guitar, blank) offered per area, Today shows each area's planned items and tapping one opens the log form pre-filled; (3) schedules and templates added to the JSON backup (bump SCHEMA_VERSION) and export and import of one template as a small file. An unlogged planned item shows as Missed on History; pressing it marks it Skipped. F63 layouts stay independent and may only suggest starters. Spec in the F66 section of docs/SPEC.md (screens, wiring, user-centred rules and four open decisions; revised 2026-11-21); mock-ups on the Design canvas page "F66 Schedules". Not built.
 - [ ] F67 Workout tab polish pass (Should). Faster set logging and an easier way to find the next exercise, on top of the shipped F53 layout. Today header gets the rest pill, a Next up button and a Done fold; Exercise gets a Use last chip, Fill all as and a pinned Log set bar; the Rest timer page, Switch template sheet, Templates, Edit template and History pages get the same tokens and a 76 px tab bar. Rest timer stays reachable everywhere (pill, chip, full page). Spec, board index and wiring tables in the v3 polish pass section of docs/screens/workout.md; mock-ups on the Design canvas "Workout tab redesign", Page 1, boards 14 to 21 (Polish row). Boards use a test palette (lavender, mint, butter, charcoal on a cream background); roles and the token plan are in the Color palette section of the same doc; the shipped peach tokens stay until it is approved. Not built.
+- [x] F68 Log, Learn and Notes windows in the screen A style (Should). Even spacing (20 px edges and padding, 24 between sections, 16 between fields, 8 label to field and between chips), one header pattern, sentence case, one peach button per window; Log gets meal-type buttons and a saved weigh-in row; Learn gets area and minute chips, type row hidden for Guitar, a clearer More details fold and the area form in place; Notes gets a character count and a Nothing to send state. No data or action changes. Plan in docs/screens/today.md (F68 section), mock-ups on the Design canvas Today page, row "Log, Learn and Notes windows". Approved 2026-11-22
 
 ## Update 2026-11-21: Today polish (F65) and weekly plans (F66)
 
@@ -143,6 +144,41 @@ To-do list for the two designs settled on 2026-11-21. Each group ships on its ow
 - [ ] Plans and templates in the JSON backup (bump SCHEMA_VERSION, merge by id, newest updatedAt wins)
 - [ ] Share a template as a file and import a template file
 - [ ] Update docs/SPEC.md F66 status, the screen docs and the CHANGELOG
+
+## Update 2026-11-22: Log, Learn and Notes windows (F68)
+
+To-do list for the window restyle approved 2026-11-22. Plan: F68 section of docs/screens/today.md. Mock-ups: Design canvas "Life Log Today v2", Today page, boards win3/Log, win3/Learn and win3/Notes.
+
+### Shared
+
+- [x] Spacing tokens (8, 16, 20, 24) in `windows.css` (not `forma.css`); window header (back button and title on one 56 px row, summary line), section, field, list-row and chip styles in `windows.css`
+- [x] Sentence-case tags (`Waiting`, `In vault`) at 13 px
+
+### Log
+
+- [x] Weigh-in: label, field and outlined Save on one row; saved status row with Change
+- [x] Meals: heading status, 10 px bar, white meal rows
+- [x] Add a meal: four meal-type buttons pre-picked by time of day (keep the draft on a refused save); peach Save meal
+- [x] Link row "Guitar and the practice timer are in Learn"
+
+### Learn
+
+- [x] Header summary and area chips
+- [x] Timer card: heading, tabular clock, measure field, dark Stop and log, outlined Discard
+- [x] Log a session: area chips (drop-down past 6 areas), type chips hidden for Guitar with the "always practice" line, minute chips that fill the field, More details fold with a summary line and focus chips
+- [x] Your areas this week rows with Edit and goal bars; area form in place with "What you measure"; red Remove
+- [x] Recent sessions fold with a count
+
+### Notes
+
+- [x] New note with a live character count and the "what you typed stays" helper
+- [x] Latest notes with a waiting count; Send button turns into a disabled "Nothing to send"
+
+### Finish
+
+- [x] Tests pass (338); each window opened and checked at 390 px in light and dark
+- [ ] Click through every action by hand on a phone (save weight, save meal, start and stop timer, edit and remove an area, save note, send to vault)
+- [ ] Fold the F68 section into the window sections of docs/screens/today.md, add a What's new line, update the CHANGELOG
 
 ## Open questions
 

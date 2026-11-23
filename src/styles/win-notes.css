@@ -1,0 +1,12 @@
+/* Notes window (F68). Per-window rules only; shared parts are in windows.css. */
+.win-notes-labelrow { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-2); }
+.win-notes-labelrow label { font-size: var(--fs-meta); font-weight: 600; color: var(--dim); }
+.win-notes-count { font-size: var(--fs-meta); color: var(--dim); font-variant-numeric: tabular-nums; }
+.win-notes-body { min-height: 144px; height: 144px; resize: vertical; }
+.win-notes-help { margin: 0; font-size: var(--fs-meta); color: var(--dim); }
+.win-notes-save, .win-notes-send { width: 100%; min-height: var(--ctl-lg); }
+.win-notes-row { justify-content: flex-start; }
+.win-notes-date { flex: none; font-size: var(--fs-meta); color: var(--dim); font-variant-numeric: tabular-nums; }
+.win-notes-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.win-notes-send { margin-top: var(--sp-2); }
+.win-notes-none { border-style: dashed; background: transparent; color: var(--dim); opacity: 1; }

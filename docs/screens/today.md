@@ -104,6 +104,73 @@ After F66 (weekly plans), the card also reads from the plan for the weekday, not
 
 Open question: does `Start workout` on a rest day or free day open the Switch sheet or the last template? (`wSession` day reset is answered, see F65 built notes.)
 
+## Log, Learn and Notes windows, screen A style (F68)
+
+Status: **built 2026-11-22** (approved the same day; checked by eye at 390 px in light and dark, not on a phone). Mock-ups on the Design canvas "Life Log Today v2", Today page, row "Log, Learn and Notes windows (screen A style)": boards `win3/Log`, `win3/Learn` (try Start timer, More details, Edit) and `win3/Notes`. When it ships, replace the three window sections below with this one.
+
+Goal: give the three windows the F65 look (type scale, sentence case, one peach button) and one even spacing system, and keep every current function.
+
+### Spacing and shared parts (all three windows)
+
+| Space | Value |
+|---|---|
+| Page edges and panel padding | 20 px |
+| Between sections | 24 px |
+| Between fields inside a section | 16 px |
+| Label to its field, and between chips | 8 px |
+| Control height | 44 px minimum; fields and main buttons 56 px |
+
+- **Header:** back button (44 px, outlined) and the title (28/34, weight 800) on one 56 px row, then a one-line summary (15, muted).
+- **Sections:** cream panels, 24 px radius; heading 17/22 weight 700, sentence case; a short status on the right of the heading where useful.
+- **Fields:** label above (13, weight 600, muted), white 56 px field with a hairline, 16 px radius.
+- **Lists inside a section:** white 52 to 56 px rows, 16 px radius, 8 px apart.
+- **Buttons:** one peach primary per window (`Save meal`, `Save session`, `Save note`); other buttons outlined; `Stop and log` is dark (ink fill, white text) on the soft peach timer card; `Remove` is red text.
+- **Chips:** 44 px pills; selected is ink fill with white text.
+- **Tags:** sentence case, 13 px: `Waiting` on peach, `In vault` on soft peach.
+
+### Log window
+
+1. Header: `Log`, summary "Your weight and meals for <weekday, date>."
+2. **Weigh-in:** heading with `Last: 182.8 lb, Monday` on the right. Label `Weight in pounds`, field and outlined `Save` on one row (step 0.1, 50 to 600). After saving, the row becomes a white status row: check, "182.4 lb saved for today" and a `Change` link that brings the field back.
+3. **Meals:** heading with `85 of 160 g protein` on the right; progress bar (10 px) and "75 g to go" or "Target reached"; today's meals as white rows (type, name, grams). A hairline, then **Add a meal**: four meal-type buttons (Breakfast, Lunch, Dinner, Snack) instead of the drop-down, pre-picked by time of day; `What you ate` (max 60); `Protein in grams (optional)`; peach `Save meal`. A refused save keeps what was typed (as now).
+4. Outlined link row "Guitar and the practice timer are in Learn" (replaces "Guitar timer moved to Learn"; still to be removed after one release).
+
+### Learn window
+
+1. Header: `Learn`, summary "45 minutes today", then one soft chip per area (`Guitar 30 min`).
+2. **Timer card** (only while running, soft peach): `Timer running: Guitar`, clock 48/52 weight 800 with tabular figures, "Practising songs. Stopping logs 13 min.", the area's measure field when it has one (`Best BPM (optional)` for Guitar), dark `Stop and log` and outlined `Discard`. Survives closing the app (as now).
+3. **Log a session:**
+   - **Area:** chips, one per area (falls back to the drop-down when there are more than 6 areas).
+   - **Type:** Practice, Study, Project, Review chips for non-Guitar areas. For Guitar the row reads "Practice. Guitar sessions always count as practice", matching what the app already does.
+   - **Minutes:** field plus 15, 30, 45, 60 min chips (selected chip fills the field).
+   - **More details** (white fold, closed): the summary line names what is inside ("Best BPM, focus and notes"); open shows the measure field (only if the area has one), `Focus (optional)` with suggestion chips (Technique, Songs, Theory, Improvisation), `Notes (optional)`.
+   - Peach `Save session` and outlined `Start timer` on one row (`Start timer` hidden while running).
+4. **Your areas this week:** a white row per area with minutes ("90 of 150 min", or "120 min, no weekly goal"), outlined `Edit`, and a goal bar when there is a goal. **Add an area:** Language, Reading, Exam prep and Your own chips.
+   - `Edit` and `Your own` swap the panel for the area form: `Name`, `What you measure (optional)` (was "Metric label"), `Weekly goal in minutes (optional)`, dark `Save area`, outlined `Cancel`, and red `Remove <area>` when editing an existing area.
+5. **Recent sessions** fold (closed): heading with the count; open shows the 5 newest as white rows (date, area, minutes).
+
+### Notes window
+
+1. Header: `Notes`, summary "Write down ideas now and send them to your vault later."
+2. **New note:** `Title (optional)` (max 80); `Note` with a live count on the right ("0 of 5,000"), 144 px textarea; helper "If saving fails, what you typed stays here."; peach `Save note`.
+3. **Latest notes:** heading with "2 waiting" or "All in your vault" on the right; the 3 newest as white rows (date, title, `Waiting` or `In vault` tag); outlined `Send 2 notes to vault`, which becomes a dashed, disabled "Nothing to send" when nothing waits.
+
+### What stays the same
+
+Data, actions and rules do not change: `logWeighIn`, `logMeal`, `pickArea`, `pickType`, `learnMin`, `logSession`, `toggleLearn`, `practiceStart`, `practiceStop`, `practiceDiscard`, `openAreaEdit`, `addStarterArea`, `saveArea`, `deleteArea`, `closeAreaEdit`, `logNote`, `exportNotes`, `closeTodayWin`. New UI-only state: the weigh-in saved row, meal type chosen by button, and the selected minute chip.
+
+### Code touchpoints
+
+| Change | Files |
+|---|---|
+| Shared window header, section and chip helpers | `src/ui/winParts.js` (`winHeader`, `winSection`, `chipRow`) |
+| Shared styles and spacing tokens (`--sp-1` to `--sp-4`, `--ctl`, `--ctl-lg`) | `src/styles/windows.css`; per-window rules in `win-log.css`, `win-learn.css`, `win-notes.css` (linked in `index.html`, cached in `sw.js`) |
+| Log window and meals | `src/ui/logWindow.js`, `src/ui/mealView.js`, `src/ui/mealActions.js` |
+| Learn window, timer card, area form | `src/ui/learnView.js`, `src/ui/learnActions.js` |
+| Notes window | `src/ui/notesView.js`, `src/ui/notesWindow.js` |
+
+Built notes (2026-11-22): new UI-only state `state.mealType` and `state.weighEdit` (cleared in `logWeighIn`), new actions `pickMeal`, `changeWeigh` and `learnFocus`; `pickArea` also reads `data-area` from the area chips. The Notes count updates through `updateNoteCount()` from one delegated `input` listener in `app.js` (textarea `#note-body`, count `#note-count`). Window markup uses `win-*` classes; the old v2 window classes remain for other screens.
+
 ## What changed from v1, and why
 
 - **Today is a summary, not a form.** v1 stacked ten blocks on one screen. v2 keeps four things visible (header, hero, session, windows) and puts the rest in drop-downs or their own windows.
@@ -207,4 +274,4 @@ Unchanged from v1 except where noted.
 | Entry shapes and validation | `src/logic/entries.js` |
 | Actions (`data-action`) | `toggleHabit`, `addHabit`, `deleteHabit`, `toggleRestDay`, `toggleSection`, `openManageHabits`, `closeManageHabits`, `syncNow`, `openTodayWin`, `closeTodayWin`, `logWeighIn`, `logMeal`, `logNote`, `exportNotes`, `pickArea`, `pickType`, `learnMin`, `logSession`, `toggleLearn`, `openAreaEdit`, `closeAreaEdit`, `saveArea`, `deleteArea`, `addStarterArea`, `practiceStart`, `practiceStop`, `practiceDiscard`, `openQuick`, `closeQuick`, `quickKind`, `quickArea`, `quickMin`, `quickType`, `quickMore`, `saveQuick`, `demo` |
 | Styles | `src/styles/forma.css` (loaded last), `main.css`, `today.css` |
-| Backlog items | F1 to F4, F9, F12, F13, F16, F17, F36, F41, F43, F49, F60, F61, F65 in `docs/BACKLOG.md` |
+| Backlog items | F1 to F4, F9, F12, F13, F16, F17, F36, F41, F43, F49, F60, F61, F65, F68 in `docs/BACKLOG.md` |

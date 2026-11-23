@@ -36,6 +36,7 @@ import { createPlatesActions } from './platesActions.js';
 import { createRestActions } from './restActions.js';
 import { createMealActions } from './mealActions.js';
 import { createNotesActions } from './notesActions.js';
+import { updateNoteCount } from './notesView.js';
 import { createPracticeActions } from './practiceActions.js';
 import { createTodayActions } from './todayActions.js';
 import { createTodayWinActions } from './todayWinActions.js';
@@ -216,6 +217,7 @@ const actions = {
     const e = makeEntry('weigh_in', today(), { weight_lb: r.value }, now);
     try { await saveEntries([e]); } catch (err) { state.msg = saveFail(err); return; }
     state.entries.push(e);
+    state.weighEdit = false; // F68: back to the saved row
     state.msg = `Saved ${r.value} lb.`;
   },
 
@@ -489,6 +491,7 @@ document.addEventListener('keydown', (ev) => {
 $app.addEventListener('scroll', rest.onScroll, true); // the rest-time wheels scroll without a re-render
 document.addEventListener('visibilitychange', () => { if (!document.hidden) rest.resume(); });
 // Picking a saved exercise name fills the rest of the form in place (no re-render, so nothing typed is lost).
+$app.addEventListener('input', (ev) => { if (ev.target.id === 'note-body') updateNoteCount(); }); // F68: live note count, no re-render
 $app.addEventListener('change', (ev) => { if (ev.target.matches?.('input[data-libfill]')) autofillForm(state, ev.target); });
 $app.addEventListener('change', (ev) => {
   const el = ev.target.closest('[data-action]');

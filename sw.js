@@ -1,7 +1,7 @@
 // Life Log service worker: cache-first app shell so the app opens offline.
 // Shell files are fetched network-first (cache is the offline fallback), so deploys
 // show up on the next open without re-adding the bookmark. Bump CACHE only to drop stale entries.
-const CACHE = 'life-log-shell-v45';
+const CACHE = 'life-log-shell-v46';
 const FONT_CACHE = 'life-log-fonts-v1';
 
 const SHELL = [
@@ -11,6 +11,10 @@ const SHELL = [
   'src/styles/main.css',
   'src/styles/today.css',
   'src/styles/forma.css',
+  'src/styles/windows.css',
+  'src/styles/win-log.css',
+  'src/styles/win-learn.css',
+  'src/styles/win-notes.css',
   'src/styles/workout-today.css',
   'src/styles/workout-sheets.css',
   'src/styles/workout-pages.css',
